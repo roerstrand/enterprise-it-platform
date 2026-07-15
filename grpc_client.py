@@ -14,13 +14,12 @@ def run():
         for user in response.users:
             print(f" id={user.id}, name={user.name}")
 
-        new_user = stub.CreateUser(user_pb2.CreateUserRequest(name="Anna"))
+        new_user = stub.CreateUser(user_pb2.CreateUserRequest(name="Anna", email="anna@example.com"))
         print(f"\nSkapade: id={new_user.id}, name={new_user.name}")
 
-        found = stub.GetUserById(user_pbd2.UserIdRequest(id=new_user.id))
+        found = stub.GetUserById(user_pb2.UserIdRequest(id=new_user.id))
         print(f"Hittade: id={found.id}, name={found.name}")
 
-    if __name__ == "__main__":
-        run()
+if __name__ == "__main__":
+    run()
 
-        
