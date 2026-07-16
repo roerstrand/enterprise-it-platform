@@ -12,5 +12,6 @@ class UserModel(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
     email: Mapped[str]
+    hashed_password: Mapped[str]
 
     

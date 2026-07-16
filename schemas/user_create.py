@@ -1,6 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 class UserCreateSchema(BaseModel):
     name: str
-    email: str
+    email: EmailStr
 
