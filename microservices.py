@@ -12,6 +12,9 @@ from repositories.user_repository import (
 
 from data.database import SessionLocal
 
+import secrets
+from auth.security import hash_password
+
 class UserServiceServicer(user_pb2_grpc.UserServiceServicer):
 
     def GetAllUsers(self, request, context):
@@ -34,7 +37,8 @@ class UserServiceServicer(user_pb2_grpc.UserServiceServicer):
         
     def CreateUser(self, request, context):
         db = SessionLocal()
-        user = create_user_in_db(db, request.name, request.email)
+        hashed_password = hash_password(request.password)
+        user = create_user_in_db(db, request.name, request.email, hashed_password)
         return user_pb2.UserResponse(id=user.id, name=user.name, email=user.email)
     
 def serve():

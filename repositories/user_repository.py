@@ -17,8 +17,8 @@ def get_user_by_id_from_db(db: Session, user_id):
     
 
     
-def create_user_in_db(db: Session, name, email):
-    user = UserModel(name=name, email=email)
+def create_user_in_db(db: Session, name, email, hashed_password):
+    user = UserModel(name=name, email=email, hashed_password=hashed_password)
     db.add(user)
     db.commit()
     return user

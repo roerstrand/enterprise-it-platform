@@ -14,7 +14,7 @@ def run():
         for user in response.users:
             print(f" id={user.id}, name={user.name}")
 
-        new_user = stub.CreateUser(user_pb2.CreateUserRequest(name="Anna", email="anna@example.com"))
+        new_user = stub.CreateUser(user_pb2.CreateUserRequest(name="Anna", email="anna@example.com", password="test1234"))
         print(f"\nSkapade: id={new_user.id}, name={new_user.name}")
 
         found = stub.GetUserById(user_pb2.UserIdRequest(id=new_user.id))
