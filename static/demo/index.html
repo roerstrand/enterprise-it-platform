@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Demo</title>
+    <link rel="stylesheet" href="/static/demo/style.css" />
+  </head>
+  <body>
+    <h1>Users</h1>
+    <ul id="user-list"></ul>
+
+    <h2>Create user</h2>
+    <form id="create-form">
+      <input type="text" id="name" placeholder="Name" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Create</button>
+    </form>
+    <p id="error"></p>
+
+    <script src="/static/demo/app.js"></script>
+
+    <script>
+      console.log(
+        "IF YOU SEE THIS IN THE CONSOLE, CSP HAS FAILED (script-src)",
+      );
+    </script>
+    <div style="color: red">This text should be red without CSP</div>
+    <base href="https://evil.example.com/" />
+    <object data="https://evil.example.com/evil.swf"></object>
+  </body>
+</html>
