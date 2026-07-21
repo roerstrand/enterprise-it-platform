@@ -1,33 +1,33 @@
 # python_microservices
 
-FastAPI-baserad microservice-demo med gRPC som internt datakontrakt och PostgreSQL som databas.
+FastAPI-based microservice demo with gRPC as the internal data contract and PostgreSQL as the database.
 
-## Arkitektur
+## Architecture
 
-Se `docs/ard/` för samtliga arkitekturbeslut (ARD:er). Kortfattat:
+See `docs/ard/` for all architecture decisions (ARDs). Summary:
 
-- Flerlagersarkitektur: router → service → repository → modell (ARD-0002)
-- PostgreSQL som produktionsdatabas, körs lokalt via Docker Compose (ARD-0001, ARD-0003)
-- All datahantering sker via gRPC, ingen REST-CRUD (ARD-0005)
-- Webbdemo på `/demo` pratar gRPC mot `microservices.py`, med strikt CSP (ARD-0004)
+- Layered architecture: router → service → repository → model (ARD-0002)
+- PostgreSQL as the production database, run locally via Docker Compose (ARD-0001, ARD-0003)
+- All data access happens via gRPC, no REST CRUD (ARD-0005)
+- Web demo at `/demo` talks gRPC to `microservices.py`, with a strict CSP (ARD-0004)
 
-## Arkitekturbeslut (ARD)
+## Architecture Decision Records (ARD)
 
-Beslut om arkitektur dokumenteras som ARD:er i `docs/ard/`, ett per beslut, numrerade `000X-titel.md`. Mall: `docs/ard/0001-template.md`.
+Architecture decisions are documented as ARDs in `docs/ard/`, one per decision, numbered `000X-title.md`. Template: `docs/ard/0001-template.md`.
 
-| ARD | Titel | Status |
+| ARD | Title | Status |
 |-----|-------|--------|
-| [0001](docs/ard/0001-postgresql-som-slutmal.md) | PostgreSQL som slutgiltig databas | Proposed |
-| [0002](docs/ard/0002-flerlagersarkitektur.md) | Flerlagersarkitektur för endpoints | Accepted |
-| [0003](docs/ard/0003-docker-compose-for-lokal-postgres.md) | Docker Compose för lokal PostgreSQL-utveckling | Accepted |
-| [0004](docs/ard/0004-webbdemo-grpc-och-csp.md) | Webbdemo-klient med gRPC och strikt CSP | Accepted |
-| [0005](docs/ard/0005-ta-bort-rest-crud-endast-grpc.md) | Borttagning av REST-CRUD till förmån för gRPC | Accepted |
+| [0001](docs/ard/0001-postgresql-som-slutmal.md) | PostgreSQL as the final database | Proposed |
+| [0002](docs/ard/0002-flerlagersarkitektur.md) | Layered architecture for endpoints | Accepted |
+| [0003](docs/ard/0003-docker-compose-for-lokal-postgres.md) | Docker Compose for local PostgreSQL development | Accepted |
+| [0004](docs/ard/0004-webbdemo-grpc-och-csp.md) | Web demo client with gRPC and strict CSP | Accepted |
+| [0005](docs/ard/0005-ta-bort-rest-crud-endast-grpc.md) | Removal of REST CRUD in favor of gRPC | Accepted |
 
-Nytt beslut: kopiera mallen, numrera nästa i ordningen, fyll i.
+New decision: copy the template, number it next in sequence, fill it in.
 
-## Köra lokalt
+## Running locally
 
-1. `docker compose up -d` — startar PostgreSQL på port 5433
-2. `.env` med `DATABASE_URL` måste finnas (git-ignorerad, se ARD-0003)
-3. `python microservices.py` — startar gRPC-servern
-4. `uvicorn main:app --reload` — startar FastAPI, webbdemo på `/demo`
+1. `docker compose up -d` — starts PostgreSQL on port 5433
+2. A `.env` with `DATABASE_URL` must exist (git-ignored, see ARD-0003)
+3. `python microservices.py` — starts the gRPC server
+4. `uvicorn main:app --reload` — starts FastAPI, web demo at `/demo`

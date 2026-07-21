@@ -1,41 +1,41 @@
-# ARD-0003: Docker Compose för lokal PostgreSQL-utveckling
+# ARD-0003: Docker Compose for local PostgreSQL development
 
 ## Status
 Accepted
 
-## Datum
+## Date
 2026-07-16
 
-## Kontext
-Efter ARD-0001 (PostgreSQL som slutmål) krävs ett reproducerbart sätt att
-köra en lokal Postgres-instans för utveckling, utan att manuellt behöva
-ange `docker run`-flaggor vid varje uppstart. Datorn har dessutom en native
-Windows PostgreSQL-tjänst som redan lyssnar på port 5432, vilket krockar med
-en Docker-container på samma port och ger ett maskerat `UnicodeDecodeError`
-i psycopg2 istället för ett tydligt autentiseringsfel.
+## Context
+After ARD-0001 (PostgreSQL as the final target), a reproducible way to run
+a local Postgres instance for development is needed, without manually
+specifying `docker run` flags on every startup. The machine also has a
+native Windows PostgreSQL service already listening on port 5432, which
+conflicts with a Docker container on the same port and produces a masked
+`UnicodeDecodeError` in psycopg2 instead of a clear authentication error.
 
-## Beslut
-- `docker-compose.yml` i projektroten definierar Postgres-containern
-  (`postgres:16`, named volume för persistens, host-port 5433 mappad till
-  container-port 5432 för att undvika krock med den native tjänsten).
-- En `.env`-fil (git-ignorerad) håller `DATABASE_URL`, laddas via
-  `python-dotenv` (`load_dotenv()`) överst i `data/database.py` innan
-  `os.getenv("DATABASE_URL", ...)` läses.
-- Containern startas/stoppas med `docker compose up -d` / `docker compose down`
-  istället för enskilda `docker run`-kommandon.
+## Decision
+- `docker-compose.yml` in the project root defines the Postgres container
+  (`postgres:16`, named volume for persistence, host port 5433 mapped to
+  container port 5432 to avoid conflicting with the native service).
+- A `.env` file (git-ignored) holds `DATABASE_URL`, loaded via
+  `python-dotenv` (`load_dotenv()`) at the top of `data/database.py` before
+  `os.getenv("DATABASE_URL", ...)` is read.
+- The container is started/stopped with `docker compose up -d` /
+  `docker compose down` instead of individual `docker run` commands.
 
-## Alternativ som övervägdes
-- Manuellt `docker run`-kommando vid varje uppstart — avfärdat, svårt att
-  komma ihåg flaggor och risk för att råka mappa fel port igen
-- Enbart `.env` utan docker-compose — avfärdat, löser inte containerns
-  konfiguration, bara anslutningssträngen
+## Alternatives considered
+- Manual `docker run` command on every startup — rejected, hard to
+  remember flags and risk of mapping the wrong port again
+- `.env` only, without docker-compose — rejected, doesn't solve the
+  container's configuration, only the connection string
 
-## Konsekvenser
-- En ny utvecklare kan köra `docker compose up -d` och få rätt databas utan
-  att känna till port-krocken i förväg
-- `load_dotenv()` skriver inte över en redan satt miljövariabel i sessionen
-  — om `$env:DATABASE_URL` satts manuellt med fel port tidigare i samma
-  session vinner den över `.env` tills den nollställs
+## Consequences
+- A new developer can run `docker compose up -d` and get the correct
+  database without knowing about the port conflict in advance
+- `load_dotenv()` does not override an already-set environment variable in
+  the session — if `$env:DATABASE_URL` was set manually with the wrong
+  port earlier in the same session, it wins over `.env` until it's cleared
   (`Remove-Item Env:\DATABASE_URL`)
-- En extra fil (`docker-compose.yml`) och ett extra beroende
-  (`python-dotenv`) att hålla koll på
+- One extra file (`docker-compose.yml`) and one extra dependency
+  (`python-dotenv`) to keep track of

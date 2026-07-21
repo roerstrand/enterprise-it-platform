@@ -1,44 +1,44 @@
-# ARD-0002: Flerlagersarkitektur för endpoints
+# ARD-0002: Layered architecture for endpoints
 
 ## Status
 Accepted
 
-## Datum
+## Date
 2026-07-15
 
-## Kontext
-Projektet ska växa med fler resurser och eventuellt fler microservices. Vi
-behöver ett konsekvent mönster för hur en request tar sig genom kodbasen, så
-att HTTP-hantering, affärslogik och databasåtkomst inte blandas ihop i samma
-funktion.
+## Context
+The project will grow with more resources and possibly more microservices.
+A consistent pattern is needed for how a request moves through the codebase,
+so that HTTP handling, business logic, and database access don't get mixed
+together in the same function.
 
-## Beslut
-Varje resurs delas upp i fyra lager, med ett strikt beroende nedåt:
+## Decision
+Each resource is split into four layers, with a strict downward dependency:
 
 ```
-routers/<resurs>.py       (HTTP-endpoints, Depends-injection, statuskoder)
-  └── services/<resurs>_service.py    (affärslogik)
-        └── repositories/<resurs>_repository.py  (DB-queries)
-              └── data/models/<resurs>_model.py   (SQLAlchemy-modell)
+routers/<resource>.py       (HTTP endpoints, Depends injection, status codes)
+  └── services/<resource>_service.py    (business logic)
+        └── repositories/<resource>_repository.py  (DB queries)
+              └── data/models/<resource>_model.py   (SQLAlchemy model)
 ```
 
-- Routers känner bara till services, aldrig repositories eller modeller direkt.
-- Services känner bara till repositories, aldrig SQLAlchemy-queries direkt.
-- Repositories är enda stället som pratar med databasen.
-- DB-sessionen injiceras via `Depends(get_db)` i routern och skickas ner
-  som första argument (`db: Session`) genom hela kedjan.
+- Routers only know about services, never repositories or models directly.
+- Services only know about repositories, never SQLAlchemy queries directly.
+- Repositories are the only place that talks to the database.
+- The DB session is injected via `Depends(get_db)` in the router and passed
+  down as the first argument (`db: Session`) through the whole chain.
 
-Mönstret gäller för alla nya resurser framöver, inte bara `users`.
+The pattern applies to all new resources going forward, not just `users`.
 
-## Alternativ som övervägdes
-- Allt i routerfunktionen (endpoint pratar direkt med DB) — avfärdat, blir
-  snabbt otestbart och svårt att återanvända logik mellan HTTP och gRPC
-- Generisk repository/service-bas-klass — avfärdat för tidigt, för få
-  resurser ännu för att motivera abstraktionen
+## Alternatives considered
+- Everything in the router function (endpoint talks directly to the DB) —
+  rejected, quickly becomes untestable and hard to reuse logic between HTTP and gRPC
+- Generic repository/service base class — rejected for now, too few
+  resources yet to justify the abstraction
 
-## Konsekvenser
-- Ny resurs kräver fyra nya filer (model, repository, service, router) —
-  mer boilerplate men tydlig ansvarsfördelning
-- Affärslogiken i services kan återanvändas av både REST-routern och en
-  framtida gRPC-server utan att duplicera DB-kod
-- Enklare att testa services/repositories isolerat med mockad `db`-session
+## Consequences
+- A new resource requires four new files (model, repository, service,
+  router) — more boilerplate but clear separation of responsibilities
+- Business logic in services can be reused by both the REST router and a
+  future gRPC server without duplicating DB code
+- Easier to test services/repositories in isolation with a mocked `db` session

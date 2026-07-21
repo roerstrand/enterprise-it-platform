@@ -1,26 +1,26 @@
-# ARD-0001: PostgreSQL som slutgiltig databas
+# ARD-0001: PostgreSQL as the final database
 
 ## Status
 Proposed
 
-## Datum
+## Date
 2026-07-15
 
-## Kontext
-Projektet använder idag SQLite för utveckling. SQLite är enkelt att komma igång
-med men saknar t.ex. bra stöd för samtidiga skrivningar, saknar riktiga
-datatyper för vissa fält, och är inte lämpligt för produktion i en
-microservice-miljö.
+## Context
+The project currently uses SQLite for development. SQLite is simple to get
+started with but lacks e.g. good support for concurrent writes, lacks real
+data types for some fields, and is not suitable for production in a
+microservice environment.
 
-## Beslut
-Vi går mot PostgreSQL som produktionsdatabas. SQLite behålls tills vidare
-som lokal utvecklings-/testdatabas.
+## Decision
+The project moves toward PostgreSQL as the production database. SQLite is
+kept for now as the local development/test database.
 
-## Alternativ som övervägdes
-- Fortsätta med SQLite i produktion — avfärdat pga bristande samtidighet och skalbarhet
-- MySQL — avfärdat, PostgreSQL har bättre stöd för JSON-fält och striktare typning
+## Alternatives considered
+- Keep SQLite in production — rejected due to poor concurrency and scalability
+- MySQL — rejected, PostgreSQL has better support for JSON fields and stricter typing
 
-## Konsekvenser
-- SQLAlchemy-modellerna måste vara databas-agnostiska (undvik SQLite-specifika typer)
-- Behöver en migrationsstrategi (t.ex. Alembic) innan bytet sker
-- Connection string i database.py måste bli miljöberoende (dev=SQLite, prod=PostgreSQL)
+## Consequences
+- The SQLAlchemy models must be database-agnostic (avoid SQLite-specific types)
+- A migration strategy (e.g. Alembic) is needed before the switch happens
+- The connection string in database.py must become environment-dependent (dev=SQLite, prod=PostgreSQL)

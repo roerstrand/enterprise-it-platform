@@ -1,53 +1,54 @@
-# ARD-0005: Borttagning av REST-CRUD till förmån för gRPC som enda datakontrakt
+# ARD-0005: Removal of REST CRUD in favor of gRPC as the sole data contract
 
 ## Status
 Accepted
 
-## Datum
+## Date
 2026-07-18
 
-## Kontext
-`routers/users.py` → `services/user_service.py` → `repositories/user_repository.py`
-har funnits sedan projektets start, som ett resultat av att REST-CRUD:en och
-gRPC-servern byggdes som två separata lärövningar i samma repo, utan en
-gemensam arkitektonisk linje från början. Efter ARD-0002 (lagerarkitektur)
-och ARD-0004 (gRPC som enda interna transport för webbdemot) blev
-motsättningen tydlig: REST-endpointen skriver direkt mot databasen, helt
-vid sidan av det gRPC-kontrakt som är tänkt att utgöra tjänstegränsen.
+## Context
+`routers/users.py` → `services/user_service.py` →
+`repositories/user_repository.py` has existed since the start of the
+project, as a result of the REST CRUD and the gRPC server being built as
+two separate learning exercises in the same repo, without a shared
+architectural line from the start. After ARD-0002 (layered architecture)
+and ARD-0004 (gRPC as the only internal transport for the web demo), the
+conflict became clear: the REST endpoint writes directly to the database,
+entirely bypassing the gRPC contract that is meant to constitute the
+service boundary.
 
-En microservice-arkitekturs syfte är att data bara nås genom ett definierat
-kontrakt mellan tjänster (här gRPC/Protobuf). En REST-endpoint som skriver
-till samma tabell utan att gå via det kontraktet gör att gränsen kan
-kringgås — vilket redan orsakat ett konkret problem: REST- och gRPC-vägarna
-behövde uppdateras separat för lösenordshashning och hann gå isär innan
-båda fixades.
+The purpose of a microservice architecture is that data is only accessed
+through a defined contract between services (here gRPC/Protobuf). A REST
+endpoint that writes to the same table without going through that contract
+means the boundary can be bypassed — which already caused a concrete
+problem: the REST and gRPC paths needed to be updated separately for
+password hashing and drifted apart before both were fixed.
 
-## Beslut
-`routers/users.py` och `services/user_service.py` tas bort. All skapande
-och läsning av användare sker uteslutande via gRPC (`microservices.py`),
-antingen genom webbdemot (`routers/demo.py`, se ARD-0004) eller
-testskriptet `grpc_client.py`. `repositories/user_repository.py` och
-`data/models/user_model.py` behålls — de används fortfarande internt av
-`microservices.py`. `schemas/user_create.py` behålls och återanvänds för
-validering av demots create-endpoint. `schemas/user_update.py` tas bort
-(blir dödkod, ingen uppdateringsväg finns i gRPC-kontraktet).
+## Decision
+`routers/users.py` and `services/user_service.py` are removed. All
+creation and reading of users happens exclusively via gRPC
+(`microservices.py`), either through the web demo (`routers/demo.py`, see
+ARD-0004) or the test script `grpc_client.py`.
+`repositories/user_repository.py` and `data/models/user_model.py` are
+kept — they are still used internally by `microservices.py`.
+`schemas/user_create.py` is kept and reused for validation in the demo's
+create endpoint. `schemas/user_update.py` is removed (becomes dead code,
+no update path exists in the gRPC contract).
 
-## Alternativ som övervägdes
-- Behålla REST men spärra den i produktion (t.ex. bunden till localhost
-  eller bakom en miljövariabel) — avfärdat. Löser inte grundproblemet
-  (gränsen kan fortfarande kringgås lokalt/under utveckling) och är bara
-  komplexitet för ett skydd som redan finns genom att ta bort ytan helt.
-- Behålla REST som ett rent utvecklarverktyg för snabb manuell testning
-  (curl/Swagger) — avfärdat. Undergräver definitionsmässigt poängen med
-  microservice-gränsen, inte bara operationellt, och den konkreta
-  divergensbuggen visar att den reella kostnaden är verklig, inte
-  hypotetisk.
+## Alternatives considered
+- Keep REST but restrict it in production (e.g. bound to localhost or
+  behind an environment variable) — rejected. Doesn't solve the underlying
+  problem (the boundary can still be bypassed locally/during development)
+  and is just complexity for a protection that already exists by removing
+  the surface entirely.
+- Keep REST as a pure developer tool for quick manual testing
+  (curl/Swagger) — rejected. Undermines the point of the microservice
+  boundary by definition, not just operationally, and the concrete
+  divergence bug shows the real cost is real, not hypothetical.
 
-## Konsekvenser
-- Ingen REST-CRUD kvar för `users` — `/docs` (Swagger) tappar sin
-  användarhantering, manuell testning sker via `/demo` eller
-  `grpc_client.py` istället
-- En enda kodväg (gRPC → repository) att hålla korrekt, istället för två
-  som kan gå isär
-- `main.py` behöver uppdateras för att inte längre inkludera
-  `routers.users`
+## Consequences
+- No REST CRUD left for `users` — `/docs` (Swagger) loses its user
+  management, manual testing happens via `/demo` or `grpc_client.py` instead
+- A single code path (gRPC → repository) to keep correct, instead of two
+  that can drift apart
+- `main.py` needs to be updated to no longer include `routers.users`

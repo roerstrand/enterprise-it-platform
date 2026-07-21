@@ -1,22 +1,21 @@
-# ARD-000X: <Kort titel på beslutet>
+# ARD-000X: <Short title of the decision>
 
 ## Status
-Proposed | Accepted | Rejected | Supereded by ARD-XXXX
+Proposed | Accepted | Rejected | Superseded by ARD-XXXX
 
-## Datum
+## Date
 YYYY-MM-DD
 
-## Kontext
-Vad är problemet eller situationen som gör att ett beslut behöver tas?
-Vilka begränsningar/krav finns?
+## Context
+What is the problem or situation that requires a decision?
+What constraints/requirements exist?
 
-## Beslut
-Vad har bestämts att göras?
+## Decision
+What has been decided?
 
-## Alternativ som övervägdes
-- Alternativ A - kort beskrivning, varför valdes eller ej
-- Alternativ B - kort beskrivning, varför valdes eller ej
+## Alternatives considered
+- Alternative A — brief description, why chosen or not
+- Alternative B — brief description, why chosen or not
 
-## Konsekvenser
-Vad blir följderna, positiva och negativa? Vad blir svårare/lättare framöver?
-
+## Consequences
+What are the consequences, positive and negative? What becomes harder/easier going forward?

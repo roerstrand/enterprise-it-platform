@@ -1,48 +1,48 @@
-# ARD-0004: Webbdemo-klient med gRPC som intern transport och strikt CSP
+# ARD-0004: Web demo client with gRPC as internal transport and strict CSP
 
 ## Status
 Accepted
 
-## Datum
+## Date
 2026-07-16
 
-## Kontext
-Ett sätt behövs för att visa att systemet fungerar utan att öppna Swagger,
-och för att demonstrera intern gRPC-kommunikation mellan FastAPI-processen
-och den befintliga microservicen (`microservices.py`). Principen för
-projektet är att intern kommunikation ska ske via gRPC/Protobuf, aldrig via
-REST-till-REST.
+## Context
+A way is needed to show that the system works without opening Swagger, and
+to demonstrate internal gRPC communication between the FastAPI process and
+the existing microservice (`microservices.py`). The project's principle is
+that internal communication happens via gRPC/Protobuf, never REST-to-REST.
 
-## Beslut
-- FastAPI (`main.py`) serverar en statisk HTML/CSS/JS-klient under `/demo`.
-- Klientens endpoints (`routers/demo.py`) pratar gRPC mot den befintliga
-  microservicen istället för att gå via `repository` direkt — en egen
-  gRPC-klientmodul (`grpc_clients/user_client.py`) återanvänder samma
-  kanal/stub-mönster som redan finns i `grpc_client.py`.
-- `microservices.py` fortsätter köra som en separat process (startas för
-  sig, parallellt med `uvicorn main:app`), eftersom det är just två skilda
-  processer som pratar med varandra som gör demot till en äkta
-  microservice-demonstration.
-- Säkerhetsheaders och Content-Security-Policy hanteras i en dedikerad
-  middleware (`middleware/security_headers.py`), inte utspritt i routrar.
-- HTML/CSS/JS struktureras utan inline-kod, så en strikt CSP
-  (`script-src 'self'`, `style-src 'self'`, ingen `unsafe-inline`) fungerar
-  utan undantag.
+## Decision
+- FastAPI (`main.py`) serves a static HTML/CSS/JS client under `/demo`.
+- The client's endpoints (`routers/demo.py`) talk gRPC to the existing
+  microservice instead of going through `repository` directly — a
+  dedicated gRPC client module (`grpc_clients/user_client.py`) reuses the
+  same channel/stub pattern already present in `grpc_client.py`.
+- `microservices.py` keeps running as a separate process (started on its
+  own, alongside `uvicorn main:app`), since it's exactly two separate
+  processes talking to each other that makes the demo a genuine
+  microservice demonstration.
+- Security headers and Content-Security-Policy are handled in a dedicated
+  middleware (`middleware/security_headers.py`), not scattered across routers.
+- HTML/CSS/JS is structured without inline code, so a strict CSP
+  (`script-src 'self'`, `style-src 'self'`, no `unsafe-inline`) works
+  without exceptions.
 
-## Alternativ som övervägdes
-- Demo-endpoints som går direkt mot `repository` — avfärdat, visar inte
-  gRPC-flödet och motsäger projektets syfte
-- Inline JS/CSS för enkelhetens skull — avfärdat, omöjliggör en strikt CSP
-- Full isolation med separat databas/repository-kod per tjänst — avfärdat
-  för det här projektet, se konsekvens nedan
+## Alternatives considered
+- Demo endpoints going directly against `repository` — rejected, doesn't
+  demonstrate the gRPC flow and contradicts the project's purpose
+- Inline JS/CSS for simplicity — rejected, makes a strict CSP impossible
+- Full isolation with separate database/repository code per service —
+  rejected for this project, see consequence below
 
-## Konsekvenser
-- Kräver att `microservices.py` körs som separat process för att `/demo`
-  ska fungera — ett rimligt fel måste hanteras i UI om den processen är
-  nere (gRPC-anropet misslyckas)
-- `main.py` (FastAPI) och `microservices.py` (gRPC) delar fortfarande samma
-  `repositories/`-kod och samma databas. Det är en medveten förenkling för
-  ett lärprojekt i en monorepo — en "renodlad" microservice-arkitektur
-  skulle låta varje tjänst äga sin egen databasåtkomst och bara dela ett
-  kontrakt (proto-filen), inte Python-moduler. Att bygga ut det nu vore ett
-  separat, större beslut och görs inte som en del av den här funktionen.
+## Consequences
+- Requires `microservices.py` to run as a separate process for `/demo` to
+  work — a reasonable error must be handled in the UI if that process is down
+  (the gRPC call fails)
+- `main.py` (FastAPI) and `microservices.py` (gRPC) still share the same
+  `repositories/` code and the same database. This is a deliberate
+  simplification for a learning project in a monorepo — a "pure"
+  microservice architecture would have each service own its own database
+  access and only share a contract (the proto file), not Python modules.
+  Building that out now would be a separate, larger decision and is not
+  part of this feature.
