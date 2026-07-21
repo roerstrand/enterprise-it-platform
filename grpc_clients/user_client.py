@@ -8,6 +8,9 @@ stub = user_pb2_grpc.UserServiceStub(channel)
 class UserServiceUnavailable(Exception):
     pass
 
+class InvalidCredentials(Exception):
+    pass
+
 def list_users():
     try:
         response = stub.GetAllUsers(user_pb2.Empty())
@@ -23,3 +26,14 @@ def create_user(name: str, email: str, password: str):
         print(f"gRPC-fel: {e.code()} {e.details()}")
         raise UserServiceUnavailable(str(e))
     return {"id": response.id, "name": response.name, "email": response.email}
+
+def login(email: str, password: str):
+    try:
+        response = stub.Login(user_pb2.LoginRequest(email=email, password=password))
+    except grpc.RpcError as e:
+        if e.code() == grpc.StatusCode.UNAUTHENTICATED:
+            raise InvalidCredentials(str(e))
+        print(f"gRPC-error: {e.code()} - {e.details()}")
+        raise UserServiceUnavailable(str(e))
+    return {"access_token": response.access_token, "token_type": response.token_type}
+

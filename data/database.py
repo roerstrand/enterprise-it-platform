@@ -6,6 +6,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from typing import Generator
 
+from contextlib import contextmanager
+
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data/users.db")
 
 engine = create_engine(
@@ -23,3 +25,4 @@ def get_db() -> Generator[Session, None, None]:
     finally:
         db.close()
 
+get_db_context = contextmanager(get_db)
