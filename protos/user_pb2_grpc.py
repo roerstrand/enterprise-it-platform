@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from protos import user_pb2 as user__pb2
+from protos import user_pb2 as protos_dot_user__pb2
 
 GRPC_GENERATED_VERSION = '1.81.1'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + ' but the generated code in user_pb2_grpc.py depends on'
+        + ' but the generated code in protos/user_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -36,18 +36,23 @@ class UserServiceStub:
         """
         self.GetAllUsers = channel.unary_unary(
                 '/user.UserService/GetAllUsers',
-                request_serializer=user__pb2.Empty.SerializeToString,
-                response_deserializer=user__pb2.UserList.FromString,
+                request_serializer=protos_dot_user__pb2.Empty.SerializeToString,
+                response_deserializer=protos_dot_user__pb2.UserList.FromString,
                 _registered_method=True)
         self.GetUserById = channel.unary_unary(
                 '/user.UserService/GetUserById',
-                request_serializer=user__pb2.UserIdRequest.SerializeToString,
-                response_deserializer=user__pb2.UserResponse.FromString,
+                request_serializer=protos_dot_user__pb2.UserIdRequest.SerializeToString,
+                response_deserializer=protos_dot_user__pb2.UserResponse.FromString,
                 _registered_method=True)
         self.CreateUser = channel.unary_unary(
                 '/user.UserService/CreateUser',
-                request_serializer=user__pb2.CreateUserRequest.SerializeToString,
-                response_deserializer=user__pb2.UserResponse.FromString,
+                request_serializer=protos_dot_user__pb2.CreateUserRequest.SerializeToString,
+                response_deserializer=protos_dot_user__pb2.UserResponse.FromString,
+                _registered_method=True)
+        self.Login = channel.unary_unary(
+                '/user.UserService/Login',
+                request_serializer=protos_dot_user__pb2.LoginRequest.SerializeToString,
+                response_deserializer=protos_dot_user__pb2.TokenResponse.FromString,
                 _registered_method=True)
 
 
@@ -72,23 +77,34 @@ class UserServiceServicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def Login(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_UserServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetAllUsers': grpc.unary_unary_rpc_method_handler(
                     servicer.GetAllUsers,
-                    request_deserializer=user__pb2.Empty.FromString,
-                    response_serializer=user__pb2.UserList.SerializeToString,
+                    request_deserializer=protos_dot_user__pb2.Empty.FromString,
+                    response_serializer=protos_dot_user__pb2.UserList.SerializeToString,
             ),
             'GetUserById': grpc.unary_unary_rpc_method_handler(
                     servicer.GetUserById,
-                    request_deserializer=user__pb2.UserIdRequest.FromString,
-                    response_serializer=user__pb2.UserResponse.SerializeToString,
+                    request_deserializer=protos_dot_user__pb2.UserIdRequest.FromString,
+                    response_serializer=protos_dot_user__pb2.UserResponse.SerializeToString,
             ),
             'CreateUser': grpc.unary_unary_rpc_method_handler(
                     servicer.CreateUser,
-                    request_deserializer=user__pb2.CreateUserRequest.FromString,
-                    response_serializer=user__pb2.UserResponse.SerializeToString,
+                    request_deserializer=protos_dot_user__pb2.CreateUserRequest.FromString,
+                    response_serializer=protos_dot_user__pb2.UserResponse.SerializeToString,
+            ),
+            'Login': grpc.unary_unary_rpc_method_handler(
+                    servicer.Login,
+                    request_deserializer=protos_dot_user__pb2.LoginRequest.FromString,
+                    response_serializer=protos_dot_user__pb2.TokenResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -116,8 +132,8 @@ class UserService:
             request,
             target,
             '/user.UserService/GetAllUsers',
-            user__pb2.Empty.SerializeToString,
-            user__pb2.UserList.FromString,
+            protos_dot_user__pb2.Empty.SerializeToString,
+            protos_dot_user__pb2.UserList.FromString,
             options,
             channel_credentials,
             insecure,
@@ -143,8 +159,8 @@ class UserService:
             request,
             target,
             '/user.UserService/GetUserById',
-            user__pb2.UserIdRequest.SerializeToString,
-            user__pb2.UserResponse.FromString,
+            protos_dot_user__pb2.UserIdRequest.SerializeToString,
+            protos_dot_user__pb2.UserResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -170,8 +186,35 @@ class UserService:
             request,
             target,
             '/user.UserService/CreateUser',
-            user__pb2.CreateUserRequest.SerializeToString,
-            user__pb2.UserResponse.FromString,
+            protos_dot_user__pb2.CreateUserRequest.SerializeToString,
+            protos_dot_user__pb2.UserResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def Login(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/user.UserService/Login',
+            protos_dot_user__pb2.LoginRequest.SerializeToString,
+            protos_dot_user__pb2.TokenResponse.FromString,
             options,
             channel_credentials,
             insecure,

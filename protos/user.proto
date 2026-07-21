@@ -6,6 +6,7 @@ service UserService {
     rpc GetAllUsers (Empty) returns (UserList);
     rpc GetUserById (UserIdRequest) returns (UserResponse);
     rpc CreateUser (CreateUserRequest) returns (UserResponse);
+    rpc Login (LoginRequest) returns (TokenResponse);
 }
 
 message Empty {}
@@ -28,4 +29,14 @@ message UserResponse {
 
 message UserList {
     repeated UserResponse users = 1;
+}
+
+message LoginRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message TokenResponse {
+    string access_token = 1;
+    string token_type = 2;
 }

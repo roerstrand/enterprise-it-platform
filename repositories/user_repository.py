@@ -14,8 +14,10 @@ def get_user_by_id_from_db(db: Session, user_id):
         select(UserModel).where(UserModel.id == user_id)
     ).scalars().first()
     
-    
-
+def get_user_by_email_from_db(db: Session, email: str):
+    return db.execute(
+        select(UserModel).where(UserModel.email == email)
+    ).scalars().first()
     
 def create_user_in_db(db: Session, name, email, hashed_password):
     user = UserModel(name=name, email=email, hashed_password=hashed_password)
