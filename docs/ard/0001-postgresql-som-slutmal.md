@@ -1,4 +1,4 @@
-# ADR-0001: PostgreSQL som slutgiltig databas
+# ARD-0001: PostgreSQL som slutgiltig databas
 
 ## Status
 Proposed

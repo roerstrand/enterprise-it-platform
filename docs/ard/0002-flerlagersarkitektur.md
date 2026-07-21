@@ -1,4 +1,4 @@
-# ADR-0002: Flerlagersarkitektur för endpoints
+# ARD-0002: Flerlagersarkitektur för endpoints
 
 ## Status
 Accepted
