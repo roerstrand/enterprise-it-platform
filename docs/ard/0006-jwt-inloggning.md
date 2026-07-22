@@ -16,7 +16,7 @@ rather than bypassing it as a REST-only shortcut.
 - `protos/user.proto` gets a `Login(LoginRequest) returns (TokenResponse)`
   RPC. `LoginRequest` carries `email`/`password`; `TokenResponse` carries
   `access_token`/`token_type`.
-- `UserServiceServicer.Login` in `microservices.py` verifies the password
+- `UserServiceServicer.Login` in `user_server.py` verifies the password
   with `verify_password` and returns a token from `create_access_token`.
 - `routers/demo.py` exposes `POST /demo/api/login`, which calls the gRPC
   `Login` RPC via `grpc_clients/user_client.py`, mirroring the existing

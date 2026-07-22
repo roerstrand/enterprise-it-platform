@@ -27,10 +27,10 @@ password hashing and drifted apart before both were fixed.
 ## Decision
 `routers/users.py` and `services/user_service.py` are removed. All
 creation and reading of users happens exclusively via gRPC
-(`microservices.py`), either through the web demo (`routers/demo.py`, see
+(`user_server.py`), either through the web demo (`routers/demo.py`, see
 ARD-0004) or the test script `grpc_client.py`.
 `repositories/user_repository.py` and `data/models/user_model.py` are
-kept — they are still used internally by `microservices.py`.
+kept — they are still used internally by `user_server.py`.
 `schemas/user_create.py` is kept and reused for validation in the demo's
 create endpoint. `schemas/user_update.py` is removed (becomes dead code,
 no update path exists in the gRPC contract).

@@ -1,4 +1,4 @@
-# python_microservices
+# enterprise-it-platform
 
 FastAPI-based microservice demo with gRPC as the internal data contract and PostgreSQL as the database.
 
@@ -9,7 +9,7 @@ See `docs/ard/` for all architecture decisions (ARDs). Summary:
 - Layered architecture: router → service → repository → model (ARD-0002)
 - PostgreSQL as the production database, run locally via Docker Compose (ARD-0001, ARD-0003)
 - All data access happens via gRPC, no REST CRUD (ARD-0005)
-- Web demo at `/demo` talks gRPC to `microservices.py`, with a strict CSP (ARD-0004)
+- Web demo at `/demo` talks gRPC to `user_server.py`, with a strict CSP (ARD-0004)
 
 ## Architecture Decision Records (ARD)
 
@@ -31,5 +31,6 @@ New decision: copy the template, number it next in sequence, fill it in.
 
 1. `docker compose up -d` — starts PostgreSQL on port 5433
 2. A `.env` with `DATABASE_URL` must exist (git-ignored, see ARD-0003)
-3. `python microservices.py` — starts the gRPC server
-4. `uvicorn main:app --reload` — starts FastAPI, web demo at `/demo`
+3. `python user_server.py` — starts the Identity/User gRPC server
+4. `python cmdb_server.py` — starts the CMDB gRPC server
+5. `uvicorn main:app --reload` — starts FastAPI, web demo at `/demo`

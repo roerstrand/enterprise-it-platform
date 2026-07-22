@@ -9,7 +9,7 @@ Accepted
 ## Context
 A way is needed to show that the system works without opening Swagger, and
 to demonstrate internal gRPC communication between the FastAPI process and
-the existing microservice (`microservices.py`). The project's principle is
+the existing microservice (`user_server.py`). The project's principle is
 that internal communication happens via gRPC/Protobuf, never REST-to-REST.
 
 ## Decision
@@ -18,7 +18,7 @@ that internal communication happens via gRPC/Protobuf, never REST-to-REST.
   microservice instead of going through `repository` directly — a
   dedicated gRPC client module (`grpc_clients/user_client.py`) reuses the
   same channel/stub pattern already present in `grpc_client.py`.
-- `microservices.py` keeps running as a separate process (started on its
+- `user_server.py` keeps running as a separate process (started on its
   own, alongside `uvicorn main:app`), since it's exactly two separate
   processes talking to each other that makes the demo a genuine
   microservice demonstration.
@@ -36,10 +36,10 @@ that internal communication happens via gRPC/Protobuf, never REST-to-REST.
   rejected for this project, see consequence below
 
 ## Consequences
-- Requires `microservices.py` to run as a separate process for `/demo` to
+- Requires `user_server.py` to run as a separate process for `/demo` to
   work — a reasonable error must be handled in the UI if that process is down
   (the gRPC call fails)
-- `main.py` (FastAPI) and `microservices.py` (gRPC) still share the same
+- `main.py` (FastAPI) and `user_server.py` (gRPC) still share the same
   `repositories/` code and the same database. This is a deliberate
   simplification for a learning project in a monorepo — a "pure"
   microservice architecture would have each service own its own database

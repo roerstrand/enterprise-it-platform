@@ -36,7 +36,7 @@ gRPC-only, layered architecture (ARD-0002, ARD-0005).
   from a CI via `owner_team_id`, not modeled as a CI itself. Keeps V1
   scope tight; promoting Team to a full CI type is a possible future
   ARD if ownership needs to participate in relationship queries too.
-- **CMDB Service is a new, separate gRPC server process** (`cmdb_service.py`,
+- **CMDB Service is a new, separate gRPC server process** (`cmdb_server.py`,
   own port, e.g. `50052`), with its own contract (`protos/cmdb.proto`)
   and its own layered stack (`repositories/cmdb_repository.py`,
   `data/models/ci_model.py`, `data/models/relationship_model.py`),
@@ -64,7 +64,7 @@ gRPC-only, layered architecture (ARD-0002, ARD-0005).
   relational model has even been proven insufficient. Worth revisiting
   once relationship-traversal queries (multi-hop impact analysis) become
   a real bottleneck.
-- **Bolt CMDB endpoints onto the existing `microservices.py`/`UserService`**
+- **Bolt CMDB endpoints onto the existing `user_server.py`/`UserService`**
   — rejected. Defeats the point of the roadmap (demonstrating an actual
   microservice architecture with independent services); Identity and
   CMDB are different bounded contexts and should be able to evolve/scale
@@ -75,8 +75,8 @@ gRPC-only, layered architecture (ARD-0002, ARD-0005).
 
 ## Consequences
 - New proto file, new generated pb2 files, new server process to run
-  alongside `microservices.py` — local dev now means three processes
-  (`uvicorn`, `microservices.py`, `cmdb_service.py`) instead of two.
+  alongside `user_server.py` — local dev now means three processes
+  (`uvicorn`, `user_server.py`, `cmdb_server.py`) instead of two.
 - `ci_type` and `relationship_type` as string/enum columns mean the
   database itself won't stop an invalid combination (e.g. a `DATABASE`
   CI with a `RUNS_ON` target that's also a `DATABASE`) — validation of
