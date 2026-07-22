@@ -7,6 +7,7 @@ import os
 sys.path.insert(0, os.getcwd())
 
 from data.models.user_model import Base
+from data.models import team_model, ci_model, relationship_model
 from data.database import engine
 
 # this is the Alembic Config object, which provides

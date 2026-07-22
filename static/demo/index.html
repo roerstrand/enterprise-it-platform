@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <title>Demo</title>
     <link rel="stylesheet" href="/static/demo/style.css" />
+    <script defer src="/static/demo/app.js"></script>
   </head>
   <body>
     <h1>Users</h1>
@@ -16,10 +17,22 @@
       <input type="password" id="password" placeholder="Password" required />
       <button type="submit">Create</button>
     </form>
+
+    <h2>Login</h2>
+    <form id="login-form">
+      <input type="email" id="login-email" placeholder="Email" required />
+      <input
+        type="password"
+        id="login-password"
+        placeholder="Passowrd"
+        required
+      />
+      <button type="submit">Login</button>
+    </form>
+    <p id="login-status"></p>
     <p id="error"></p>
 
-    <script src="/static/demo/app.js"></script>
-
+    <!-- XSS simulated scripts to check CSP -->
     <script>
       console.log(
         "IF YOU SEE THIS IN THE CONSOLE, CSP HAS FAILED (script-src)",

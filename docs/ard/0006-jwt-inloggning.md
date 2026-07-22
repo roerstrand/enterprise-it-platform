@@ -1,7 +1,7 @@
 # ARD-0006: JWT login via gRPC
 
 ## Status
-Proposed
+Accepted
 
 ## Date
 2026-07-21

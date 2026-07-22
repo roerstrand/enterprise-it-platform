@@ -1,9 +1,11 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import FileResponse
 
 from grpc_clients.user_client import list_users, create_user, login, UserServiceUnavailable, InvalidCredentials
 from schemas.user_create import UserCreateSchema
 from schemas.user_login import UserLoginSchema
+
+from auth.dependencies import get_current_user
 
 router = APIRouter(prefix="/demo")
 
@@ -32,4 +34,9 @@ def api_login(credentials: UserLoginSchema):
     except InvalidCredentials:
         raise HTTPException(status_code=401, detail="Invalid email or password")
     except UserServiceUnavailable:
-        raise HTTPException(status_code=503, details="gRPC services is down")
+        raise HTTPException(status_code=503, detail="gRPC services is down")
+    
+@router.get("/api/me")
+def api_me(user: dict = Depends(get_current_user)):
+    return user
+

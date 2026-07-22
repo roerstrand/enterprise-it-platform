@@ -39,4 +39,26 @@ document.getElementById("create-form").addEventListener("submit", async (e) => {
   }
 });
 
+document.getElementById("login-form").addEventListenter("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-password").value;
+  const status = document.getElementById("login-status");
+
+  try {
+    const res = await fetch("/demo/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    if (!res.ok) throw new Error("Invalid email or passowrd");
+    const data = await res.json();
+    localStorage.setItem("access_token", data.access_token);
+    status.textContent = "Logged in";
+    e.target.reset();
+  } catch (err) {
+    status.textContent = err.message;
+  }
+});
+
 loadUsers();
