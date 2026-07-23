@@ -1,7 +1,7 @@
 # ARD-0007: CMDB Service — Configuration Item model and gRPC contract (V1)
 
 ## Status
-Proposed
+Accepted
 
 ## Date
 2026-07-22

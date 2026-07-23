@@ -1,5 +1,6 @@
 import grpc
 from concurrent import futures
+from prometheus_client import start_http_server
 
 from protos import cmdb_pb2
 from protos import cmdb_pb2_grpc
@@ -13,6 +14,7 @@ from repositories.cmdb_repository import (
 )
 
 from data.database import get_db_context
+from observability.grpc_metrics import track_grpc_metrics
 
 def _to_ci_response(ci):
     response = cmdb_pb2.CIResponse(
@@ -24,12 +26,14 @@ def _to_ci_response(ci):
 
 class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
 
+    @track_grpc_metrics("cmdb")
     def CreateCI(self, request, context):
         with get_db_context() as db:
             owner_team_id = request.owner_team_id if request.HasField("owner_team_id") else None
             ci = create_ci_in_db(db, request.name, request.ci_type, request.enviroment, owner_team_id)
             return _to_ci_response(ci)
 
+    @track_grpc_metrics("cmdb")
     def GetCI(self, request, context):
         with get_db_context() as db:
             ci = get_ci_by_id_from_db(db, request.id)
@@ -39,11 +43,13 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
             context.set_details("CI {request.id} not found")
             return cmdb_pb2.CIResponse()
 
+    @track_grpc_metrics("cmdb")
     def ListCIs(self, request, context):
         with get_db_context() as db:
             cis = get_all_cis_from_db(db)
             return cmdb_pb2.CIList(cis=[_to_ci_response(ci) for ci in cis])
 
+    @track_grpc_metrics("cmdb")
     def CreateRelationship(self, request, context):
         with get_db_context() as db:
             relationship = create_relationship_in_db(
@@ -56,12 +62,14 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
                 relationship_type=relationship.relationship_type,
             )
 
+    @track_grpc_metrics("cmdb")
     def GetRelatedCIs(self, request, context):
         with get_db_context() as db:
             cis = get_related_cis_from_db(db, request.id)
             return cmdb_pb2.CIList(cis=[_to_ci_response(ci) for ci in cis])
 
 def serve():
+    start_http_server(9102)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     cmdb_pb2_grpc.add_CmdbServiceServicer_to_server(CmdbServiceServicer(), server)
     server.add_insecure_port("[::]:50052")

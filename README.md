@@ -23,7 +23,8 @@ Architecture decisions are documented as ARDs in `docs/ard/`, one per decision, 
 | [0004](docs/ard/0004-webbdemo-grpc-och-csp.md) | Web demo client with gRPC and strict CSP | Accepted |
 | [0005](docs/ard/0005-ta-bort-rest-crud-endast-grpc.md) | Removal of REST CRUD in favor of gRPC | Accepted |
 | [0006](docs/ard/0006-jwt-inloggning.md) | JWT login via gRPC | Accepted |
-| [0007](docs/ard/0007-cmdb-service-configuration-items.md) | CMDB Service — Configuration Item model and gRPC contract (V1) | Proposed |
+| [0007](docs/ard/0007-cmdb-service-configuration-items.md) | CMDB Service — Configuration Item model and gRPC contract (V1) | Accepted |
+| [0008](docs/ard/0008-observability-prometheus-grafana-opentelemetry.md) | Observability — Prometheus, Grafana, OpenTelemetry (V1) | Proposed |
 
 New decision: copy the template, number it next in sequence, fill it in.
 

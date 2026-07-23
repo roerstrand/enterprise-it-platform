@@ -16,8 +16,12 @@ from data.database import get_db_context
 import secrets
 from auth.security import hash_password, verify_password, create_access_token
 
+from prometheus_client import start_http_server
+from observability.grpc_metrics import track_grpc_metrics
+
 class UserServiceServicer(user_pb2_grpc.UserServiceServicer):
 
+    @track_grpc_metrics("user")
     def GetAllUsers(self, request, context):
         with get_db_context() as db:
             users = get_all_users_from_db(db)
@@ -25,6 +29,7 @@ class UserServiceServicer(user_pb2_grpc.UserServiceServicer):
                 users=[user_pb2.UserResponse(id=u.id, name=u.name, email=u.email) for u in users]
             )
 
+    @track_grpc_metrics("user")
     def GetUserById(self, request, context):
         with get_db_context() as db:
             user = get_user_by_id_from_db(db, request.id)
@@ -35,13 +40,14 @@ class UserServiceServicer(user_pb2_grpc.UserServiceServicer):
             return user_pb2.UserResponse()
                 
             
-        
+    @track_grpc_metrics("user")
     def CreateUser(self, request, context):
         with get_db_context() as db:
             hashed_password = hash_password(request.password)
             user = create_user_in_db(db, request.name, request.email, hashed_password)
             return user_pb2.UserResponse(id=user.id, name=user.name, email=user.email)
 
+    @track_grpc_metrics("user")
     def Login(self, request, context):
         with get_db_context() as db:
             user = get_user_by_email_from_db(db, request.email)
@@ -53,6 +59,7 @@ class UserServiceServicer(user_pb2_grpc.UserServiceServicer):
             return user_pb2.TokenResponse(access_token=token, token_type="bearer")
     
 def serve():
+    start_http_server(9101)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     user_pb2_grpc.add_UserServiceServicer_to_server(UserServiceServicer(), server)
     server.add_insecure_port("[::]:50051")
