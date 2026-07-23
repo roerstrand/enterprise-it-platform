@@ -26,7 +26,7 @@ def run():
         for ci in all_cis.cis:
             print(f" id={ci.id}, name={ci.name}, type={ci.ci_type}")
 
-        related = stub.GetRelatCIs(cmdb_pb2.CIIdRequest(id=app_ci.id))
+        related = stub.GetRelatedCIs(cmdb_pb2.CIIdRequest(id=app_ci.id))
         print(f"\nCIs related to {app_ci.name}:")
         for ci in related.cis:
             print(f" id={ci.id}, name={ci.name}")

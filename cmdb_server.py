@@ -30,7 +30,7 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
     def CreateCI(self, request, context):
         with get_db_context() as db:
             owner_team_id = request.owner_team_id if request.HasField("owner_team_id") else None
-            ci = create_ci_in_db(db, request.name, request.ci_type, request.enviroment, owner_team_id)
+            ci = create_ci_in_db(db, request.name, request.ci_type, request.environment, owner_team_id)
             return _to_ci_response(ci)
 
     @track_grpc_metrics("cmdb")
