@@ -18,6 +18,7 @@ from auth.security import hash_password, verify_password, create_access_token
 
 from prometheus_client import start_http_server
 from observability.grpc_metrics import track_grpc_metrics
+from observability.tracing import setup_tracing
 
 class UserServiceServicer(user_pb2_grpc.UserServiceServicer):
 
@@ -59,6 +60,7 @@ class UserServiceServicer(user_pb2_grpc.UserServiceServicer):
             return user_pb2.TokenResponse(access_token=token, token_type="bearer")
     
 def serve():
+    setup_tracing("user")
     start_http_server(9101)
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     user_pb2_grpc.add_UserServiceServicer_to_server(UserServiceServicer(), server)

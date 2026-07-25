@@ -5,8 +5,8 @@ from data.models.ci_model import ConfigurationItemModel
 from data.models.relationship_model import CIRelationshipModel
 from data.models.team_model import TeamModel
 
-def create_ci_in_db(db: Session, name: str, ci_type: str, environment: str, owner_team_id: int | None = None):
-    ci = ConfigurationItemModel(name=name, ci_type=ci_type, environment=environment, owner_team_id=owner_team_id)
+def create_ci_in_db(db: Session, name: str, ci_type: str, environment: str, owner_team_id: int | None = None, owner_user_id: int | None = None):
+    ci = ConfigurationItemModel(name=name, ci_type=ci_type, environment=environment, owner_team_id=owner_team_id, owner_user_id=owner_user_id)
     db.add(ci)
     db.commit()
     return ci
