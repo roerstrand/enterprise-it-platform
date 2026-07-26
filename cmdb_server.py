@@ -21,6 +21,8 @@ from data.database import get_db_context
 from observability.grpc_metrics import track_grpc_metrics
 from observability.tracing import setup_tracing
 from messaging.publisher import publish_event
+from google.protobuf.json_format import MessageToDict, ParseDict
+from caching.cache import get_cached, set_cached
 
 def _to_ci_response(ci):
     response = cmdb_pb2.CIResponse(
@@ -48,10 +50,17 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
 
     @track_grpc_metrics("cmdb")
     def GetCI(self, request, context):
+        cache_key = f"ci:{request.id}"
+        cached = get_cached(cache_key)
+        if cached is not None:
+            return ParseDict(cached, cmdb_pb2.CIResponse())
+        
         with get_db_context() as db:
             ci = get_ci_by_id_from_db(db, request.id)
             if ci:
-                return _to_ci_response(ci)
+                response = _to_ci_response(ci)
+                set_cached(cache_key, MessageToDict(response))
+                return response
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details("CI {request.id} not found")
             return cmdb_pb2.CIResponse()
