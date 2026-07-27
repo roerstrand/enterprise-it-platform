@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+option csharp_namespace = "ChangeService.Grpc";
+
+package change;
+
+service ChangeService {
+    rpc CreateChange (CreateChangeRequest) returns (ChangeResponse);
+    rpc GetChange (ChangeIdRequest) returns (ChangeResponse);
+    rpc ListChanges (Empty) returns (ChangeList);
+    rpc ApproveChange (ChangeIdRequest) returns (ChangeResponse);
+}
+
+message Empty {}
+
+message ChangeIdRequest {
+    int32 id = 1;
+}
+
+message CreateChangeRequest {
+    string title = 1;
+    string description = 2;
+    string risk_level = 3;
+    int32 ci_id = 4;
+}
+
+message ChangeResponse {
+    int32 id = 1;
+    string title = 2;
+    string description = 3;
+    string status = 4;
+    string risk_level = 5;
+    int32 ci_id = 6;
+}
+
+message ChangeList {
+    repeated ChangeResponse changes = 1;
+}
+

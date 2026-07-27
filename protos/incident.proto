@@ -19,13 +19,13 @@ message CreateIncidentRequest {
     string title = 1;
     string description = 2;
     string severity = 3;
-    int32 si_id = 4;
+    int32 ci_id = 4;
 }
 
 message IncidentResponse {
     int32 id = 1;
     string title = 2;
-    string decription = 3;
+    string description = 3;
     string status = 4;
     string severity = 5;
     int32 ci_id = 6;

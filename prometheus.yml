@@ -14,4 +14,6 @@ scrape_configs:
     static_configs:
       - targets: ["host.docker.internal:9102"]
 
-  
+  - job_name: "incident_server"
+    static_configs:
+      - targets: ["host.docker.internal:9103"]
