@@ -13,3 +13,4 @@ class ConfigurationItemModel(Base):
     owner_team_id: Mapped[int | None] = mapped_column(ForeignKey("teams.id"))
     owner_user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
 
+

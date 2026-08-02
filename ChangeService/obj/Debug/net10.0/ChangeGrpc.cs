@@ -55,6 +55,8 @@ namespace ChangeService.Grpc {
     static readonly grpc::Marshaller<global::ChangeService.Grpc.Empty> __Marshaller_change_Empty = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::ChangeService.Grpc.Empty.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::ChangeService.Grpc.ChangeList> __Marshaller_change_ChangeList = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::ChangeService.Grpc.ChangeList.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::ChangeService.Grpc.ChangeWithCIResponse> __Marshaller_change_ChangeWithCIResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::ChangeService.Grpc.ChangeWithCIResponse.Parser));
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Method<global::ChangeService.Grpc.CreateChangeRequest, global::ChangeService.Grpc.ChangeResponse> __Method_CreateChange = new grpc::Method<global::ChangeService.Grpc.CreateChangeRequest, global::ChangeService.Grpc.ChangeResponse>(
@@ -87,6 +89,14 @@ namespace ChangeService.Grpc {
         "ApproveChange",
         __Marshaller_change_ChangeIdRequest,
         __Marshaller_change_ChangeResponse);
+
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Method<global::ChangeService.Grpc.ChangeIdRequest, global::ChangeService.Grpc.ChangeWithCIResponse> __Method_GetChangeWithCI = new grpc::Method<global::ChangeService.Grpc.ChangeIdRequest, global::ChangeService.Grpc.ChangeWithCIResponse>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "GetChangeWithCI",
+        __Marshaller_change_ChangeIdRequest,
+        __Marshaller_change_ChangeWithCIResponse);
 
     /// <summary>Service descriptor</summary>
     public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
@@ -122,6 +132,12 @@ namespace ChangeService.Grpc {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
 
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::System.Threading.Tasks.Task<global::ChangeService.Grpc.ChangeWithCIResponse> GetChangeWithCI(global::ChangeService.Grpc.ChangeIdRequest request, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
     }
 
     /// <summary>Creates service definition that can be registered with a server</summary>
@@ -133,7 +149,8 @@ namespace ChangeService.Grpc {
           .AddMethod(__Method_CreateChange, serviceImpl.CreateChange)
           .AddMethod(__Method_GetChange, serviceImpl.GetChange)
           .AddMethod(__Method_ListChanges, serviceImpl.ListChanges)
-          .AddMethod(__Method_ApproveChange, serviceImpl.ApproveChange).Build();
+          .AddMethod(__Method_ApproveChange, serviceImpl.ApproveChange)
+          .AddMethod(__Method_GetChangeWithCI, serviceImpl.GetChangeWithCI).Build();
     }
 
     /// <summary>Register service method with a service binder with or without implementation. Useful when customizing the service binding logic.
@@ -147,6 +164,7 @@ namespace ChangeService.Grpc {
       serviceBinder.AddMethod(__Method_GetChange, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::ChangeService.Grpc.ChangeIdRequest, global::ChangeService.Grpc.ChangeResponse>(serviceImpl.GetChange));
       serviceBinder.AddMethod(__Method_ListChanges, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::ChangeService.Grpc.Empty, global::ChangeService.Grpc.ChangeList>(serviceImpl.ListChanges));
       serviceBinder.AddMethod(__Method_ApproveChange, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::ChangeService.Grpc.ChangeIdRequest, global::ChangeService.Grpc.ChangeResponse>(serviceImpl.ApproveChange));
+      serviceBinder.AddMethod(__Method_GetChangeWithCI, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::ChangeService.Grpc.ChangeIdRequest, global::ChangeService.Grpc.ChangeWithCIResponse>(serviceImpl.GetChangeWithCI));
     }
 
   }

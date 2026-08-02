@@ -9,6 +9,7 @@ service ChangeService {
     rpc GetChange (ChangeIdRequest) returns (ChangeResponse);
     rpc ListChanges (Empty) returns (ChangeList);
     rpc ApproveChange (ChangeIdRequest) returns (ChangeResponse);
+    rpc GetChangeWithCI (ChangeIdRequest) returns (ChangeWithCIResponse);
 }
 
 message Empty {}
@@ -37,3 +38,10 @@ message ChangeList {
     repeated ChangeResponse changes = 1;
 }
 
+message ChangeWithCIResponse {
+    ChangeResponse change = 1;
+    string ci_name = 2;
+    string ci_environment = 3;
+    string owner_name = 4;
+    string owner_email = 5;
+}

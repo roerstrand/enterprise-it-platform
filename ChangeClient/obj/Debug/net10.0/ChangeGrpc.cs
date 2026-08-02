@@ -55,6 +55,8 @@ namespace ChangeService.Grpc {
     static readonly grpc::Marshaller<global::ChangeService.Grpc.Empty> __Marshaller_change_Empty = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::ChangeService.Grpc.Empty.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::ChangeService.Grpc.ChangeList> __Marshaller_change_ChangeList = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::ChangeService.Grpc.ChangeList.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::ChangeService.Grpc.ChangeWithCIResponse> __Marshaller_change_ChangeWithCIResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::ChangeService.Grpc.ChangeWithCIResponse.Parser));
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Method<global::ChangeService.Grpc.CreateChangeRequest, global::ChangeService.Grpc.ChangeResponse> __Method_CreateChange = new grpc::Method<global::ChangeService.Grpc.CreateChangeRequest, global::ChangeService.Grpc.ChangeResponse>(
@@ -87,6 +89,14 @@ namespace ChangeService.Grpc {
         "ApproveChange",
         __Marshaller_change_ChangeIdRequest,
         __Marshaller_change_ChangeResponse);
+
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Method<global::ChangeService.Grpc.ChangeIdRequest, global::ChangeService.Grpc.ChangeWithCIResponse> __Method_GetChangeWithCI = new grpc::Method<global::ChangeService.Grpc.ChangeIdRequest, global::ChangeService.Grpc.ChangeWithCIResponse>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "GetChangeWithCI",
+        __Marshaller_change_ChangeIdRequest,
+        __Marshaller_change_ChangeWithCIResponse);
 
     /// <summary>Service descriptor</summary>
     public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
@@ -200,6 +210,26 @@ namespace ChangeService.Grpc {
       public virtual grpc::AsyncUnaryCall<global::ChangeService.Grpc.ChangeResponse> ApproveChangeAsync(global::ChangeService.Grpc.ChangeIdRequest request, grpc::CallOptions options)
       {
         return CallInvoker.AsyncUnaryCall(__Method_ApproveChange, null, options, request);
+      }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::ChangeService.Grpc.ChangeWithCIResponse GetChangeWithCI(global::ChangeService.Grpc.ChangeIdRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return GetChangeWithCI(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::ChangeService.Grpc.ChangeWithCIResponse GetChangeWithCI(global::ChangeService.Grpc.ChangeIdRequest request, grpc::CallOptions options)
+      {
+        return CallInvoker.BlockingUnaryCall(__Method_GetChangeWithCI, null, options, request);
+      }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual grpc::AsyncUnaryCall<global::ChangeService.Grpc.ChangeWithCIResponse> GetChangeWithCIAsync(global::ChangeService.Grpc.ChangeIdRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return GetChangeWithCIAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual grpc::AsyncUnaryCall<global::ChangeService.Grpc.ChangeWithCIResponse> GetChangeWithCIAsync(global::ChangeService.Grpc.ChangeIdRequest request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncUnaryCall(__Method_GetChangeWithCI, null, options, request);
       }
       /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]

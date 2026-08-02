@@ -2,6 +2,7 @@ using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
 using ChangeService.Data;
 using ChangeService.Grpc;
+using Grpc.Net.Client;
 
 namespace ChangeService.Services;
 
@@ -59,6 +60,26 @@ public class ChangeServiceImpl : ChangeService.Grpc.ChangeService.ChangeServiceB
         change.Status = "approved";
         await _db.SaveChangesAsync();
         return ToResponse(change);
+    }
+
+    public override async Task<ChangeWithCIResponse> GetChangeWithCI(ChangeIdRequest request, ServerCallContext context)
+    {
+        var change = await _db.Changes.FindAsync(request.Id);
+        if (change is null) throw new RpcException(new Status(StatusCode.NotFound, $"Change {request.Id} not found"));
+
+        using var channel = GrpcChannel.ForAddress("http://localhost:50052");
+        var cmdbClient = new Cmdb.Grpc.CmdbService.CmdbServiceClient(channel);
+        var ciWithOwner = await cmdbClient.GetCIWithOwnerAsync(new Cmdb.Grpc.CIIdRequest { Id = change.CiId });
+
+        return new ChangeWithCIResponse
+        {
+            Change = ToResponse(change),
+            CiName = ciWithOwner.Ci.Name,
+            CiEnvironment = ciWithOwner.Ci.Environment,
+            OwnerName = ciWithOwner.OwnerName,
+            OwnerEmail = ciWithOwner.OwnerEmail
+        };
+
     }
 
 }

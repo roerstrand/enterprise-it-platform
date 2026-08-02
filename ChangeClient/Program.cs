@@ -20,3 +20,12 @@ var all = await client.ListChangesAsync(new Empty());
 Console.WriteLine("\nAll changes:");
 foreach (var c in all.Changes)
     Console.WriteLine($"  id={c.Id}, title={c.Title}, status={c.Status}");
+
+var withCI = await client.GetChangeWithCIAsync(new ChangeIdRequest
+{
+    Id = created.Id
+});
+Console.WriteLine($"\nGetChangeWithCI:");
+Console.WriteLine($"  change={withCI.Change.Title}, status={withCI.Change.Status}");
+Console.WriteLine($"  ci_name={withCI.CiName}, ci_environment={withCI.CiEnvironment}");
+Console.WriteLine($"  owner_name={withCI.OwnerName}, owner_email={withCI.OwnerEmail}");

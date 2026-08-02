@@ -31,13 +31,18 @@ namespace ChangeService.Grpc {
             "GAEgASgFEg0KBXRpdGxlGAIgASgJEhMKC2Rlc2NyaXB0aW9uGAMgASgJEg4K",
             "BnN0YXR1cxgEIAEoCRISCgpyaXNrX2xldmVsGAUgASgJEg0KBWNpX2lkGAYg",
             "ASgFIjUKCkNoYW5nZUxpc3QSJwoHY2hhbmdlcxgBIAMoCzIWLmNoYW5nZS5D",
-            "aGFuZ2VSZXNwb25zZTKGAgoNQ2hhbmdlU2VydmljZRJDCgxDcmVhdGVDaGFu",
-            "Z2USGy5jaGFuZ2UuQ3JlYXRlQ2hhbmdlUmVxdWVzdBoWLmNoYW5nZS5DaGFu",
-            "Z2VSZXNwb25zZRI8CglHZXRDaGFuZ2USFy5jaGFuZ2UuQ2hhbmdlSWRSZXF1",
-            "ZXN0GhYuY2hhbmdlLkNoYW5nZVJlc3BvbnNlEjAKC0xpc3RDaGFuZ2VzEg0u",
-            "Y2hhbmdlLkVtcHR5GhIuY2hhbmdlLkNoYW5nZUxpc3QSQAoNQXBwcm92ZUNo",
-            "YW5nZRIXLmNoYW5nZS5DaGFuZ2VJZFJlcXVlc3QaFi5jaGFuZ2UuQ2hhbmdl",
-            "UmVzcG9uc2VCFaoCEkNoYW5nZVNlcnZpY2UuR3JwY2IGcHJvdG8z"));
+            "aGFuZ2VSZXNwb25zZSKQAQoUQ2hhbmdlV2l0aENJUmVzcG9uc2USJgoGY2hh",
+            "bmdlGAEgASgLMhYuY2hhbmdlLkNoYW5nZVJlc3BvbnNlEg8KB2NpX25hbWUY",
+            "AiABKAkSFgoOY2lfZW52aXJvbm1lbnQYAyABKAkSEgoKb3duZXJfbmFtZRgE",
+            "IAEoCRITCgtvd25lcl9lbWFpbBgFIAEoCTLQAgoNQ2hhbmdlU2VydmljZRJD",
+            "CgxDcmVhdGVDaGFuZ2USGy5jaGFuZ2UuQ3JlYXRlQ2hhbmdlUmVxdWVzdBoW",
+            "LmNoYW5nZS5DaGFuZ2VSZXNwb25zZRI8CglHZXRDaGFuZ2USFy5jaGFuZ2Uu",
+            "Q2hhbmdlSWRSZXF1ZXN0GhYuY2hhbmdlLkNoYW5nZVJlc3BvbnNlEjAKC0xp",
+            "c3RDaGFuZ2VzEg0uY2hhbmdlLkVtcHR5GhIuY2hhbmdlLkNoYW5nZUxpc3QS",
+            "QAoNQXBwcm92ZUNoYW5nZRIXLmNoYW5nZS5DaGFuZ2VJZFJlcXVlc3QaFi5j",
+            "aGFuZ2UuQ2hhbmdlUmVzcG9uc2USSAoPR2V0Q2hhbmdlV2l0aENJEhcuY2hh",
+            "bmdlLkNoYW5nZUlkUmVxdWVzdBocLmNoYW5nZS5DaGFuZ2VXaXRoQ0lSZXNw",
+            "b25zZUIVqgISQ2hhbmdlU2VydmljZS5HcnBjYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -45,7 +50,8 @@ namespace ChangeService.Grpc {
             new pbr::GeneratedClrTypeInfo(typeof(global::ChangeService.Grpc.ChangeIdRequest), global::ChangeService.Grpc.ChangeIdRequest.Parser, new[]{ "Id" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::ChangeService.Grpc.CreateChangeRequest), global::ChangeService.Grpc.CreateChangeRequest.Parser, new[]{ "Title", "Description", "RiskLevel", "CiId" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::ChangeService.Grpc.ChangeResponse), global::ChangeService.Grpc.ChangeResponse.Parser, new[]{ "Id", "Title", "Description", "Status", "RiskLevel", "CiId" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::ChangeService.Grpc.ChangeList), global::ChangeService.Grpc.ChangeList.Parser, new[]{ "Changes" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::ChangeService.Grpc.ChangeList), global::ChangeService.Grpc.ChangeList.Parser, new[]{ "Changes" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::ChangeService.Grpc.ChangeWithCIResponse), global::ChangeService.Grpc.ChangeWithCIResponse.Parser, new[]{ "Change", "CiName", "CiEnvironment", "OwnerName", "OwnerEmail" }, null, null, null, null)
           }));
     }
     #endregion
@@ -1281,6 +1287,361 @@ namespace ChangeService.Grpc {
             break;
           case 10: {
             changes_.AddEntriesFrom(ref input, _repeated_changes_codec);
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
+  public sealed partial class ChangeWithCIResponse : pb::IMessage<ChangeWithCIResponse>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<ChangeWithCIResponse> _parser = new pb::MessageParser<ChangeWithCIResponse>(() => new ChangeWithCIResponse());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<ChangeWithCIResponse> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::ChangeService.Grpc.ChangeReflection.Descriptor.MessageTypes[5]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ChangeWithCIResponse() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ChangeWithCIResponse(ChangeWithCIResponse other) : this() {
+      change_ = other.change_ != null ? other.change_.Clone() : null;
+      ciName_ = other.ciName_;
+      ciEnvironment_ = other.ciEnvironment_;
+      ownerName_ = other.ownerName_;
+      ownerEmail_ = other.ownerEmail_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ChangeWithCIResponse Clone() {
+      return new ChangeWithCIResponse(this);
+    }
+
+    /// <summary>Field number for the "change" field.</summary>
+    public const int ChangeFieldNumber = 1;
+    private global::ChangeService.Grpc.ChangeResponse change_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::ChangeService.Grpc.ChangeResponse Change {
+      get { return change_; }
+      set {
+        change_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "ci_name" field.</summary>
+    public const int CiNameFieldNumber = 2;
+    private string ciName_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string CiName {
+      get { return ciName_; }
+      set {
+        ciName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "ci_environment" field.</summary>
+    public const int CiEnvironmentFieldNumber = 3;
+    private string ciEnvironment_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string CiEnvironment {
+      get { return ciEnvironment_; }
+      set {
+        ciEnvironment_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "owner_name" field.</summary>
+    public const int OwnerNameFieldNumber = 4;
+    private string ownerName_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string OwnerName {
+      get { return ownerName_; }
+      set {
+        ownerName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "owner_email" field.</summary>
+    public const int OwnerEmailFieldNumber = 5;
+    private string ownerEmail_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string OwnerEmail {
+      get { return ownerEmail_; }
+      set {
+        ownerEmail_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as ChangeWithCIResponse);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(ChangeWithCIResponse other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(Change, other.Change)) return false;
+      if (CiName != other.CiName) return false;
+      if (CiEnvironment != other.CiEnvironment) return false;
+      if (OwnerName != other.OwnerName) return false;
+      if (OwnerEmail != other.OwnerEmail) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (change_ != null) hash ^= Change.GetHashCode();
+      if (CiName.Length != 0) hash ^= CiName.GetHashCode();
+      if (CiEnvironment.Length != 0) hash ^= CiEnvironment.GetHashCode();
+      if (OwnerName.Length != 0) hash ^= OwnerName.GetHashCode();
+      if (OwnerEmail.Length != 0) hash ^= OwnerEmail.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (change_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Change);
+      }
+      if (CiName.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(CiName);
+      }
+      if (CiEnvironment.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteString(CiEnvironment);
+      }
+      if (OwnerName.Length != 0) {
+        output.WriteRawTag(34);
+        output.WriteString(OwnerName);
+      }
+      if (OwnerEmail.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteString(OwnerEmail);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (change_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Change);
+      }
+      if (CiName.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(CiName);
+      }
+      if (CiEnvironment.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteString(CiEnvironment);
+      }
+      if (OwnerName.Length != 0) {
+        output.WriteRawTag(34);
+        output.WriteString(OwnerName);
+      }
+      if (OwnerEmail.Length != 0) {
+        output.WriteRawTag(42);
+        output.WriteString(OwnerEmail);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (change_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Change);
+      }
+      if (CiName.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(CiName);
+      }
+      if (CiEnvironment.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(CiEnvironment);
+      }
+      if (OwnerName.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(OwnerName);
+      }
+      if (OwnerEmail.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(OwnerEmail);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(ChangeWithCIResponse other) {
+      if (other == null) {
+        return;
+      }
+      if (other.change_ != null) {
+        if (change_ == null) {
+          Change = new global::ChangeService.Grpc.ChangeResponse();
+        }
+        Change.MergeFrom(other.Change);
+      }
+      if (other.CiName.Length != 0) {
+        CiName = other.CiName;
+      }
+      if (other.CiEnvironment.Length != 0) {
+        CiEnvironment = other.CiEnvironment;
+      }
+      if (other.OwnerName.Length != 0) {
+        OwnerName = other.OwnerName;
+      }
+      if (other.OwnerEmail.Length != 0) {
+        OwnerEmail = other.OwnerEmail;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            if (change_ == null) {
+              Change = new global::ChangeService.Grpc.ChangeResponse();
+            }
+            input.ReadMessage(Change);
+            break;
+          }
+          case 18: {
+            CiName = input.ReadString();
+            break;
+          }
+          case 26: {
+            CiEnvironment = input.ReadString();
+            break;
+          }
+          case 34: {
+            OwnerName = input.ReadString();
+            break;
+          }
+          case 42: {
+            OwnerEmail = input.ReadString();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            if (change_ == null) {
+              Change = new global::ChangeService.Grpc.ChangeResponse();
+            }
+            input.ReadMessage(Change);
+            break;
+          }
+          case 18: {
+            CiName = input.ReadString();
+            break;
+          }
+          case 26: {
+            CiEnvironment = input.ReadString();
+            break;
+          }
+          case 34: {
+            OwnerName = input.ReadString();
+            break;
+          }
+          case 42: {
+            OwnerEmail = input.ReadString();
             break;
           }
         }
