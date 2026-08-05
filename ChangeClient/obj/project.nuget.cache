@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "dTtB17ypiDc=",
+  "dgSpecHash": "DW+9ttuepG0=",
   "success": true,
-  "projectFilePath": "C:\\Users\\robin\\source\\repos\\python\\python_microservices\\ChangeClient\\ChangeClient.csproj",
+  "projectFilePath": "C:\\Users\\robin\\source\\repos\\python\\enterprise-it-platform\\ChangeClient\\ChangeClient.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\robin\\.nuget\\packages\\google.protobuf\\3.35.1\\google.protobuf.3.35.1.nupkg.sha512",
     "C:\\Users\\robin\\.nuget\\packages\\grpc.core.api\\2.80.0\\grpc.core.api.2.80.0.nupkg.sha512",

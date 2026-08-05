@@ -2521,11 +2521,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\robin\\source\\repos\\python\\python_microservices\\ChangeService\\ChangeService.csproj",
+      "projectUniqueName": "C:\\Users\\robin\\source\\repos\\python\\enterprise-it-platform\\ChangeService\\ChangeService.csproj",
       "projectName": "ChangeService",
-      "projectPath": "C:\\Users\\robin\\source\\repos\\python\\python_microservices\\ChangeService\\ChangeService.csproj",
+      "projectPath": "C:\\Users\\robin\\source\\repos\\python\\enterprise-it-platform\\ChangeService\\ChangeService.csproj",
       "packagesPath": "C:\\Users\\robin\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\robin\\source\\repos\\python\\python_microservices\\ChangeService\\obj\\",
+      "outputPath": "C:\\Users\\robin\\source\\repos\\python\\enterprise-it-platform\\ChangeService\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
