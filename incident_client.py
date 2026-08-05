@@ -1,4 +1,6 @@
 import grpc
+import time
+
 from protos import user_pb2, user_pb2_grpc
 from protos import cmdb_pb2, cmdb_pb2_grpc
 from protos import incident_pb2, incident_pb2_grpc
@@ -30,6 +32,9 @@ def run():
             print(f"  incident={enriched.incident.title}, status={enriched.incident.status}")
             print(f"  ci_name={enriched.ci_name}, ci_environment={enriched.ci_environment}")
             print(f"  owner_name={enriched.owner_name}, owner_email={enriched.owner_email}")
+            time.sleep(20)
+            fetched = incident_stub.GetIncident(incident_pb2.IncidentIdRequest(id=incident.id))
+            print(f"\nAfter 20s, ai_summary: {fetched.ai_summary}")
 
 if __name__ == "__main__":
     run()

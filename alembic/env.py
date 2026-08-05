@@ -6,9 +6,19 @@ import sys
 import os
 sys.path.insert(0, os.getcwd())
 
+from dotenv import load_dotenv
+load_dotenv()
+
+from sqlalchemy import create_engine
+
 from data.models.user_model import Base
 from data.models import team_model, ci_model, relationship_model, incident_model
-from data.database import engine
+
+def _sync_database_url() -> str:
+    url = os.getenv("DATABASE_URL", "sqlite:///./data/users.db")
+    return url.replace("postgresql+asyncpg://", "postgresql://")
+
+engine = create_engine(_sync_database_url())
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

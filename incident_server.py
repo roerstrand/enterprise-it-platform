@@ -1,5 +1,5 @@
+import asyncio
 import grpc
-from concurrent import futures
 from prometheus_client import start_http_server
 
 from protos import incident_pb2, incident_pb2_grpc, cmdb_pb2, cmdb_pb2_grpc
@@ -7,31 +7,53 @@ from protos import incident_pb2, incident_pb2_grpc, cmdb_pb2, cmdb_pb2_grpc
 from repositories.incident_repository import (
     create_incident_in_db,
     get_incident_by_id_from_db,
-    get_all_incidents_from_db
+    get_all_incidents_from_db,
+    update_incident_ai_summary,
 )
 
 from data.database import get_db_context
 from observability.grpc_metrics import track_grpc_metrics
 from observability.tracing import setup_tracing
+from ai.foundry_client import generate_incident_summary
 
 def _to_incident_response(incident):
      return incident_pb2.IncidentResponse(
         id=incident.id, title=incident.title, description=incident.description,
-        status=incident.status, severity=incident.severity, ci_id=incident.ci_id
+        status=incident.status, severity=incident.severity, ci_id=incident.ci_id, ai_summary=incident.ai_summary or ""
     )
+
+_background_tasks: set[asyncio.Task] = set()
+
+def _fire_and_forget(coro):
+    task = asyncio.create_task(coro)
+    _background_tasks.add(task)
+    task.add_done_callback(_background_tasks.discard)
+    return task
+
+async def _generate_and_store_summary(incident_id, title, description):
+    summary = await asyncio.to_thread(generate_incident_summary, title, description)
+    if summary:
+        async with get_db_context() as db:
+            await update_incident_ai_summary(db, incident_id, summary)
 
 class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
 
     @track_grpc_metrics("Incident")
-    def CreateIncident(self, request, context):
-        with get_db_context() as db:
-            incident = create_incident_in_db(db, request.title, request.description, request.severity, request.ci_id)
-            return _to_incident_response(incident)
+    async def CreateIncident(self, request, context):
+        async with get_db_context() as db:
+            incident = await create_incident_in_db(db, request.title, request.description, request.severity, request.ci_id)
+            response = _to_incident_response(incident)
+
+        _fire_and_forget(
+            _generate_and_store_summary(incident.id, incident.title, incident.description)
+        )
+
+        return response
 
     @track_grpc_metrics("Incident")
-    def GetIncident(self, request, context):
-        with get_db_context() as db:
-            incident = get_incident_by_id_from_db(db, request.id)
+    async def GetIncident(self, request, context):
+        async with get_db_context() as db:
+            incident = await get_incident_by_id_from_db(db, request.id)
             if incident:
                 return _to_incident_response(incident)
             context.set_code(grpc.StatusCode.NOT_FOUND)
@@ -39,15 +61,15 @@ class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
             return incident_pb2.IncidentResponse()
 
     @track_grpc_metrics("Incident")
-    def ListIncidents(self, request, context):
-        with get_db_context() as db:
-            incidents = get_all_incidents_from_db(db)
+    async def ListIncidents(self, request, context):
+        async with get_db_context() as db:
+            incidents = await get_all_incidents_from_db(db)
             return incident_pb2.IncidentList(incidents={_to_incident_response(i) for i in incidents})
 
     @track_grpc_metrics("Incident")
-    def GetIncidentWithCI(self, request, context):
-        with get_db_context() as db:
-            incident = get_incident_by_id_from_db(db, request.id)
+    async def GetIncidentWithCI(self, request, context):
+        async with get_db_context() as db:
+            incident = await get_incident_by_id_from_db(db, request.id)
             if not incident:
                 context.set_code(grpc.StatusCode.NOT_FOUND)
                 context.set_details(f"Incident {request.id} not found")
@@ -56,9 +78,9 @@ class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
 
             incident_response = _to_incident_response(incident)
 
-            with grpc.insecure_channel("localhost:50052") as channel:
+            async with grpc.aio.insecure_channel("localhost:50052") as channel:
                 cmdb_stub = cmdb_pb2_grpc.CmdbServiceStub(channel)
-                ci_with_owner = cmdb_stub.GetCIWithOwner(cmdb_pb2.CIIdRequest(id=incident.ci_id))
+                ci_with_owner = await cmdb_stub.GetCIWithOwner(cmdb_pb2.CIIdRequest(id=incident.ci_id))
 
                 return incident_pb2.IncidentWithCIResponse(
                 incident=incident_response,
@@ -68,14 +90,14 @@ class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
                 owner_email=ci_with_owner.owner_email,
             )
 
-def serve():
+async def serve():
     setup_tracing("incident")
     start_http_server(9103)
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    server = grpc.aio.server()
     incident_pb2_grpc.add_IncidentServiceServicer_to_server(IncidentServiceServicer(), server)
     server.add_insecure_port("[::]:50053")
-    server.start()
-    server.wait_for_termination()
+    await server.start()
+    await server.wait_for_termination()
 
 if __name__ == "__main__":
-    serve()
+    asyncio.run(serve())

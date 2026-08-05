@@ -2,7 +2,7 @@ import grpc
 from protos import user_pb2
 from protos import user_pb2_grpc
 
-channel = grpc.insecure_channel("localhost:50051")
+channel = grpc.aio.insecure_channel("localhost:50051")
 stub = user_pb2_grpc.UserServiceStub(channel)
 
 class UserServiceUnavailable(Exception):
@@ -11,25 +11,25 @@ class UserServiceUnavailable(Exception):
 class InvalidCredentials(Exception):
     pass
 
-def list_users():
+async def list_users():
     try:
-        response = stub.GetAllUsers(user_pb2.Empty())
+        response = await stub.GetAllUsers(user_pb2.Empty())
     except grpc.RpcError as e:
         print(f"gRPC-fel: {e.code()} {e.details()}")
         raise UserServiceUnavailable(str(e))
     return [{"id": u.id, "name": u.name, "email": u.email} for u in response.users]
 
-def create_user(name: str, email: str, password: str):
+async def create_user(name: str, email: str, password: str):
     try:
-        response = stub.CreateUser(user_pb2.CreateUserRequest(name=name, email=email, password=password))
+        response = await stub.CreateUser(user_pb2.CreateUserRequest(name=name, email=email, password=password))
     except grpc.RpcError as e:
         print(f"gRPC-fel: {e.code()} {e.details()}")
         raise UserServiceUnavailable(str(e))
     return {"id": response.id, "name": response.name, "email": response.email}
 
-def login(email: str, password: str):
+async def login(email: str, password: str):
     try:
-        response = stub.Login(user_pb2.LoginRequest(email=email, password=password))
+        response = await stub.Login(user_pb2.LoginRequest(email=email, password=password))
     except grpc.RpcError as e:
         if e.code() == grpc.StatusCode.UNAUTHENTICATED:
             raise InvalidCredentials(str(e))

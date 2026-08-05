@@ -1,5 +1,5 @@
+import asyncio
 import grpc
-from concurrent import futures
 
 from protos import user_pb2
 from protos import user_pb2_grpc
@@ -23,51 +23,50 @@ from observability.tracing import setup_tracing
 class UserServiceServicer(user_pb2_grpc.UserServiceServicer):
 
     @track_grpc_metrics("user")
-    def GetAllUsers(self, request, context):
-        with get_db_context() as db:
-            users = get_all_users_from_db(db)
+    async def GetAllUsers(self, request, context):
+        async with get_db_context() as db:
+            users = await get_all_users_from_db(db)
             return user_pb2.UserList(
                 users=[user_pb2.UserResponse(id=u.id, name=u.name, email=u.email) for u in users]
             )
 
     @track_grpc_metrics("user")
-    def GetUserById(self, request, context):
-        with get_db_context() as db:
-            user = get_user_by_id_from_db(db, request.id)
+    async def GetUserById(self, request, context):
+        async with get_db_context() as db:
+            user = await get_user_by_id_from_db(db, request.id)
             if user:
                 return user_pb2.UserResponse(id=user.id, name=user.name, email=user.email)
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details(f"User {request.id} not found")
             return user_pb2.UserResponse()
-                
-            
+
+
     @track_grpc_metrics("user")
-    def CreateUser(self, request, context):
-        with get_db_context() as db:
-            hashed_password = hash_password(request.password)
-            user = create_user_in_db(db, request.name, request.email, hashed_password)
+    async def CreateUser(self, request, context):
+        hashed_password = await asyncio.to_thread(hash_password, request.password)
+        async with get_db_context() as db:
+            user = await create_user_in_db(db, request.name, request.email, hashed_password)
             return user_pb2.UserResponse(id=user.id, name=user.name, email=user.email)
 
     @track_grpc_metrics("user")
-    def Login(self, request, context):
-        with get_db_context() as db:
-            user = get_user_by_email_from_db(db, request.email)
-            if not user or not verify_password(request.password, user.hashed_password):
+    async def Login(self, request, context):
+        async with get_db_context() as db:
+            user = await get_user_by_email_from_db(db, request.email)
+            if not user or not await asyncio.to_thread(verify_password, request.password, user.hashed_password):
                 context.set_code(grpc.StatusCode.UNAUTHENTICATED)
                 context.set_details("Invalid email or password")
                 return user_pb2.TokenResponse()
             token = create_access_token({"sub": str(user.id), "email": user.email})
             return user_pb2.TokenResponse(access_token=token, token_type="bearer")
-    
-def serve():
+
+async def serve():
     setup_tracing("user")
     start_http_server(9101)
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    server = grpc.aio.server()
     user_pb2_grpc.add_UserServiceServicer_to_server(UserServiceServicer(), server)
     server.add_insecure_port("[::]:50051")
-    server.start()
-    server.wait_for_termination()
+    await server.start()
+    await server.wait_for_termination()
 
 if __name__ == "__main__":
-    serve()
-    
+    asyncio.run(serve())

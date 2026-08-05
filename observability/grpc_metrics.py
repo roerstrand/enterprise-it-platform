@@ -10,9 +10,9 @@ GRPC_REQUEST_LATENCY = Histogram(
 def track_grpc_metrics(service_name):
     def decorator(func):
         @wraps(func)
-        def wrapper(self, request, context):
+        async def wrapper(self, request, context):
             with GRPC_REQUEST_LATENCY.labels(service=service_name, method=func.__name__).time():
-                return func(self, request, context)
+                return await func(self, request, context)
         return wrapper
     return decorator
 

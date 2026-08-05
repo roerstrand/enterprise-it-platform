@@ -2,27 +2,25 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-from typing import Generator
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from typing import AsyncGenerator
 
-from contextlib import contextmanager
+from contextlib import asynccontextmanager
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data/users.db")
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./data/users.db")
 
-engine = create_engine(
-DATABASE_URL)
+engine = create_async_engine(DATABASE_URL)
 
-SessionLocal = sessionmaker(
+SessionLocal = async_sessionmaker(
     bind=engine,
     expire_on_commit=False
 )
 
-def get_db() -> Generator[Session, None, None]:
+async def get_db() -> AsyncGenerator[AsyncSession, None]:
     db = SessionLocal()
     try:
         yield db
     finally:
-        db.close()
+        await db.close()
 
-get_db_context = contextmanager(get_db)
+get_db_context = asynccontextmanager(get_db)

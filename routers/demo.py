@@ -14,23 +14,23 @@ def demo_page():
     return FileResponse("static/demo/index.html")
 
 @router.get("/api/users")
-def api_list_users():
+async def api_list_users():
     try:
-        return list_users()
+        return await list_users()
     except UserServiceUnavailable:
         raise HTTPException(status_code=503, detail="gRPC service is down")
-    
+
 @router.post("/api/users")
-def api_create_user(user: UserCreateSchema):
+async def api_create_user(user: UserCreateSchema):
     try:
-        return create_user(user.name, user.email, user.password)
+        return await create_user(user.name, user.email, user.password)
     except UserServiceUnavailable:
         raise HTTPException(status_code=503, detail="gRPC service is down")
-    
+
 @router.post("/api/login")
-def api_login(credentials: UserLoginSchema):
+async def api_login(credentials: UserLoginSchema):
     try:
-        return login(credentials.email, credentials.password)
+        return await login(credentials.email, credentials.password)
     except InvalidCredentials:
         raise HTTPException(status_code=401, detail="Invalid email or password")
     except UserServiceUnavailable:

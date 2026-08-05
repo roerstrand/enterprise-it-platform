@@ -11,4 +11,5 @@ class IncidentModel(Base):
     status: Mapped[str] = mapped_column(default="open")
     severity: Mapped[str]
     ci_id: Mapped[int]
+    ai_summary: Mapped[str | None] = mapped_column(default=None)
 
