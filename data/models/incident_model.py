@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import text
 
 from data.models.user_model import Base
 
@@ -12,4 +13,5 @@ class IncidentModel(Base):
     severity: Mapped[str]
     ci_id: Mapped[int]
     ai_summary: Mapped[str | None] = mapped_column(default=None)
+    ai_summary_status: Mapped[str] = mapped_column(server_default=text("'pending'"))
 

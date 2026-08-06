@@ -26,4 +26,14 @@ async def update_incident_ai_summary(db: AsyncSession, incident_id: int, ai_summ
     incident = result.scalars().first()
     if incident:
         incident.ai_summary = ai_summary
+        incident.ai_summary_status = "ready"
+        await db.commit()
+
+async def mark_incident_ai_summary_failed(db: AsyncSession, incident_id: int):
+    result = await db.execute(
+        select(IncidentModel).where(IncidentModel.id == incident_id)
+    )
+    incident = result.scalars().first()
+    if incident:
+        incident.ai_summary_status = "failed"
         await db.commit()

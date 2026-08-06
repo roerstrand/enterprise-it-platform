@@ -30,6 +30,7 @@ message IncidentResponse {
     string severity = 5;
     int32 ci_id = 6;
     string ai_summary = 7;
+    string ai_summary_status = 8;
 }
 
 message IncidentList {

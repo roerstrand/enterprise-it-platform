@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15protos/incident.proto\x12\x08incident\"\x07\n\x05\x45mpty\"\x1f\n\x11IncidentIdRequest\x12\n\n\x02id\x18\x01 \x01(\x05\"\\\n\x15\x43reateIncidentRequest\x12\r\n\x05title\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x10\n\x08severity\x18\x03 \x01(\t\x12\r\n\x05\x63i_id\x18\x04 \x01(\x05\"\x87\x01\n\x10IncidentResponse\x12\n\n\x02id\x18\x01 \x01(\x05\x12\r\n\x05title\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x0e\n\x06status\x18\x04 \x01(\t\x12\x10\n\x08severity\x18\x05 \x01(\t\x12\r\n\x05\x63i_id\x18\x06 \x01(\x05\x12\x12\n\nai_summary\x18\x07 \x01(\t\"=\n\x0cIncidentList\x12-\n\tincidents\x18\x01 \x03(\x0b\x32\x1a.incident.IncidentResponse\"\x98\x01\n\x16IncidentWithCIResponse\x12,\n\x08incident\x18\x01 \x01(\x0b\x32\x1a.incident.IncidentResponse\x12\x0f\n\x07\x63i_name\x18\x02 \x01(\t\x12\x16\n\x0e\x63i_environment\x18\x03 \x01(\t\x12\x12\n\nowner_name\x18\x04 \x01(\t\x12\x13\n\x0bowner_email\x18\x05 \x01(\t2\xb6\x02\n\x0fIncidentService\x12M\n\x0e\x43reateIncident\x12\x1f.incident.CreateIncidentRequest\x1a\x1a.incident.IncidentResponse\x12\x46\n\x0bGetIncident\x12\x1b.incident.IncidentIdRequest\x1a\x1a.incident.IncidentResponse\x12\x38\n\rListIncidents\x12\x0f.incident.Empty\x1a\x16.incident.IncidentList\x12R\n\x11GetIncidentWithCI\x12\x1b.incident.IncidentIdRequest\x1a .incident.IncidentWithCIResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15protos/incident.proto\x12\x08incident\"\x07\n\x05\x45mpty\"\x1f\n\x11IncidentIdRequest\x12\n\n\x02id\x18\x01 \x01(\x05\"\\\n\x15\x43reateIncidentRequest\x12\r\n\x05title\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x10\n\x08severity\x18\x03 \x01(\t\x12\r\n\x05\x63i_id\x18\x04 \x01(\x05\"\xa2\x01\n\x10IncidentResponse\x12\n\n\x02id\x18\x01 \x01(\x05\x12\r\n\x05title\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x0e\n\x06status\x18\x04 \x01(\t\x12\x10\n\x08severity\x18\x05 \x01(\t\x12\r\n\x05\x63i_id\x18\x06 \x01(\x05\x12\x12\n\nai_summary\x18\x07 \x01(\t\x12\x19\n\x11\x61i_summary_status\x18\x08 \x01(\t\"=\n\x0cIncidentList\x12-\n\tincidents\x18\x01 \x03(\x0b\x32\x1a.incident.IncidentResponse\"\x98\x01\n\x16IncidentWithCIResponse\x12,\n\x08incident\x18\x01 \x01(\x0b\x32\x1a.incident.IncidentResponse\x12\x0f\n\x07\x63i_name\x18\x02 \x01(\t\x12\x16\n\x0e\x63i_environment\x18\x03 \x01(\t\x12\x12\n\nowner_name\x18\x04 \x01(\t\x12\x13\n\x0bowner_email\x18\x05 \x01(\t2\xb6\x02\n\x0fIncidentService\x12M\n\x0e\x43reateIncident\x12\x1f.incident.CreateIncidentRequest\x1a\x1a.incident.IncidentResponse\x12\x46\n\x0bGetIncident\x12\x1b.incident.IncidentIdRequest\x1a\x1a.incident.IncidentResponse\x12\x38\n\rListIncidents\x12\x0f.incident.Empty\x1a\x16.incident.IncidentList\x12R\n\x11GetIncidentWithCI\x12\x1b.incident.IncidentIdRequest\x1a .incident.IncidentWithCIResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -38,11 +38,11 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_CREATEINCIDENTREQUEST']._serialized_start=77
   _globals['_CREATEINCIDENTREQUEST']._serialized_end=169
   _globals['_INCIDENTRESPONSE']._serialized_start=172
-  _globals['_INCIDENTRESPONSE']._serialized_end=307
-  _globals['_INCIDENTLIST']._serialized_start=309
-  _globals['_INCIDENTLIST']._serialized_end=370
-  _globals['_INCIDENTWITHCIRESPONSE']._serialized_start=373
-  _globals['_INCIDENTWITHCIRESPONSE']._serialized_end=525
-  _globals['_INCIDENTSERVICE']._serialized_start=528
-  _globals['_INCIDENTSERVICE']._serialized_end=838
+  _globals['_INCIDENTRESPONSE']._serialized_end=334
+  _globals['_INCIDENTLIST']._serialized_start=336
+  _globals['_INCIDENTLIST']._serialized_end=397
+  _globals['_INCIDENTWITHCIRESPONSE']._serialized_start=400
+  _globals['_INCIDENTWITHCIRESPONSE']._serialized_end=552
+  _globals['_INCIDENTSERVICE']._serialized_start=555
+  _globals['_INCIDENTSERVICE']._serialized_end=865
 # @@protoc_insertion_point(module_scope)

@@ -9,6 +9,7 @@ from repositories.incident_repository import (
     get_incident_by_id_from_db,
     get_all_incidents_from_db,
     update_incident_ai_summary,
+    mark_incident_ai_summary_failed,
 )
 
 from data.database import get_db_context
@@ -19,7 +20,7 @@ from ai.foundry_client import generate_incident_summary
 def _to_incident_response(incident):
      return incident_pb2.IncidentResponse(
         id=incident.id, title=incident.title, description=incident.description,
-        status=incident.status, severity=incident.severity, ci_id=incident.ci_id, ai_summary=incident.ai_summary or ""
+        status=incident.status, severity=incident.severity, ci_id=incident.ci_id, ai_summary=incident.ai_summary or "", ai_summary_status=incident.ai_summary_status
     )
 
 _background_tasks: set[asyncio.Task] = set()
@@ -30,11 +31,28 @@ def _fire_and_forget(coro):
     task.add_done_callback(_background_tasks.discard)
     return task
 
-async def _generate_and_store_summary(incident_id, title, description):
-    summary = await asyncio.to_thread(generate_incident_summary, title, description)
+async def _generate_and_store_summary(incident_id, title, description, ci_id):
+    ci_name = ci_environment = owner_name = None
+    try:
+        async with grpc.aio.insecure_channel("localhost:50052") as channel:
+            cmdb_stub = cmdb_pb2_grpc.CmdbServiceStub(channel)
+            ci_with_owner = await cmdb_stub.GetCIWithOwner(cmdb_pb2.CIIdRequest(id=ci_id))
+            ci_name = ci_with_owner.ci.name
+            ci_environment = ci_with_owner.ci.environment
+            owner_name = ci_with_owner.owner_name
+    except grpc.RpcError as e:
+        print(f"[incident_server] CMDB lookup failed for ci_id={ci_id}: {e}")
+
+    summary = await asyncio.to_thread(
+        generate_incident_summary, title, description, ci_name, ci_environment, owner_name
+    )
+
     if summary:
         async with get_db_context() as db:
             await update_incident_ai_summary(db, incident_id, summary)
+    else:
+        async with get_db_context() as db:
+            await mark_incident_ai_summary_failed(db, incident_id)
 
 class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
 
@@ -45,7 +63,7 @@ class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
             response = _to_incident_response(incident)
 
         _fire_and_forget(
-            _generate_and_store_summary(incident.id, incident.title, incident.description)
+            _generate_and_store_summary(incident.id, incident.title, incident.description, incident.ci_id)
         )
 
         return response
