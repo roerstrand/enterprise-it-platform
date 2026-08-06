@@ -43,6 +43,7 @@ def run():
                 fetched = incident_stub.GetIncident(incident_pb2.IncidentIdRequest(id=incident.id))
 
             print(f"\nai_summary_status={fetched.ai_summary_status}, ai_summary: {fetched.ai_summary}")
+            print(f"ai_suggested_severity: {fetched.ai_suggested_severity}")
 
 if __name__ == "__main__":
     run()

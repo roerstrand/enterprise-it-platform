@@ -31,6 +31,7 @@ message IncidentResponse {
     int32 ci_id = 6;
     string ai_summary = 7;
     string ai_summary_status = 8;
+    string ai_suggested_severity = 9;
 }
 
 message IncidentList {

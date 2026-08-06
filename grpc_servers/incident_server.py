@@ -10,17 +10,19 @@ from repositories.incident_repository import (
     get_all_incidents_from_db,
     update_incident_ai_summary,
     mark_incident_ai_summary_failed,
+    update_incident_ai_suggested_severity
 )
 
 from data.database import get_db_context
 from observability.grpc_metrics import track_grpc_metrics
 from observability.tracing import setup_tracing
-from ai.foundry_client import generate_incident_summary
+from ai.foundry_client import generate_incident_summary, classify_incident_severity
 
 def _to_incident_response(incident):
      return incident_pb2.IncidentResponse(
         id=incident.id, title=incident.title, description=incident.description,
-        status=incident.status, severity=incident.severity, ci_id=incident.ci_id, ai_summary=incident.ai_summary or "", ai_summary_status=incident.ai_summary_status
+        status=incident.status, severity=incident.severity, ci_id=incident.ci_id, ai_summary=incident.ai_summary or "", 
+        ai_summary_status=incident.ai_summary_status, ai_suggested_severity=incident.ai_suggested_severity or ""
     )
 
 _background_tasks: set[asyncio.Task] = set()
@@ -47,12 +49,21 @@ async def _generate_and_store_summary(incident_id, title, description, ci_id):
         generate_incident_summary, title, description, ci_name, ci_environment, owner_name
     )
 
+    suggested_severity = await asyncio.to_thread(
+        classify_incident_severity, title, description, ci_name, ci_environment, owner_name
+    )
+
+    if suggested_severity:
+        async with get_db_context() as db:
+            await update_incident_ai_suggested_severity(db, incident_id, suggested_severity)
+
     if summary:
         async with get_db_context() as db:
             await update_incident_ai_summary(db, incident_id, summary)
     else:
         async with get_db_context() as db:
             await mark_incident_ai_summary_failed(db, incident_id)
+
 
 class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
 
