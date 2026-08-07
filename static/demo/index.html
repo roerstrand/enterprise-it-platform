@@ -3,36 +3,107 @@
   <head>
     <meta charset="UTF-8" />
     <title>Demo</title>
-    <link rel="stylesheet" href="/static/demo/style.css" />
-    <script defer src="/static/demo/app.js"></script>
+    <link rel="stylesheet" href="/static/demo/style.css?v=5" />
+    <script defer src="/static/demo/app.js?v=5"></script>
   </head>
   <body>
-    <h1>Users</h1>
-    <ul id="user-list"></ul>
+    <div class="layout">
+      <aside class="card">
+        <h1>Users</h1>
 
-    <h2>Create user</h2>
-    <form id="create-form">
-      <input type="text" id="name" placeholder="Name" required />
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <button type="submit">Create</button>
-    </form>
+        <h2>Create user</h2>
+        <form id="create-form">
+          <label for="name">Name</label>
+          <input type="text" id="name" placeholder="Jane Doe" required />
 
-    <h2>Login</h2>
-    <form id="login-form">
-      <input type="email" id="login-email" placeholder="Email" required />
-      <input
-        type="password"
-        id="login-password"
-        placeholder="Passowrd"
-        required
-      />
-      <button type="submit">Login</button>
-    </form>
-    <p id="login-status"></p>
-    <p id="error"></p>
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="jane@example.com" required />
 
-    <!-- XSS simulated scripts to check CSP -->
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" required />
+
+          <button type="submit">Create user</button>
+        </form>
+
+        <h2>Login</h2>
+        <form id="login-form">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="jane@example.com" required />
+
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" required />
+
+          <button type="submit">Login</button>
+        </form>
+        <p id="login-status" class="status"></p>
+        <p id="error" class="status status-error"></p>
+
+        <h2>User list</h2>
+        <ul id="user-list" class="plain-list"></ul>
+      </aside>
+
+      <main class="card">
+        <h1>Incidents</h1>
+
+        <div class="incident-forms">
+          <div>
+            <h2>Create incident</h2>
+            <form id="incident-create-form">
+              <label for="incident-title">Title</label>
+              <input type="text" id="incident-title" placeholder="Payment API down" required />
+
+              <label for="incident-description">Description</label>
+              <input type="text" id="incident-description" placeholder="500 errors on checkout" required />
+
+              <label for="incident-severity">Severity</label>
+              <input type="text" id="incident-severity" placeholder="HIGH" required />
+
+              <label for="incident-ci-id">CI id</label>
+              <input type="number" id="incident-ci-id" placeholder="1" required />
+
+              <button type="submit">Create incident</button>
+            </form>
+          </div>
+
+          <div>
+            <h2>Add update</h2>
+            <form id="incident-update-form">
+              <label for="update-incident-id">Incident id</label>
+              <input type="number" id="update-incident-id" placeholder="1" required />
+
+              <label for="update-text">Update text</label>
+              <input type="text" id="update-text" placeholder="The issue has been fixed." required />
+
+              <button type="submit">Add update</button>
+            </form>
+          </div>
+        </div>
+        <p id="incident-error" class="status status-error"></p>
+
+        <div class="list-header">
+          <h2>Incident list</h2>
+          <button id="refresh-incidents" class="secondary">Refresh</button>
+        </div>
+        <div class="table-scroll">
+          <table id="incident-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Severity</th>
+                <th>AI severity</th>
+                <th>AI status</th>
+                <th>AI summary</th>
+              </tr>
+            </thead>
+            <tbody id="incident-list"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <!-- XSS simulated scripts to check CSP
     <script>
       console.log(
         "IF YOU SEE THIS IN THE CONSOLE, CSP HAS FAILED (script-src)",
@@ -40,6 +111,6 @@
     </script>
     <div style="color: red">This text should be red without CSP</div>
     <base href="https://evil.example.com/" />
-    <object data="https://evil.example.com/evil.swf"></object>
+    <object data="https://evil.example.com/evil.swf"></object> -->
   </body>
 </html>

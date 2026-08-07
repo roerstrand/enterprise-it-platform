@@ -119,7 +119,7 @@ class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
     async def ListIncidents(self, request, context):
         async with get_db_context() as db:
             incidents = await get_all_incidents_from_db(db)
-            return incident_pb2.IncidentList(incidents={_to_incident_response(i) for i in incidents})
+            return incident_pb2.IncidentList(incidents=[_to_incident_response(i) for i in incidents])
 
     @track_grpc_metrics("Incident")
     async def GetIncidentWithCI(self, request, context):
