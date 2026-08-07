@@ -14,5 +14,6 @@ class IncidentModel(Base):
     ci_id: Mapped[int]
     ai_summary: Mapped[str | None] = mapped_column(default=None)
     ai_summary_status: Mapped[str] = mapped_column(server_default=text("'pending'"))
-    ai_suggested_severity: Mapped[str | None] = mapped_column(default=None) 
+    ai_suggested_severity: Mapped[str | None] = mapped_column(default=None)
+    ai_suggested_status: Mapped[str | None] = mapped_column(default=None)
 

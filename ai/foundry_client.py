@@ -2,6 +2,7 @@ from openai import OpenAI
 
 MODEL_ID = "mistralai-Mistral-7B-Instruct-v0-2-generic-cpu"
 BASE_URL = "http://127.0.0.1:51298/v1"
+VALID_STATUSES = {"OPEN", "IN_PROGRESS", "RESOLVED"}
 
 def _build_context_block(ci_name: str | None, ci_environment: str | None, owner_name: str | None) -> str:
         context_lines = []
@@ -62,3 +63,30 @@ def classify_incident_severity(title: str, description: str, ci_name: str | None
     except Exception as e:
          print(f"[foundry_client] ERROR: {e}")
          return None
+
+def classify_incident_status(title: str, description: str, updates: list[str], ci_name: str | None = None, 
+                             ci_environment: str | None = None, owner_name: str | None = None) -> str | None:
+     try:
+          client = OpenAI(base_url=BASE_URL, api_key="not-needed")
+          context_block = _build_context_block(ci_name, ci_environment, owner_name)
+          updates_block = ("\n".join(f"- {u}" for u in updates) + "\n") if updates else ""
+
+          response = client.chat.completions.create(
+               model=MODEL_ID,
+               messages=[{
+                    "role": "user",
+                    "content": (
+                         "You are an IT operations assistant. Classify the current status of this incident "
+                         "as exactly one word: OPEN, IN_PROGRESS, or RESOLVED. Reply with only that word. \n"
+                         f"{context_block}"
+                         f"Title: {title}\nDescription: {description}\n"
+                         f"Updates:\n{updates_block}"
+                    )
+               }]
+          )
+          raw = response.choices[0].message.content.strip().upper()
+          return next((s for s in VALID_STATUSES if s in raw), None)
+     except Exception as e:
+          print(f"[foundry_client] ERROR: {e}")
+          return None
+    

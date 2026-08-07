@@ -10,19 +10,22 @@ from repositories.incident_repository import (
     get_all_incidents_from_db,
     update_incident_ai_summary,
     mark_incident_ai_summary_failed,
-    update_incident_ai_suggested_severity
+    update_incident_ai_suggested_severity,
+    update_incident_ai_suggested_status,
 )
+
+from repositories.incident_update_repository import create_incident_update_in_db, get_updates_for_incident_from_db
 
 from data.database import get_db_context
 from observability.grpc_metrics import track_grpc_metrics
 from observability.tracing import setup_tracing
-from ai.foundry_client import generate_incident_summary, classify_incident_severity
+from ai.foundry_client import generate_incident_summary, classify_incident_severity, classify_incident_status
 
 def _to_incident_response(incident):
      return incident_pb2.IncidentResponse(
         id=incident.id, title=incident.title, description=incident.description,
         status=incident.status, severity=incident.severity, ci_id=incident.ci_id, ai_summary=incident.ai_summary or "", 
-        ai_summary_status=incident.ai_summary_status, ai_suggested_severity=incident.ai_suggested_severity or ""
+        ai_summary_status=incident.ai_summary_status, ai_suggested_severity=incident.ai_suggested_severity or "", ai_suggested_status=incident.ai_suggested_status or ""
     )
 
 _background_tasks: set[asyncio.Task] = set()
@@ -63,6 +66,29 @@ async def _generate_and_store_summary(incident_id, title, description, ci_id):
     else:
         async with get_db_context() as db:
             await mark_incident_ai_summary_failed(db, incident_id)
+
+async def _classify_and_store_status(incident_id, title, description, ci_id):
+    ci_name = ci_environment = owner_name = None
+    try:
+        async with grpc.aio.insecure_channel("localhost:50052") as channel:
+            cmdb_stub = cmdb_pb2_grpc.CmdbServiceStub(channel)
+            ci_with_owner = await cmdb_stub.GetCIWithOwner(cmdb_pb2.CIIdRequest(id=ci_id))
+            ci_name = ci_with_owner.ci.name
+            ci_environment = ci_with_owner.ci.environment
+            owner_name = ci_with_owner.owner_name
+    except grpc.RpcError as e:
+        print(f"[incident server] CMDB lookup failed for ci_id={ci_id}: {e}")
+
+    async with get_db_context() as db:
+        updates = await get_updates_for_incident_from_db(db, incident_id)
+
+    suggested_status = await asyncio.to_thread(
+        classify_incident_status, title, description, [u.text for u in updates], ci_name, ci_environment, owner_name
+    )
+
+    if suggested_status:
+        async with get_db_context() as db:
+            await update_incident_ai_suggested_status(db, incident_id, suggested_status)
 
 
 class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
@@ -118,6 +144,24 @@ class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
                 owner_name=ci_with_owner.owner_name,
                 owner_email=ci_with_owner.owner_email,
             )
+
+    @track_grpc_metrics("Incident")
+    async def AddIncidentUpdate(self, request, context):
+        async with get_db_context() as db:
+            await create_incident_update_in_db(db, request.incident_id, request.text)
+            incident = await get_incident_by_id_from_db(db, request.incident_id)
+            if not incident:
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details(f"Incident {request.incident_id} not found")
+                return incident_pb2.IncidentResponse()
+            response = _to_incident_response(incident)
+
+        _fire_and_forget(
+            _classify_and_store_status(incident.id, incident.title, incident.description, incident.ci_id)
+        )
+
+        return response
+                
 
 async def serve():
     setup_tracing("incident")

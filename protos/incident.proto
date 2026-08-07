@@ -7,12 +7,18 @@ service IncidentService {
     rpc GetIncident (IncidentIdRequest) returns (IncidentResponse);
     rpc ListIncidents (Empty) returns (IncidentList);
     rpc GetIncidentWithCI (IncidentIdRequest) returns (IncidentWithCIResponse);
+    rpc AddIncidentUpdate (AddIncidentUpdateRequest) returns (IncidentResponse);
 }
 
 message Empty {}
 
 message IncidentIdRequest {
     int32 id = 1;
+}
+
+message AddIncidentUpdateRequest {
+    int32 incident_id = 1;
+    string text = 2;
 }
 
 message CreateIncidentRequest {
@@ -32,6 +38,7 @@ message IncidentResponse {
     string ai_summary = 7;
     string ai_summary_status = 8;
     string ai_suggested_severity = 9;
+    string ai_suggested_status = 10;
 }
 
 message IncidentList {

@@ -54,6 +54,11 @@ class IncidentServiceStub:
                 request_serializer=protos_dot_incident__pb2.IncidentIdRequest.SerializeToString,
                 response_deserializer=protos_dot_incident__pb2.IncidentWithCIResponse.FromString,
                 _registered_method=True)
+        self.AddIncidentUpdate = channel.unary_unary(
+                '/incident.IncidentService/AddIncidentUpdate',
+                request_serializer=protos_dot_incident__pb2.AddIncidentUpdateRequest.SerializeToString,
+                response_deserializer=protos_dot_incident__pb2.IncidentResponse.FromString,
+                _registered_method=True)
 
 
 class IncidentServiceServicer:
@@ -83,6 +88,12 @@ class IncidentServiceServicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def AddIncidentUpdate(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_IncidentServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -105,6 +116,11 @@ def add_IncidentServiceServicer_to_server(servicer, server):
                     servicer.GetIncidentWithCI,
                     request_deserializer=protos_dot_incident__pb2.IncidentIdRequest.FromString,
                     response_serializer=protos_dot_incident__pb2.IncidentWithCIResponse.SerializeToString,
+            ),
+            'AddIncidentUpdate': grpc.unary_unary_rpc_method_handler(
+                    servicer.AddIncidentUpdate,
+                    request_deserializer=protos_dot_incident__pb2.AddIncidentUpdateRequest.FromString,
+                    response_serializer=protos_dot_incident__pb2.IncidentResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -215,6 +231,33 @@ class IncidentService:
             '/incident.IncidentService/GetIncidentWithCI',
             protos_dot_incident__pb2.IncidentIdRequest.SerializeToString,
             protos_dot_incident__pb2.IncidentWithCIResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def AddIncidentUpdate(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/incident.IncidentService/AddIncidentUpdate',
+            protos_dot_incident__pb2.AddIncidentUpdateRequest.SerializeToString,
+            protos_dot_incident__pb2.IncidentResponse.FromString,
             options,
             channel_credentials,
             insecure,
