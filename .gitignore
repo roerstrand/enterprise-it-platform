@@ -153,6 +153,9 @@ activemq-data/
 .env
 .envrc
 .venv
+
+# Kubernetes secrets (plaintext credentials, mirrors .env)
+k8s/app-secrets.yaml
 env/
 venv/
 ENV/

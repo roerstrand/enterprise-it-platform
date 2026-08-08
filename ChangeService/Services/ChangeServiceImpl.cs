@@ -67,7 +67,8 @@ public class ChangeServiceImpl : ChangeService.Grpc.ChangeService.ChangeServiceB
         var change = await _db.Changes.FindAsync(request.Id);
         if (change is null) throw new RpcException(new Status(StatusCode.NotFound, $"Change {request.Id} not found"));
 
-        using var channel = GrpcChannel.ForAddress("http://localhost:50052");
+        var cmdbServiceAddr = Environment.GetEnvironmentVariable("CMDB_SERVICE_ADDR") ?? "localhost:50052";
+        using var channel = GrpcChannel.ForAddress($"http://{cmdbServiceAddr}");
         var cmdbClient = new Cmdb.Grpc.CmdbService.CmdbServiceClient(channel);
         var ciWithOwner = await cmdbClient.GetCIWithOwnerAsync(new Cmdb.Grpc.CIIdRequest { Id = change.CiId });
 

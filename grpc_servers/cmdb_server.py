@@ -1,6 +1,9 @@
 import asyncio
+import os
 import grpc
 from prometheus_client import start_http_server
+
+USER_SERVICE_ADDR = os.getenv("USER_SERVICE_ADDR", "localhost:50051")
 
 from protos import cmdb_pb2
 from protos import cmdb_pb2_grpc
@@ -105,7 +108,7 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
             if ci.owner_user_id is None:
                 return cmdb_pb2.CIWithOwnerResponse(ci=ci_response)
 
-            async with grpc.aio.insecure_channel("localhost:50051") as channel:
+            async with grpc.aio.insecure_channel(USER_SERVICE_ADDR) as channel:
                 user_stub = user_pb2_grpc.UserServiceStub(channel)
                 user = await user_stub.GetUserById(user_pb2.UserIdRequest(id=ci.owner_user_id))
 
