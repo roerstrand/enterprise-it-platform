@@ -1,6 +1,9 @@
 import asyncio
+import os
 import grpc
 from prometheus_client import start_http_server
+
+CMDB_SERVICE_ADDR = os.getenv("CMDB_SERVICE_ADDR", "localhost:50052")
 
 from protos import incident_pb2, incident_pb2_grpc, cmdb_pb2, cmdb_pb2_grpc
 
@@ -39,7 +42,7 @@ def _fire_and_forget(coro):
 async def _generate_and_store_summary(incident_id, title, description, ci_id):
     ci_name = ci_environment = owner_name = None
     try:
-        async with grpc.aio.insecure_channel("localhost:50052") as channel:
+        async with grpc.aio.insecure_channel(CMDB_SERVICE_ADDR) as channel:
             cmdb_stub = cmdb_pb2_grpc.CmdbServiceStub(channel)
             ci_with_owner = await cmdb_stub.GetCIWithOwner(cmdb_pb2.CIIdRequest(id=ci_id))
             ci_name = ci_with_owner.ci.name
@@ -70,7 +73,7 @@ async def _generate_and_store_summary(incident_id, title, description, ci_id):
 async def _classify_and_store_status(incident_id, title, description, ci_id):
     ci_name = ci_environment = owner_name = None
     try:
-        async with grpc.aio.insecure_channel("localhost:50052") as channel:
+        async with grpc.aio.insecure_channel(CMDB_SERVICE_ADDR) as channel:
             cmdb_stub = cmdb_pb2_grpc.CmdbServiceStub(channel)
             ci_with_owner = await cmdb_stub.GetCIWithOwner(cmdb_pb2.CIIdRequest(id=ci_id))
             ci_name = ci_with_owner.ci.name
@@ -133,7 +136,7 @@ class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
 
             incident_response = _to_incident_response(incident)
 
-            async with grpc.aio.insecure_channel("localhost:50052") as channel:
+            async with grpc.aio.insecure_channel(CMDB_SERVICE_ADDR) as channel:
                 cmdb_stub = cmdb_pb2_grpc.CmdbServiceStub(channel)
                 ci_with_owner = await cmdb_stub.GetCIWithOwner(cmdb_pb2.CIIdRequest(id=incident.ci_id))
 

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-server
+  template:
+    metadata:
+      labels:
+        app: user-server
+    spec:
+      containers:
+        - name: user-server
+          image: user-server:local
+          imagePullPolicy: Never   # Bygg lokalt image, försök aldrig hämta den från ett registry
+          ports:
+            - containerPort: 50051
+            - containerPort: 9101
+          env:
+            - name: DATABASE_URL
+              valueFrom:                   # Hämta värdet från ett annat k8s-objekt istället för att skriva det direkt
+                secretKeyRef:               # ...specifikt en Secret
+                  name: app-secrets         # Secret-objektets namn (se app-secrets.yaml)
+                  key: DATABASE_URL         # Vilken nyckel i den Secreten
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: SECRET_KEY
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "jaeger:4317"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-server
+spec:
+  selector:
+    app: user-server
+  ports:
+    - name: grpc
+      port: 50051
+      targetPort: 50051
+    - name: metrics
+      port: 9101
+      targetPort: 9101

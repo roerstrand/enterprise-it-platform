@@ -1,0 +1,14 @@
+FROM python:3.13-slim
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+
+WORKDIR /app
+
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-install-project
+
+COPY . .
+
+EXPOSE 50052 9102
+
+CMD ["uv", "run", "python", "-m", "grpc_servers.cmdb_server"]

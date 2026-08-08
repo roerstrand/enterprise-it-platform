@@ -1,7 +1,8 @@
 import json
+import os
 import pika
 
-RABBITMQ_URL = "amqp://guest:guest@localhost:5672/"
+RABBITMQ_URL = os.getenv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672/")
 
 def publish_event(exchange: str, routing_key: str, message: dict):
     connection = pika.BlockingConnection(pika.URLParameters(RABBITMQ_URL))
