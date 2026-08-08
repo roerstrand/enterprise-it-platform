@@ -33,6 +33,10 @@ spec:
               value: "user-server:50051"
             - name: INCIDENT_SERVICE_ADDR
               value: "incident-server:50053"
+            - name: CMDB_SERVICE_ADDR
+              value: "cmdb-server:50052"
+            - name: CHANGE_SERVICE_ADDR
+              value: "change-service:50054"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: "jaeger:4317"
 ---

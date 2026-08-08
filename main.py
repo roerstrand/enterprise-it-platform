@@ -9,6 +9,12 @@ from prometheus_fastapi_instrumentator import Instrumentator
 app = FastAPI();
 
 app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://localhost.4200"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(demo.router)
 
