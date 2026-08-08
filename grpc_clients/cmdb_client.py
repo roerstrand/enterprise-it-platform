@@ -1,0 +1,47 @@
+import os
+import grpc
+from protos import cmdb_pb2
+from protos import cmdb_pb2_grpc
+
+CMDB_SERVICE_ADDR = os.getenv("CMDB_SERVICE_ADDR", "localhost:50052")
+
+_stub = None
+
+def _get_stub():
+    global _stub
+    if _stub is None:
+        channel = grpc.aio.insecure_channel(CMDB_SERVICE_ADDR)
+        _stub = cmdb_pb2_grpc.CmdbServiceStub(channel)
+    return _stub
+
+class CmdbServiceUnavailable(Exception):
+    pass
+
+def _to_dict(ci):
+    return {
+        "id": ci.id,
+        "name": ci.name,
+        "ci_type": ci.ci_type,
+        "environment": ci.environment,
+        "owner_team_id": ci.owner_team_id if ci.HasField("owner_team_id") else None,
+        "owner_user_id": ci.owner_user_id if ci.HasField("owner_user_id") else None,
+    }
+
+async def list_cis():
+    try:
+        response = await _get_stub().ListCIs(cmdb_pb2.Empty())
+    except grpc.RpcError as e:
+        print(f"gRPC-fel: {e.code()} {e.details()}")
+        raise CmdbServiceUnavailable(str(e))
+    return [_to_dict(ci) for ci in response.cis]
+
+async def create_ci(name: str, ci_type: str, environment: str, owner_user_id: int | None = None):
+    try:
+        request = cmdb_pb2.CreateCIRequest(name=name, ci_type=ci_type, environment=environment)
+        if owner_user_id is not None:
+            request.owner_user_id = owner_user_id
+        response = await _get_stub().CreateCI(request)
+    except grpc.RpcError as e:
+        print(f"gRPC-fel: {e.code()} {e.details()}")
+        raise CmdbServiceUnavailable(str(e))
+    return _to_dict(response)
