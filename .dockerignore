@@ -4,8 +4,4 @@ __pycache__
 .git
 k8s
 docs
-ChangeService/bin
-ChangeService/obj
-ChangeClient/bin
-ChangeClient/obj
 .env

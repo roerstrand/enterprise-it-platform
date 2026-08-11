@@ -38,10 +38,12 @@ New decision: copy the template, number it next in sequence, fill it in.
 
 ## Running locally
 
+The Python backend lives in `server/` — steps 3, 4, 5 and 7 are run with `server/` as the working directory.
+
 1. `docker compose up -d` — starts infrastructure: PostgreSQL (5433), Redis, RabbitMQ, Prometheus, Grafana, Jaeger, and nginx (port 80, proxies to FastAPI on 8000)
-2. A `.env` with `DATABASE_URL` must exist (git-ignored, see ARD-0003)
-3. `python -m grpc_servers.user_server` — Identity/User gRPC server (port 50051)
-4. `python -m grpc_servers.cmdb_server` — CMDB gRPC server (port 50052)
-5. `python -m grpc_servers.incident_server` — Incident gRPC server (port 50053)
-6. `dotnet run --project ChangeService` — Change Service, C#/.NET gRPC server (port 50054, ARD-0009)
-7. `uvicorn main:app --reload` — starts FastAPI, web demo at `/demo` (port 8000)
+2. A `.env` with `DATABASE_URL` must exist at the repo root (git-ignored, see ARD-0003)
+3. `cd server && python -m grpc_servers.user_server` — Identity/User gRPC server (port 50051)
+4. `cd server && python -m grpc_servers.cmdb_server` — CMDB gRPC server (port 50052)
+5. `cd server && python -m grpc_servers.incident_server` — Incident gRPC server (port 50053)
+6. `dotnet run --project server/ChangeService` — Change Service, C#/.NET gRPC server (port 50054, ARD-0009)
+7. `cd server && uvicorn main:app --reload` — starts FastAPI, web demo at `/demo` (port 8000)
