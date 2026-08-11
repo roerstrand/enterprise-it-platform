@@ -1,2 +1,0 @@
-obj\Debug\net10.0/Change.cs \
-obj\Debug\net10.0/ChangeGrpc.cs: ../protos/change.proto

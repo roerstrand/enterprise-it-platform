@@ -1,2 +1,0 @@
-obj\Debug\net10.0/Cmdb.cs \
-obj\Debug\net10.0/CmdbGrpc.cs: ../protos/cmdb.proto
