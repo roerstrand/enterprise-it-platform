@@ -1,0 +1,15 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+COPY server/protos/ protos/
+COPY ChangeService/ ChangeService/
+WORKDIR /src/ChangeService
+RUN dotnet publish -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
+WORKDIR /app
+COPY --from=build /app/publish .
+
+ENV ASPNETCORE_URLS=http://+:50054
+EXPOSE 50054
+
+CMD ["dotnet", "ChangeService.dll"]
