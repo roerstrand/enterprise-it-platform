@@ -15,6 +15,8 @@ from repositories.incident_repository import (
     mark_incident_ai_summary_failed,
     update_incident_ai_suggested_severity,
     update_incident_ai_suggested_status,
+    accept_incident_suggested_severity,
+    accept_incident_suggested_status,
 )
 
 from repositories.incident_update_repository import create_incident_update_in_db, get_updates_for_incident_from_db
@@ -164,7 +166,29 @@ class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
         )
 
         return response
-                
+
+    @track_grpc_metrics("Incident")
+    async def AcceptSuggestedSeverity(self, request, context):
+        async with get_db_context() as db:
+            await accept_incident_suggested_severity(db, request.id)
+            incident = await get_incident_by_id_from_db(db, request.id)
+            if not incident:
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details(f"Incident {request.id} not found")
+                return incident_pb2.IncidentResponse()
+            return _to_incident_response(incident)
+
+    @track_grpc_metrics("Incident")
+    async def AcceptSuggestedStatus(self, request, context):
+        async with get_db_context() as db:
+            await accept_incident_suggested_status(db, request.id)
+            incident = await get_incident_by_id_from_db(db, request.id)
+            if not incident:
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details(f"Incident {request.id} not found")
+                return incident_pb2.IncidentResponse()
+            return _to_incident_response(incident)
+
 
 async def serve():
     setup_tracing("incident")
