@@ -56,3 +56,21 @@ async def update_incident_ai_suggested_status(db: AsyncSession, incident_id: int
         incident.ai_suggested_status = suggested_status
         await db.commit()
 
+async def accept_incident_suggested_severity(db: AsyncSession, incident_id: int):
+    result = await db.execute(
+        select(IncidentModel).where(IncidentModel.id == incident_id)
+    )
+    incident = result.scalars().first()
+    if incident and incident.ai_suggested_severity:
+        incident.severity = incident.ai_suggested_severity
+        await db.commit()
+
+async def accept_incident_suggested_status(db: AsyncSession, incident_id: int):
+    result = await db.execute(
+        select(IncidentModel).where(IncidentModel.id == incident_id)
+    )
+    incident = result.scalars().first()
+    if incident and incident.ai_suggested_status:
+        incident.status = incident.ai_suggested_status
+        await db.commit()
+

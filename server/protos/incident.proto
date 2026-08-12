@@ -8,6 +8,8 @@ service IncidentService {
     rpc ListIncidents (Empty) returns (IncidentList);
     rpc GetIncidentWithCI (IncidentIdRequest) returns (IncidentWithCIResponse);
     rpc AddIncidentUpdate (AddIncidentUpdateRequest) returns (IncidentResponse);
+    rpc AcceptSuggestedSeverity (IncidentIdRequest) returns (IncidentResponse);
+    rpc AcceptSuggestedStatus (IncidentIdRequest) returns (IncidentResponse);
 }
 
 message Empty {}
