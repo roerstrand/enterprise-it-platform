@@ -68,5 +68,6 @@ dependencies = [
     "typing-inspection==0.4.2",
     "urllib3==2.7.0",
     "uvicorn==0.49.0",
+    "watchdog[watchmedo]>=6.0.0",
     "wrapt==2.2.2",
 ]
