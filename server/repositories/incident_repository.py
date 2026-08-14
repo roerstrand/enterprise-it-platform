@@ -74,3 +74,27 @@ async def accept_incident_suggested_status(db: AsyncSession, incident_id: int):
         incident.status = incident.ai_suggested_status
         await db.commit()
 
+async def update_incident_in_db(db: AsyncSession, incident_id: int, title: str, description: str, severity: str, ci_id: int):
+    result = await db.execute(
+        select(IncidentModel).where(IncidentModel.id == incident_id)
+    )
+    incident = result.scalars().first()
+    if incident:
+        incident.title = title
+        incident.description = description
+        incident.severity = severity
+        incident.ci_id = ci_id
+        await db.commit()
+    return incident
+
+async def delete_incident_from_db(db: AsyncSession, incident_id: int):
+    result = await db.execute(
+        select(IncidentModel).where(IncidentModel.id == incident_id)
+    )
+    incident = result.scalars().first()
+    if not incident:
+        return False
+    await db.delete(incident)
+    await db.commit()
+    return True
+

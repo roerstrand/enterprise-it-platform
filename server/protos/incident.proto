@@ -10,6 +10,8 @@ service IncidentService {
     rpc AddIncidentUpdate (AddIncidentUpdateRequest) returns (IncidentResponse);
     rpc AcceptSuggestedSeverity (IncidentIdRequest) returns (IncidentResponse);
     rpc AcceptSuggestedStatus (IncidentIdRequest) returns (IncidentResponse);
+    rpc UpdateIncident (UpdateIncidentRequest) returns (IncidentResponse);
+    rpc DeleteIncident (IncidentIdRequest) returns (Empty);
 }
 
 message Empty {}
@@ -28,6 +30,14 @@ message CreateIncidentRequest {
     string description = 2;
     string severity = 3;
     int32 ci_id = 4;
+}
+
+message UpdateIncidentRequest {
+    int32 id = 1;
+    string title = 2;
+    string description = 3;
+    string severity = 4;
+    int32 ci_id = 5;
 }
 
 message IncidentResponse {

@@ -10,6 +10,9 @@ service CmdbService {
     rpc CreateRelationship (CreateRelationshipRequest) returns (RelationshipResponse);
     rpc GetRelatedCIs (CIIdRequest) returns (CIList);
     rpc GetCIWithOwner (CIIdRequest) returns (CIWithOwnerResponse);
+    rpc UpdateCI (UpdateCIRequest) returns (CIResponse);
+    rpc DeleteCI (CIIdRequest) returns (Empty);
+
 }
 
 message Empty {}
@@ -24,6 +27,15 @@ message CreateCIRequest {
     string environment = 3;
     optional int32 owner_team_id = 4;
     optional int32 owner_user_id = 5;
+}
+
+message UpdateCIRequest {
+    int32 id = 1;
+    string name = 2;
+    string ci_type = 3;
+    string environment = 4;
+    optional int32 owner_team_id = 5;
+    optional int32 owner_user_id = 6;
 }
 
 message CIResponse {

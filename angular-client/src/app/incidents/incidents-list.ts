@@ -9,7 +9,7 @@ import { IncidentService } from './incident.service';
 import { Incident } from './incident';
 
 @Component({
-    selector: 'app-incidentsl-list',
+    selector: 'app-incidents-list',
     imports: [
         ReactiveFormsModule,
         MatTableModule,
@@ -26,11 +26,15 @@ export class IncidentsList implements OnInit {
     protected readonly incidents = signal<Incident[]>([]);
     protected readonly loading = signal(true);
     protected readonly displayedColumns = [
-      'id', 'title', 'description', 'status', 'severity', 'ai_suggested_severity', 'ai_suggested_status', 'ai_summary'
+      'id', 'title', 'description', 'status', 'severity', 'ai_suggested_severity', 'ai_suggested_status', 'ai_summary', 'actions'
     ];
+
+    // null = inget under redigering, annars id:t för raden vars edit-formulär ska visas
+    protected readonly editingId = signal<number | null>(null);
 
     protected readonly createForm: FormGroup;
     protected readonly updateForm: FormGroup;
+    protected readonly editForm: FormGroup;
 
     constructor(private incidentService: IncidentService, formBuilder: FormBuilder) {
         this.createForm = formBuilder.group({
@@ -43,6 +47,13 @@ export class IncidentsList implements OnInit {
         this.updateForm = formBuilder.group({
             incidentId: [null, Validators.required],
             text: ['', Validators.required]
+        });
+
+        this.editForm = formBuilder.group({
+            title: ['', Validators.required],
+            description: ['', Validators.required],
+            severity: ['', Validators.required],
+            ciId: [null, Validators.required]
         });
     }
 
@@ -97,6 +108,44 @@ export class IncidentsList implements OnInit {
 
     protected onAcceptStatus(incidentId: number): void {
         this.incidentService.acceptStatus(incidentId).subscribe({
+            next: () => this.loadIncidents()
+        });
+    }
+
+    protected onEditClick(incident: Incident): void {
+        this.editingId.set(incident.id);
+        // patchValue fyller bara i de nämnda fälten, till skillnad från setValue som kräver ALLA fält
+        this.editForm.patchValue({
+            title: incident.title,
+            description: incident.description,
+            severity: incident.severity,
+            ciId: incident.ci_id
+        });
+    }
+
+    protected onEditCancel(): void {
+        this.editingId.set(null);
+    }
+
+    protected onEditSubmit(): void {
+        const id = this.editingId();
+        if (id === null || this.editForm.invalid) {
+            return;
+        }
+        const { title, description, severity, ciId } = this.editForm.value;
+        this.incidentService.update(id, title, description, severity, ciId).subscribe({
+            next: () => {
+                this.editingId.set(null);
+                this.loadIncidents();
+            }
+        });
+    }
+
+    protected onDelete(incidentId: number): void {
+        if (!confirm(`Delete incident ${incidentId}?`)) {
+            return;
+        }
+        this.incidentService.delete(incidentId).subscribe({
             next: () => this.loadIncidents()
         });
     }

@@ -23,4 +23,17 @@ export class CIService {
         });
     }
 
+    update(ciId: number, name: string, ciType: string, environment: string, ownerUserId: number | null): Observable<CI> {
+        return this.http.put<CI>(`${this.baseUrl}/${ciId}`, {
+            name,
+            ci_type: ciType,
+            environment,
+            owner_user_id: ownerUserId
+        });
+    }
+
+    delete(ciId: number): Observable<unknown> {
+        return this.http.delete(`${this.baseUrl}/${ciId}`);
+    }
+
 }

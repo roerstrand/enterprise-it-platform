@@ -25,9 +25,12 @@ import { CI } from './ci';
 export class CisList implements OnInit {
     protected readonly cis = signal<CI[]>([]);
     protected readonly loading = signal(true);
-    protected readonly displayedColumns = ['id', 'name', 'ci_type', 'environment', 'owner_user_id'];
+    protected readonly displayedColumns = ['id', 'name', 'ci_type', 'environment', 'owner_user_id', 'actions'];
+
+    protected readonly editingId = signal<number | null>(null);
 
     protected readonly form: FormGroup;
+    protected readonly editForm: FormGroup;
 
     constructor(private ciService: CIService, formBuilder: FormBuilder) {
         this.form = formBuilder.group({
@@ -36,6 +39,13 @@ export class CisList implements OnInit {
             environment: ['', Validators.required],
             ownerUserId: [null],
         });
+        this.editForm = formBuilder.group({
+            name: ['', Validators.required],
+            ciType: ['', Validators.required],
+            environment: ['', Validators.required],
+            ownerUserId: [null],
+        });
+
     }
 
     ngOnInit(): void {
@@ -66,6 +76,43 @@ export class CisList implements OnInit {
                 this.form.reset();
                 this.loadCis();
             }
+        });
+    }
+
+     protected onEditClick(ci: CI): void {
+        this.editingId.set(ci.id);
+        this.editForm.patchValue({
+            name: ci.name,
+            ciType: ci.ci_type,
+            environment: ci.environment,
+            ownerUserId: ci.owner_user_id
+        });
+    }
+
+    protected onEditCancel(): void {
+        this.editingId.set(null);
+    }
+
+    protected onEditSubmit(): void {
+        const id = this.editingId();
+        if (id === null || this.editForm.invalid) {
+            return;
+        }
+        const { name, ciType, environment, ownerUserId } = this.editForm.value;
+        this.ciService.update(id, name, ciType, environment, ownerUserId).subscribe({
+            next: () => {
+                this.editingId.set(null);
+                this.loadCis();
+            }
+        });
+    }
+
+    protected onDelete(ciId: number): void {
+        if (!confirm(`Delete CI ${ciId}?`)) {
+            return;
+        }
+        this.ciService.delete(ciId).subscribe({
+            next: () => this.loadCis()
         });
     }
 }
