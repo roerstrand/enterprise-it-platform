@@ -91,8 +91,48 @@
       <th mat-header-cell *matHeaderCellDef>AI summary</th>
       <td mat-cell *matCellDef="let incident">{{ incident.ai_summary }}</td>
     </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let incident">
+        <button mat-button (click)="onEditClick(incident)">Edit</button>
+        <button mat-button color="warn" (click)="onDelete(incident.id)">Delete</button>
+      </td>
+    </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
+}
+
+<!-- editingId() är null tills "Edit" klickas på en rad, då visas formuläret förifyllt med den radens värden -->
+@if (editingId() !== null) {
+  <form [formGroup]="editForm" (ngSubmit)="onEditSubmit()" class="incident-form">
+    <h3>Edit incident {{ editingId() }}</h3>
+    <mat-form-field>
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Description</mat-label>
+      <input matInput formControlName="description" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Severity</mat-label>
+      <input matInput formControlName="severity" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>CI id</mat-label>
+      <input matInput type="number" formControlName="ciId" />
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="editForm.invalid">
+      Save
+    </button>
+    <button mat-button type="button" (click)="onEditCancel()">
+      Cancel
+    </button>
+  </form>
 }

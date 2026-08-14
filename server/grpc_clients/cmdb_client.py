@@ -45,3 +45,21 @@ async def create_ci(name: str, ci_type: str, environment: str, owner_user_id: in
         print(f"gRPC-fel: {e.code()} {e.details()}")
         raise CmdbServiceUnavailable(str(e))
     return _to_dict(response)
+
+async def update_ci(ci_id: int, name: str, ci_type: str, environment: str, owner_user_id: int | None = None):
+    try:
+        request = cmdb_pb2.UpdateCIRequest(id=ci_id, name=name, ci_type=ci_type, environment=environment)
+        if owner_user_id is not None:
+            request.owner_user_id = owner_user_id
+        response = await _get_stub().UpdateCI(request)
+    except grpc.RpcError as e:
+        print(f"gRPC-fel: {e.code()} {e.details()}")
+        raise CmdbServiceUnavailable(str(e))
+    return _to_dict(response)
+
+async def delete_ci(ci_id: int):
+    try:
+        await _get_stub().DeleteCI(cmdb_pb2.CIIdRequest(id=ci_id))
+    except grpc.RpcError as e:
+        print(f"gRPC-fel: {e.code()} {e.details()}")
+        raise CmdbServiceUnavailable(str(e))

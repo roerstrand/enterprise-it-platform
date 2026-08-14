@@ -37,4 +37,18 @@ export class IncidentService {
         return this.http.post<Incident>(`${this.baseUrl}/${incidentId}/accept-status`, {})
     }
 
+    update(incidentId: number, title: string, description: string, severity: string, ciId: number): Observable<Incident> {
+        return this.http.put<Incident>(`${this.baseUrl}/${incidentId}`, {
+            title,
+            description,
+            severity,
+            ci_id: ciId
+        });
+    }
+
+    delete(incidentId: number): Observable<unknown> {
+        // ingen typad response behövs, backend returnerar bara { deleted: id } vi inte använder till något
+        return this.http.delete(`${this.baseUrl}/${incidentId}`);
+    }
+
 }

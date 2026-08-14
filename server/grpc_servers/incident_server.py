@@ -17,6 +17,8 @@ from repositories.incident_repository import (
     update_incident_ai_suggested_status,
     accept_incident_suggested_severity,
     accept_incident_suggested_status,
+    update_incident_in_db,
+    delete_incident_from_db,
 )
 
 from repositories.incident_update_repository import create_incident_update_in_db, get_updates_for_incident_from_db
@@ -188,6 +190,27 @@ class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
                 context.set_details(f"Incident {request.id} not found")
                 return incident_pb2.IncidentResponse()
             return _to_incident_response(incident)
+
+    @track_grpc_metrics("Incident")
+    async def UpdateIncident(self, request, context):
+        async with get_db_context() as db:
+            incident = await update_incident_in_db(
+                db, request.id, request.title, request.description, request.severity, request.ci_id
+            )
+            if not incident:
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details(f"Incident {request.id} not found")
+                return incident_pb2.IncidentResponse()
+            return _to_incident_response(incident)
+
+    @track_grpc_metrics("Incident")
+    async def DeleteIncident(self, request, context):
+        async with get_db_context() as db:
+            deleted = await delete_incident_from_db(db, request.id)
+            if not deleted:
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details(f"Incident {request.id} not found")
+            return incident_pb2.Empty()
 
 
 async def serve():

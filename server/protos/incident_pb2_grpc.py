@@ -69,6 +69,16 @@ class IncidentServiceStub:
                 request_serializer=protos_dot_incident__pb2.IncidentIdRequest.SerializeToString,
                 response_deserializer=protos_dot_incident__pb2.IncidentResponse.FromString,
                 _registered_method=True)
+        self.UpdateIncident = channel.unary_unary(
+                '/incident.IncidentService/UpdateIncident',
+                request_serializer=protos_dot_incident__pb2.UpdateIncidentRequest.SerializeToString,
+                response_deserializer=protos_dot_incident__pb2.IncidentResponse.FromString,
+                _registered_method=True)
+        self.DeleteIncident = channel.unary_unary(
+                '/incident.IncidentService/DeleteIncident',
+                request_serializer=protos_dot_incident__pb2.IncidentIdRequest.SerializeToString,
+                response_deserializer=protos_dot_incident__pb2.Empty.FromString,
+                _registered_method=True)
 
 
 class IncidentServiceServicer:
@@ -116,6 +126,18 @@ class IncidentServiceServicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def UpdateIncident(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeleteIncident(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_IncidentServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -153,6 +175,16 @@ def add_IncidentServiceServicer_to_server(servicer, server):
                     servicer.AcceptSuggestedStatus,
                     request_deserializer=protos_dot_incident__pb2.IncidentIdRequest.FromString,
                     response_serializer=protos_dot_incident__pb2.IncidentResponse.SerializeToString,
+            ),
+            'UpdateIncident': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateIncident,
+                    request_deserializer=protos_dot_incident__pb2.UpdateIncidentRequest.FromString,
+                    response_serializer=protos_dot_incident__pb2.IncidentResponse.SerializeToString,
+            ),
+            'DeleteIncident': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteIncident,
+                    request_deserializer=protos_dot_incident__pb2.IncidentIdRequest.FromString,
+                    response_serializer=protos_dot_incident__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -344,6 +376,60 @@ class IncidentService:
             '/incident.IncidentService/AcceptSuggestedStatus',
             protos_dot_incident__pb2.IncidentIdRequest.SerializeToString,
             protos_dot_incident__pb2.IncidentResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpdateIncident(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/incident.IncidentService/UpdateIncident',
+            protos_dot_incident__pb2.UpdateIncidentRequest.SerializeToString,
+            protos_dot_incident__pb2.IncidentResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DeleteIncident(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/incident.IncidentService/DeleteIncident',
+            protos_dot_incident__pb2.IncidentIdRequest.SerializeToString,
+            protos_dot_incident__pb2.Empty.FromString,
             options,
             channel_credentials,
             insecure,

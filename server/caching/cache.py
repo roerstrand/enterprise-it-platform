@@ -13,3 +13,7 @@ async def get_cached(key: str):
 
 async def set_cached(key: str, value: dict, tti_seconds: int = 60):
     await _client.set(key, json.dumps(value), ex=tti_seconds)
+
+async def delete_cached(key: str):
+    await _client.delete(key)
+

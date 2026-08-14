@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from protos import cmdb_pb2 as cmdb__pb2
+from protos import cmdb_pb2 as protos_dot_cmdb__pb2
 
 GRPC_GENERATED_VERSION = '1.81.1'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + ' but the generated code in cmdb_pb2_grpc.py depends on'
+        + ' but the generated code in protos/cmdb_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -36,33 +36,43 @@ class CmdbServiceStub:
         """
         self.CreateCI = channel.unary_unary(
                 '/cmdb.CmdbService/CreateCI',
-                request_serializer=cmdb__pb2.CreateCIRequest.SerializeToString,
-                response_deserializer=cmdb__pb2.CIResponse.FromString,
+                request_serializer=protos_dot_cmdb__pb2.CreateCIRequest.SerializeToString,
+                response_deserializer=protos_dot_cmdb__pb2.CIResponse.FromString,
                 _registered_method=True)
         self.GetCI = channel.unary_unary(
                 '/cmdb.CmdbService/GetCI',
-                request_serializer=cmdb__pb2.CIIdRequest.SerializeToString,
-                response_deserializer=cmdb__pb2.CIResponse.FromString,
+                request_serializer=protos_dot_cmdb__pb2.CIIdRequest.SerializeToString,
+                response_deserializer=protos_dot_cmdb__pb2.CIResponse.FromString,
                 _registered_method=True)
         self.ListCIs = channel.unary_unary(
                 '/cmdb.CmdbService/ListCIs',
-                request_serializer=cmdb__pb2.Empty.SerializeToString,
-                response_deserializer=cmdb__pb2.CIList.FromString,
+                request_serializer=protos_dot_cmdb__pb2.Empty.SerializeToString,
+                response_deserializer=protos_dot_cmdb__pb2.CIList.FromString,
                 _registered_method=True)
         self.CreateRelationship = channel.unary_unary(
                 '/cmdb.CmdbService/CreateRelationship',
-                request_serializer=cmdb__pb2.CreateRelationshipRequest.SerializeToString,
-                response_deserializer=cmdb__pb2.RelationshipResponse.FromString,
+                request_serializer=protos_dot_cmdb__pb2.CreateRelationshipRequest.SerializeToString,
+                response_deserializer=protos_dot_cmdb__pb2.RelationshipResponse.FromString,
                 _registered_method=True)
         self.GetRelatedCIs = channel.unary_unary(
                 '/cmdb.CmdbService/GetRelatedCIs',
-                request_serializer=cmdb__pb2.CIIdRequest.SerializeToString,
-                response_deserializer=cmdb__pb2.CIList.FromString,
+                request_serializer=protos_dot_cmdb__pb2.CIIdRequest.SerializeToString,
+                response_deserializer=protos_dot_cmdb__pb2.CIList.FromString,
                 _registered_method=True)
         self.GetCIWithOwner = channel.unary_unary(
                 '/cmdb.CmdbService/GetCIWithOwner',
-                request_serializer=cmdb__pb2.CIIdRequest.SerializeToString,
-                response_deserializer=cmdb__pb2.CIWithOwnerResponse.FromString,
+                request_serializer=protos_dot_cmdb__pb2.CIIdRequest.SerializeToString,
+                response_deserializer=protos_dot_cmdb__pb2.CIWithOwnerResponse.FromString,
+                _registered_method=True)
+        self.UpdateCI = channel.unary_unary(
+                '/cmdb.CmdbService/UpdateCI',
+                request_serializer=protos_dot_cmdb__pb2.UpdateCIRequest.SerializeToString,
+                response_deserializer=protos_dot_cmdb__pb2.CIResponse.FromString,
+                _registered_method=True)
+        self.DeleteCI = channel.unary_unary(
+                '/cmdb.CmdbService/DeleteCI',
+                request_serializer=protos_dot_cmdb__pb2.CIIdRequest.SerializeToString,
+                response_deserializer=protos_dot_cmdb__pb2.Empty.FromString,
                 _registered_method=True)
 
 
@@ -105,38 +115,60 @@ class CmdbServiceServicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def UpdateCI(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeleteCI(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_CmdbServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'CreateCI': grpc.unary_unary_rpc_method_handler(
                     servicer.CreateCI,
-                    request_deserializer=cmdb__pb2.CreateCIRequest.FromString,
-                    response_serializer=cmdb__pb2.CIResponse.SerializeToString,
+                    request_deserializer=protos_dot_cmdb__pb2.CreateCIRequest.FromString,
+                    response_serializer=protos_dot_cmdb__pb2.CIResponse.SerializeToString,
             ),
             'GetCI': grpc.unary_unary_rpc_method_handler(
                     servicer.GetCI,
-                    request_deserializer=cmdb__pb2.CIIdRequest.FromString,
-                    response_serializer=cmdb__pb2.CIResponse.SerializeToString,
+                    request_deserializer=protos_dot_cmdb__pb2.CIIdRequest.FromString,
+                    response_serializer=protos_dot_cmdb__pb2.CIResponse.SerializeToString,
             ),
             'ListCIs': grpc.unary_unary_rpc_method_handler(
                     servicer.ListCIs,
-                    request_deserializer=cmdb__pb2.Empty.FromString,
-                    response_serializer=cmdb__pb2.CIList.SerializeToString,
+                    request_deserializer=protos_dot_cmdb__pb2.Empty.FromString,
+                    response_serializer=protos_dot_cmdb__pb2.CIList.SerializeToString,
             ),
             'CreateRelationship': grpc.unary_unary_rpc_method_handler(
                     servicer.CreateRelationship,
-                    request_deserializer=cmdb__pb2.CreateRelationshipRequest.FromString,
-                    response_serializer=cmdb__pb2.RelationshipResponse.SerializeToString,
+                    request_deserializer=protos_dot_cmdb__pb2.CreateRelationshipRequest.FromString,
+                    response_serializer=protos_dot_cmdb__pb2.RelationshipResponse.SerializeToString,
             ),
             'GetRelatedCIs': grpc.unary_unary_rpc_method_handler(
                     servicer.GetRelatedCIs,
-                    request_deserializer=cmdb__pb2.CIIdRequest.FromString,
-                    response_serializer=cmdb__pb2.CIList.SerializeToString,
+                    request_deserializer=protos_dot_cmdb__pb2.CIIdRequest.FromString,
+                    response_serializer=protos_dot_cmdb__pb2.CIList.SerializeToString,
             ),
             'GetCIWithOwner': grpc.unary_unary_rpc_method_handler(
                     servicer.GetCIWithOwner,
-                    request_deserializer=cmdb__pb2.CIIdRequest.FromString,
-                    response_serializer=cmdb__pb2.CIWithOwnerResponse.SerializeToString,
+                    request_deserializer=protos_dot_cmdb__pb2.CIIdRequest.FromString,
+                    response_serializer=protos_dot_cmdb__pb2.CIWithOwnerResponse.SerializeToString,
+            ),
+            'UpdateCI': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateCI,
+                    request_deserializer=protos_dot_cmdb__pb2.UpdateCIRequest.FromString,
+                    response_serializer=protos_dot_cmdb__pb2.CIResponse.SerializeToString,
+            ),
+            'DeleteCI': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteCI,
+                    request_deserializer=protos_dot_cmdb__pb2.CIIdRequest.FromString,
+                    response_serializer=protos_dot_cmdb__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -164,8 +196,8 @@ class CmdbService:
             request,
             target,
             '/cmdb.CmdbService/CreateCI',
-            cmdb__pb2.CreateCIRequest.SerializeToString,
-            cmdb__pb2.CIResponse.FromString,
+            protos_dot_cmdb__pb2.CreateCIRequest.SerializeToString,
+            protos_dot_cmdb__pb2.CIResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -191,8 +223,8 @@ class CmdbService:
             request,
             target,
             '/cmdb.CmdbService/GetCI',
-            cmdb__pb2.CIIdRequest.SerializeToString,
-            cmdb__pb2.CIResponse.FromString,
+            protos_dot_cmdb__pb2.CIIdRequest.SerializeToString,
+            protos_dot_cmdb__pb2.CIResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -218,8 +250,8 @@ class CmdbService:
             request,
             target,
             '/cmdb.CmdbService/ListCIs',
-            cmdb__pb2.Empty.SerializeToString,
-            cmdb__pb2.CIList.FromString,
+            protos_dot_cmdb__pb2.Empty.SerializeToString,
+            protos_dot_cmdb__pb2.CIList.FromString,
             options,
             channel_credentials,
             insecure,
@@ -245,8 +277,8 @@ class CmdbService:
             request,
             target,
             '/cmdb.CmdbService/CreateRelationship',
-            cmdb__pb2.CreateRelationshipRequest.SerializeToString,
-            cmdb__pb2.RelationshipResponse.FromString,
+            protos_dot_cmdb__pb2.CreateRelationshipRequest.SerializeToString,
+            protos_dot_cmdb__pb2.RelationshipResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -272,8 +304,8 @@ class CmdbService:
             request,
             target,
             '/cmdb.CmdbService/GetRelatedCIs',
-            cmdb__pb2.CIIdRequest.SerializeToString,
-            cmdb__pb2.CIList.FromString,
+            protos_dot_cmdb__pb2.CIIdRequest.SerializeToString,
+            protos_dot_cmdb__pb2.CIList.FromString,
             options,
             channel_credentials,
             insecure,
@@ -299,8 +331,62 @@ class CmdbService:
             request,
             target,
             '/cmdb.CmdbService/GetCIWithOwner',
-            cmdb__pb2.CIIdRequest.SerializeToString,
-            cmdb__pb2.CIWithOwnerResponse.FromString,
+            protos_dot_cmdb__pb2.CIIdRequest.SerializeToString,
+            protos_dot_cmdb__pb2.CIWithOwnerResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpdateCI(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/cmdb.CmdbService/UpdateCI',
+            protos_dot_cmdb__pb2.UpdateCIRequest.SerializeToString,
+            protos_dot_cmdb__pb2.CIResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DeleteCI(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/cmdb.CmdbService/DeleteCI',
+            protos_dot_cmdb__pb2.CIIdRequest.SerializeToString,
+            protos_dot_cmdb__pb2.Empty.FromString,
             options,
             channel_credentials,
             insecure,

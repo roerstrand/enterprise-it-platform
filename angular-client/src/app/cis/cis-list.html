@@ -13,7 +13,7 @@
   </mat-form-field>
   <mat-form-field>
     <mat-label>Owner user id (optional)</mat-label>
-    <input matInput type="number" formControllName="ownerUserId" />
+    <input matInput type="number" formControlName="ownerUserId" />
   </mat-form-field>
 
   <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
@@ -22,7 +22,7 @@
 </form>
 
 @if (loading()) {
-  <mat-spinner diameter="40" />
+  <mat-spinner diameter="40" />g
 } @else {
   <table mat-table [dataSource]="cis()" class="mat-elevation-z2">
     <ng-container matColumnDef="id">
@@ -45,8 +45,42 @@
       <th mat-header-cell *matHeaderCellDef>Owner user id</th>
       <td mat-cell *matCellDef="let ci">{{ ci.owner_user_id ?? '-' }}</td>
     </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let ci">
+        <button mat-button (click)="onEditClick(ci)">Edit</button>
+        <button mat-button color="warn" (click)="onDelete(ci.id)">Delete</button>
+      </td>
+    </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
+}
+
+@if (editingId() !== null) {
+  <form [formGroup]="editForm" (ngSubmit)="onEditSubmit()" class="ci-form">
+    <h3>Edit CI {{ editingId() }}</h3>
+    <mat-form-field>
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>CI type</mat-label>
+      <input matInput formControlName="ciType" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Environment</mat-label>
+      <input matInput formControlName="environment" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Owner user id</mat-label>
+      <input matInput type="number" formControlName="ownerUserId" />
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="editForm.invalid">
+      Save
+    </button>
+    <button mat-button type="button" (click)="onEditCancel()">Cancel</button>
+  </form>
 }

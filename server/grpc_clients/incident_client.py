@@ -75,3 +75,20 @@ async def accept_suggested_status(incident_id: int):
         raise IncidentServiceUnavailable(str(e))
     return _to_dict(response)
 
+async def update_incident(incident_id: int, title: str, description: str, severity: str, ci_id: int):
+    try:
+        response = await _get_stub().UpdateIncident(incident_pb2.UpdateIncidentRequest(
+            id=incident_id, title=title, description=description, severity=severity, ci_id=ci_id
+        ))
+    except grpc.RpcError as e:
+        print(f"gRPC-fel: {e.code()} {e.details()}")
+        raise IncidentServiceUnavailable(str(e))
+    return _to_dict(response)
+
+async def delete_incident(incident_id: int):
+    try:
+        await _get_stub().DeleteIncident(incident_pb2.IncidentIdRequest(id=incident_id))
+    except grpc.RpcError as e:
+        print(f"gRPC-fel: {e.code()} {e.details()}")
+        raise IncidentServiceUnavailable(str(e))
+

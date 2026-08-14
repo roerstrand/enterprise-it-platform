@@ -53,3 +53,28 @@ async def get_related_cis_from_db(db: AsyncSession, ci_id: int):
         select(ConfigurationItemModel).where(ConfigurationItemModel.id.in_(related_ids))
     )
     return result.scalars().all()
+
+async def update_ci_in_db(db: AsyncSession, ci_id: int, name: str, ci_type: str, environment: str, owner_team_id: int | None = None, owner_user_id: int | None = None):
+    result = await db.execute(
+        select(ConfigurationItemModel).where(ConfigurationItemModel.id == ci_id)
+    )
+    ci = result.scalars().first()
+    if ci: 
+        ci.name = name
+        ci.ci_type = ci_type
+        ci.environment = environment
+        ci.owner_team_id = owner_team_id
+        ci.owner_user_id = owner_user_id
+        await db.commit()
+    return ci
+
+async def delete_ci_from_db(db: AsyncSession, ci_id: int):
+    result = await db.execute(
+        select(ConfigurationItemModel).where(ConfigurationItemModel.id == ci_id)
+    )
+    ci = result.scalars().first()
+    if not ci:
+        return False
+    await db.delete(ci)
+    await db.commit()
+    return True
