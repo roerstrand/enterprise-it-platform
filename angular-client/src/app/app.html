@@ -1,1 +1,8 @@
+<mat-toolbar color="primary">
+  <!-- routerLinkActive lägger till klassen "active-link" på den <a> vars routerLink matchar aktuell URL -->
+  <a mat-button routerLink="/users" routerLinkActive="active-link">Users</a>
+  <a mat-button routerLink="/cis" routerLinkActive="active-link">CIs</a>
+  <a mat-button routerLink="/incidents" routerLinkActive="active-link">Incidents</a>
+</mat-toolbar>
+
 <router-outlet />

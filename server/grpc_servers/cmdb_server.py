@@ -46,14 +46,23 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
         async with get_db_context() as db:
             owner_team_id = request.owner_team_id if request.HasField("owner_team_id") else None
             owner_user_id = request.owner_user_id if request.HasField("owner_user_id") else None
+
             ci = await create_ci_in_db(db, request.name, request.ci_type, request.environment, owner_team_id, owner_user_id)
-            await asyncio.to_thread(publish_event, "cmdb_events", "ci.created", {
-                "id": ci.id, "name": ci.name, "ci_type": ci.ci_type, "environment": ci.environment, "owner_user_id": ci.owner_user_id,
 
-            })
-            await delete_cached("cis:all")
+            try:
+                await asyncio.to_thread(publish_event, "cmdb_events", "ci.created", 
+                                        {
+                                            "id": ci.id, "name": ci.name, "ci_type": ci.ci_type, "environment": ci.environment, "owner_user_id": ci.owner_user_id,
+                                        })
+            except Exception as e:
+                print(f"publish_event misslyckades: {e}")
+
+            try:
+                await delete_cached("cis:all")
+            except Exception as e:
+                print(f"delete_cached misslyckades: {e}")
             return _to_ci_response(ci)
-
+        
     @track_grpc_metrics("cmdb")
     async def GetCI(self, request, context):
         cache_key = f"ci:{request.id}"
@@ -155,9 +164,14 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
                 context.set_code(grpc.StatusCode.NOT_FOUND)
                 context.set_details(f"CI {request.id} not found")
                 return cmdb_pb2.CIResponse()
-            await delete_cached(f"ci:{request.id}")
-            await delete_cached(f"ci_with_owner:{request.id}")
-            await delete_cached("cis:all")
+
+            try:
+                await delete_cached(f"ci:{request.id}")
+                await delete_cached(f"ci_with_owner:{request.id}")
+                await delete_cached("cis:all")
+            except Exception as e:
+                print(f"delete_cached misslyckades: {e}")
+
             return _to_ci_response(ci)
 
     @track_grpc_metrics("cmdb")
@@ -167,9 +181,14 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
             if not deleted:
                 context.set_code(grpc.StatusCode.NOT_FOUND)
                 context.set_details(f"CI {request.id} not found")
-            await delete_cached(f"ci:{request.id}")
-            await delete_cached(f"ci_with_owner:{request.id}")
-            await delete_cached("cis:all")
+
+            try:
+                await delete_cached(f"ci:{request.id}")
+                await delete_cached(f"ci_with_owner:{request.id}")
+                await delete_cached("cis:all")
+            except Exception as e:
+                print(f"delete_cached misslyckades: {e}")
+
             return cmdb_pb2.Empty()
 
 async def serve():
