@@ -62,8 +62,11 @@ async def accept_incident_suggested_severity(db: AsyncSession, incident_id: int)
     )
     incident = result.scalars().first()
     if incident and incident.ai_suggested_severity:
-        incident.severity = incident.ai_suggested_severity
+        # AI returnerar UPPERCASE (t.ex. "HIGH"); status/severity lagras alltid lowercase i DB
+        incident.severity = incident.ai_suggested_severity.lower()
         await db.commit()
+        await db.refresh(incident)
+    return incident
 
 async def accept_incident_suggested_status(db: AsyncSession, incident_id: int):
     result = await db.execute(
@@ -71,8 +74,34 @@ async def accept_incident_suggested_status(db: AsyncSession, incident_id: int):
     )
     incident = result.scalars().first()
     if incident and incident.ai_suggested_status:
-        incident.status = incident.ai_suggested_status
+        incident.status = incident.ai_suggested_status.lower()
         await db.commit()
+        await db.refresh(incident)
+    return incident
+
+async def update_incident_status_in_db(db: AsyncSession, incident_id: int, status: str):
+    result = await db.execute(
+        select(IncidentModel).where(IncidentModel.id == incident_id)
+    )
+    incident = result.scalars().first()
+    if incident:
+        incident.status = status
+        await db.commit()
+        # updated_at har onupdate=func.now() (server-side) - måste refreshas explicit efter commit,
+        # annars ger senare attributläsning (t.ex. i _to_incident_response) MissingGreenlet i async-läge.
+        await db.refresh(incident)
+    return incident
+
+async def update_incident_severity_in_db(db: AsyncSession, incident_id: int, severity: str):
+    result = await db.execute(
+        select(IncidentModel).where(IncidentModel.id == incident_id)
+    )
+    incident = result.scalars().first()
+    if incident:
+        incident.severity = severity
+        await db.commit()
+        await db.refresh(incident)
+    return incident
 
 async def update_incident_in_db(db: AsyncSession, incident_id: int, title: str, description: str, severity: str, ci_id: int):
     result = await db.execute(
@@ -85,6 +114,7 @@ async def update_incident_in_db(db: AsyncSession, incident_id: int, title: str, 
         incident.severity = severity
         incident.ci_id = ci_id
         await db.commit()
+        await db.refresh(incident)
     return incident
 
 async def delete_incident_from_db(db: AsyncSession, incident_id: int):

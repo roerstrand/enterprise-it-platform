@@ -1,27 +1,54 @@
-<div class="app-shell">
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <mat-icon aria-hidden="true">hub</mat-icon>
-      <span>Enterprise IT</span>
-    </div>
+<!-- Ingen sidebar på login-sidan - @if styr hela app-shell-layouten utifrån inloggat läge -->
+@if (authService.isAuthenticated()) {
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <mat-icon aria-hidden="true">hub</mat-icon>
+        <span>Enterprise IT</span>
+      </div>
 
-    <nav class="sidebar-nav">
-      <a routerLink="/users" routerLinkActive="active" class="sidebar-link">
-        <mat-icon aria-hidden="true">group</mat-icon>
-        <span>Users</span>
-      </a>
-      <a routerLink="/cis" routerLinkActive="active" class="sidebar-link">
-        <mat-icon aria-hidden="true">dns</mat-icon>
-        <span>Configuration Items</span>
-      </a>
-      <a routerLink="/incidents" routerLinkActive="active" class="sidebar-link">
-        <mat-icon aria-hidden="true">report_problem</mat-icon>
-        <span>Incidents</span>
-      </a>
-    </nav>
-  </aside>
+      <nav class="sidebar-nav">
+        <a routerLink="/dashboard" routerLinkActive="active" class="sidebar-link">
+          <mat-icon aria-hidden="true">dashboard</mat-icon>
+          <span>Dashboard</span>
+        </a>
+        @if (authService.isAdmin()) {
+          <a routerLink="/users" routerLinkActive="active" class="sidebar-link">
+            <mat-icon aria-hidden="true">group</mat-icon>
+            <span>Users</span>
+          </a>
+        }
+        <a routerLink="/cis" routerLinkActive="active" class="sidebar-link">
+          <mat-icon aria-hidden="true">dns</mat-icon>
+          <span>Configuration Items</span>
+        </a>
+        <a routerLink="/incidents" routerLinkActive="active" class="sidebar-link">
+          <mat-icon aria-hidden="true">report_problem</mat-icon>
+          <span>Incidents</span>
+        </a>
+        @if (authService.isAdmin()) {
+          <a routerLink="/audit" routerLinkActive="active" class="sidebar-link">
+            <mat-icon aria-hidden="true">fact_check</mat-icon>
+            <span>Audit Log</span>
+          </a>
+        }
+      </nav>
 
-  <main class="app-main">
-    <router-outlet />
-  </main>
-</div>
+      <div class="sidebar-user">
+        <div class="sidebar-user-info">
+          <span class="sidebar-user-email">{{ authService.currentUser()?.email }}</span>
+          <span class="sidebar-user-role">{{ authService.currentUser()?.role }}</span>
+        </div>
+        <button mat-icon-button (click)="onLogout()" aria-label="Log out" title="Log out">
+          <mat-icon aria-hidden="true">logout</mat-icon>
+        </button>
+      </div>
+    </aside>
+
+    <main class="app-main">
+      <router-outlet />
+    </main>
+  </div>
+} @else {
+  <router-outlet />
+}

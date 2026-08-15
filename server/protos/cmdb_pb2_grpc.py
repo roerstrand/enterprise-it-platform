@@ -71,7 +71,7 @@ class CmdbServiceStub:
                 _registered_method=True)
         self.DeleteCI = channel.unary_unary(
                 '/cmdb.CmdbService/DeleteCI',
-                request_serializer=protos_dot_cmdb__pb2.CIIdRequest.SerializeToString,
+                request_serializer=protos_dot_cmdb__pb2.CIActionRequest.SerializeToString,
                 response_deserializer=protos_dot_cmdb__pb2.Empty.FromString,
                 _registered_method=True)
 
@@ -167,7 +167,7 @@ def add_CmdbServiceServicer_to_server(servicer, server):
             ),
             'DeleteCI': grpc.unary_unary_rpc_method_handler(
                     servicer.DeleteCI,
-                    request_deserializer=protos_dot_cmdb__pb2.CIIdRequest.FromString,
+                    request_deserializer=protos_dot_cmdb__pb2.CIActionRequest.FromString,
                     response_serializer=protos_dot_cmdb__pb2.Empty.SerializeToString,
             ),
     }
@@ -385,7 +385,7 @@ class CmdbService:
             request,
             target,
             '/cmdb.CmdbService/DeleteCI',
-            protos_dot_cmdb__pb2.CIIdRequest.SerializeToString,
+            protos_dot_cmdb__pb2.CIActionRequest.SerializeToString,
             protos_dot_cmdb__pb2.Empty.FromString,
             options,
             channel_credentials,

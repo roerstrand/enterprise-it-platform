@@ -1,1 +1,12 @@
 // Delade layout-klasser (.page, .table-card, .table-scroll m.fl.) ligger i src/styles.scss
+
+.table-scroll table {
+  table-layout: fixed;
+}
+
+.col-id { width: 72px; }
+
+.role-select {
+  width: 110px;
+  text-transform: capitalize;
+}

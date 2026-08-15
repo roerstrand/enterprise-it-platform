@@ -11,7 +11,7 @@ service CmdbService {
     rpc GetRelatedCIs (CIIdRequest) returns (CIList);
     rpc GetCIWithOwner (CIIdRequest) returns (CIWithOwnerResponse);
     rpc UpdateCI (UpdateCIRequest) returns (CIResponse);
-    rpc DeleteCI (CIIdRequest) returns (Empty);
+    rpc DeleteCI (CIActionRequest) returns (Empty);
 
 }
 
@@ -21,12 +21,21 @@ message CIIdRequest {
     int32 id = 1;
 }
 
+// id + vem som utför handlingen - används av DeleteCI så att cmdb_server kan skriva audit-logg.
+message CIActionRequest {
+    int32 id = 1;
+    int32 actor_user_id = 2;
+    string actor_email = 3;
+}
+
 message CreateCIRequest {
     string name = 1;
     string ci_type = 2;
     string environment = 3;
     optional int32 owner_team_id = 4;
     optional int32 owner_user_id = 5;
+    int32 actor_user_id = 6;
+    string actor_email = 7;
 }
 
 message UpdateCIRequest {
@@ -36,6 +45,8 @@ message UpdateCIRequest {
     string environment = 4;
     optional int32 owner_team_id = 5;
     optional int32 owner_user_id = 6;
+    int32 actor_user_id = 7;
+    string actor_email = 8;
 }
 
 message CIResponse {

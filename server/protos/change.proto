@@ -8,7 +8,7 @@ service ChangeService {
     rpc CreateChange (CreateChangeRequest) returns (ChangeResponse);
     rpc GetChange (ChangeIdRequest) returns (ChangeResponse);
     rpc ListChanges (Empty) returns (ChangeList);
-    rpc ApproveChange (ChangeIdRequest) returns (ChangeResponse);
+    rpc ApproveChange (ChangeActionRequest) returns (ChangeResponse);
     rpc GetChangeWithCI (ChangeIdRequest) returns (ChangeWithCIResponse);
 }
 
@@ -18,11 +18,20 @@ message ChangeIdRequest {
     int32 id = 1;
 }
 
+// id + vem som utfor handlingen - anvands av ApproveChange for audit-loggning.
+message ChangeActionRequest {
+    int32 id = 1;
+    int32 actor_user_id = 2;
+    string actor_email = 3;
+}
+
 message CreateChangeRequest {
     string title = 1;
     string description = 2;
     string risk_level = 3;
     int32 ci_id = 4;
+    int32 actor_user_id = 5;
+    string actor_email = 6;
 }
 
 message ChangeResponse {

@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from data.models.incident_update_model import IncidentUpdateModel
 
-async def create_incident_update_in_db(db: AsyncSession, incident_id: int, text: str):
-    update = IncidentUpdateModel(incident_id=incident_id, text=text)
+async def create_incident_update_in_db(db: AsyncSession, incident_id: int, text: str, author_user_id: int | None = None):
+    update = IncidentUpdateModel(incident_id=incident_id, text=text, author_user_id=author_user_id)
     db.add(update)
     await db.commit()
     return update

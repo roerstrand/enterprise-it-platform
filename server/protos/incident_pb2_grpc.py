@@ -66,12 +66,12 @@ class IncidentServiceStub:
                 _registered_method=True)
         self.AcceptSuggestedSeverity = channel.unary_unary(
                 '/incident.IncidentService/AcceptSuggestedSeverity',
-                request_serializer=protos_dot_incident__pb2.IncidentIdRequest.SerializeToString,
+                request_serializer=protos_dot_incident__pb2.IncidentActionRequest.SerializeToString,
                 response_deserializer=protos_dot_incident__pb2.IncidentResponse.FromString,
                 _registered_method=True)
         self.AcceptSuggestedStatus = channel.unary_unary(
                 '/incident.IncidentService/AcceptSuggestedStatus',
-                request_serializer=protos_dot_incident__pb2.IncidentIdRequest.SerializeToString,
+                request_serializer=protos_dot_incident__pb2.IncidentActionRequest.SerializeToString,
                 response_deserializer=protos_dot_incident__pb2.IncidentResponse.FromString,
                 _registered_method=True)
         self.UpdateIncident = channel.unary_unary(
@@ -79,9 +79,19 @@ class IncidentServiceStub:
                 request_serializer=protos_dot_incident__pb2.UpdateIncidentRequest.SerializeToString,
                 response_deserializer=protos_dot_incident__pb2.IncidentResponse.FromString,
                 _registered_method=True)
+        self.UpdateIncidentStatus = channel.unary_unary(
+                '/incident.IncidentService/UpdateIncidentStatus',
+                request_serializer=protos_dot_incident__pb2.UpdateIncidentStatusRequest.SerializeToString,
+                response_deserializer=protos_dot_incident__pb2.IncidentResponse.FromString,
+                _registered_method=True)
+        self.UpdateIncidentSeverity = channel.unary_unary(
+                '/incident.IncidentService/UpdateIncidentSeverity',
+                request_serializer=protos_dot_incident__pb2.UpdateIncidentSeverityRequest.SerializeToString,
+                response_deserializer=protos_dot_incident__pb2.IncidentResponse.FromString,
+                _registered_method=True)
         self.DeleteIncident = channel.unary_unary(
                 '/incident.IncidentService/DeleteIncident',
-                request_serializer=protos_dot_incident__pb2.IncidentIdRequest.SerializeToString,
+                request_serializer=protos_dot_incident__pb2.IncidentActionRequest.SerializeToString,
                 response_deserializer=protos_dot_incident__pb2.Empty.FromString,
                 _registered_method=True)
 
@@ -143,6 +153,18 @@ class IncidentServiceServicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def UpdateIncidentStatus(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UpdateIncidentSeverity(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def DeleteIncident(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -184,12 +206,12 @@ def add_IncidentServiceServicer_to_server(servicer, server):
             ),
             'AcceptSuggestedSeverity': grpc.unary_unary_rpc_method_handler(
                     servicer.AcceptSuggestedSeverity,
-                    request_deserializer=protos_dot_incident__pb2.IncidentIdRequest.FromString,
+                    request_deserializer=protos_dot_incident__pb2.IncidentActionRequest.FromString,
                     response_serializer=protos_dot_incident__pb2.IncidentResponse.SerializeToString,
             ),
             'AcceptSuggestedStatus': grpc.unary_unary_rpc_method_handler(
                     servicer.AcceptSuggestedStatus,
-                    request_deserializer=protos_dot_incident__pb2.IncidentIdRequest.FromString,
+                    request_deserializer=protos_dot_incident__pb2.IncidentActionRequest.FromString,
                     response_serializer=protos_dot_incident__pb2.IncidentResponse.SerializeToString,
             ),
             'UpdateIncident': grpc.unary_unary_rpc_method_handler(
@@ -197,9 +219,19 @@ def add_IncidentServiceServicer_to_server(servicer, server):
                     request_deserializer=protos_dot_incident__pb2.UpdateIncidentRequest.FromString,
                     response_serializer=protos_dot_incident__pb2.IncidentResponse.SerializeToString,
             ),
+            'UpdateIncidentStatus': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateIncidentStatus,
+                    request_deserializer=protos_dot_incident__pb2.UpdateIncidentStatusRequest.FromString,
+                    response_serializer=protos_dot_incident__pb2.IncidentResponse.SerializeToString,
+            ),
+            'UpdateIncidentSeverity': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateIncidentSeverity,
+                    request_deserializer=protos_dot_incident__pb2.UpdateIncidentSeverityRequest.FromString,
+                    response_serializer=protos_dot_incident__pb2.IncidentResponse.SerializeToString,
+            ),
             'DeleteIncident': grpc.unary_unary_rpc_method_handler(
                     servicer.DeleteIncident,
-                    request_deserializer=protos_dot_incident__pb2.IncidentIdRequest.FromString,
+                    request_deserializer=protos_dot_incident__pb2.IncidentActionRequest.FromString,
                     response_serializer=protos_dot_incident__pb2.Empty.SerializeToString,
             ),
     }
@@ -390,7 +422,7 @@ class IncidentService:
             request,
             target,
             '/incident.IncidentService/AcceptSuggestedSeverity',
-            protos_dot_incident__pb2.IncidentIdRequest.SerializeToString,
+            protos_dot_incident__pb2.IncidentActionRequest.SerializeToString,
             protos_dot_incident__pb2.IncidentResponse.FromString,
             options,
             channel_credentials,
@@ -417,7 +449,7 @@ class IncidentService:
             request,
             target,
             '/incident.IncidentService/AcceptSuggestedStatus',
-            protos_dot_incident__pb2.IncidentIdRequest.SerializeToString,
+            protos_dot_incident__pb2.IncidentActionRequest.SerializeToString,
             protos_dot_incident__pb2.IncidentResponse.FromString,
             options,
             channel_credentials,
@@ -457,6 +489,60 @@ class IncidentService:
             _registered_method=True)
 
     @staticmethod
+    def UpdateIncidentStatus(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/incident.IncidentService/UpdateIncidentStatus',
+            protos_dot_incident__pb2.UpdateIncidentStatusRequest.SerializeToString,
+            protos_dot_incident__pb2.IncidentResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpdateIncidentSeverity(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/incident.IncidentService/UpdateIncidentSeverity',
+            protos_dot_incident__pb2.UpdateIncidentSeverityRequest.SerializeToString,
+            protos_dot_incident__pb2.IncidentResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
     def DeleteIncident(request,
             target,
             options=(),
@@ -471,7 +557,7 @@ class IncidentService:
             request,
             target,
             '/incident.IncidentService/DeleteIncident',
-            protos_dot_incident__pb2.IncidentIdRequest.SerializeToString,
+            protos_dot_incident__pb2.IncidentActionRequest.SerializeToString,
             protos_dot_incident__pb2.Empty.FromString,
             options,
             channel_credentials,

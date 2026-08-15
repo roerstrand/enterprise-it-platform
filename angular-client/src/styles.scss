@@ -14,7 +14,9 @@ html {
         tertiary: mat.$blue-palette,
       ),
       typography: Roboto,
-      density: 0,
+      // -2 = kompaktare form fields/knappar/kort i hela appen via Material 3:s
+      // densitets-tokens, istället för att skriva över höjd/padding komponent för komponent
+      density: -2,
     )
   );
 }
@@ -81,15 +83,108 @@ body {
   align-items: flex-start;
 }
 
-.form-card {
+// OBS: gäller bara kort som faktiskt ligger i en .form-cards rad-flexbox (bredd-basis där).
+// .form-card används numera även som fristående kort direkt i .page - som är en
+// kolumn-flexbox - och där skulle samma regel istället tolkas som en HÖJD på 320px,
+// vilket gav stora tomma ytor i korten oavsett innehåll.
+.form-cards > .form-card {
   flex: 1 1 320px;
 }
 
-.form-row {
+// Responsivt formulärgrid - 2 kolumner på desktop, 1 på smala skärmar.
+// Ersätter den gamla flex-wrap-baserade .form-row.
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 16px;
+  align-items: start;
+}
+
+@media (max-width: 640px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-grid mat-form-field {
+  width: 100%;
+}
+
+// Materials form-field reserverar alltid plats under fältet för
+// fel/hint-text (subscript), även när den är tom. Ingen av formulären här
+// använder mat-error/mat-hint, så vi tar bort den reserverade höjden -
+// det är den enskilt största bidragande orsaken till att fälten känns höga.
+.form-grid .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+// Fält som numeriska id:n/severity inte ska sträckas ut till full kolumnbredd
+.field-narrow {
+  max-width: 220px;
+}
+
+// Låter ett fält (t.ex. en lång beskrivning) spänna över båda kolumnerna
+.field-full {
+  grid-column: 1 / -1;
+}
+
+// Knapprad under fälten, spänner över hela gridet
+.form-actions {
+  grid-column: 1 / -1;
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: flex-start;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+// Primärknappen sist/längst till höger istället för klistrad till vänsterkanten
+.form-actions--end {
+  justify-content: flex-end;
+}
+
+// Placerar en knapp (eller knappgrupp) i samma gridcell/rad som föregående fält,
+// nedåt- och högerjusterad - undviker en egen tom rad bara för knappen
+.grid-cell-end {
+  justify-self: end;
+  align-self: end;
+  display: flex;
+  gap: 8px;
+}
+
+// Begränsar ett formulärkort så det inte sträcker sig över hela sidans 1280px
+// bara för att det har breda fält (Title/Description) - undviker tomt utrymme
+.form-card--wide {
+  max-width: 760px;
+}
+
+// Enradigt grid för korta formulär där ett fält (t.ex. löpande uppdateringstext)
+// ska få större delen av bredden, med knappen inline sist på samma rad
+.form-grid-inline {
+  display: grid;
+  grid-template-columns: 160px 1fr auto;
+  gap: 4px 16px;
+  align-items: end;
+}
+
+@media (max-width: 640px) {
+  .form-grid-inline {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-grid-inline mat-form-field {
+  width: 100%;
+}
+
+.form-grid-inline .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+// Visuellt lägre prioriterad sektion (t.ex. "Add update" bredvid "Create incident") -
+// mindre/dämpad kort-titel + en svagt avvikande bakgrund istället för identisk vikt
+.form-card--secondary {
+  --mat-card-title-text-size: 12px;
+  background-color: var(--mat-sys-surface-container-lowest, #fafbfc);
 }
 
 .form-card,
@@ -110,6 +205,23 @@ body {
   padding: 0;
   // Klipper tabellens raka hörn mot kortets egna rundade hörn
   overflow: hidden;
+}
+
+// Tätare innerpadding i formulärkorten - Materials default (16px header +
+// 16px content, med extra luft mellan dem) gör korten mycket större än
+// innehållet kräver i ett datatätt admin-gränssnitt
+.form-card mat-card-header {
+  padding: 12px 16px 0;
+}
+
+.form-card mat-card-content {
+  padding: 8px 16px 14px;
+}
+
+// Sidor med smalare innehåll (t.ex. Users) - egen maxbredd istället för
+// att sträcka ett litet tabellkort över hela .page:s 1280px
+.page-narrow {
+  max-width: 720px;
 }
 
 .table-scroll {
@@ -137,9 +249,20 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
+// Material 3:s default knappform är en full pill (border-radius: 9999px) -
+// läser mer "konsument-app" än enterprise admin-verktyg. 6px matchar kortens
+// och chipsens rundning istället, för en mer sammanhållen, återhållsam form.
+.mat-mdc-raised-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-outlined-button,
+.mat-mdc-button {
+  border-radius: 6px;
+}
+
 .table-scroll th.mat-mdc-header-cell {
   // Hierarki via typografi (versaler, brett bokstavsmellanrum, dämpad färg) +
-  // en mjuk kantlinje istället för ett fyllt färgblock - Stripe/Linear-mönster
+  // en svag bakgrund + mjuk kantlinje istället för ett fyllt färgblock - Stripe/Linear-mönster
+  background-color: var(--mat-sys-surface-container-low);
   color: var(--mat-sys-on-surface-variant);
   font-size: 11px;
   font-weight: 600;
@@ -153,6 +276,10 @@ button:focus-visible {
   // Tätare radhöjd - en driftsverktygstabell ska rymma mycket, inte kännas som en marknadssida
   padding-top: 10px;
   padding-bottom: 10px;
+  // Explicit, snävare horisontell padding istället för Materials default (~16-24px) -
+  // ger mer plats åt själva innehållet i de smala kolumnerna (id, status, severity m.fl.)
+  padding-left: 12px;
+  padding-right: 12px;
   font-size: 13px;
 }
 
@@ -220,6 +347,15 @@ button:focus-visible {
   align-items: center;
   gap: 4px;
   white-space: nowrap;
+}
+
+// Kompakta, visuellt sekundära text-knappar i tabellceller (Edit/Delete/Accept m.fl.)
+// - Materials default min-width/padding är gjorda för fristående knappar, inte
+// en rad av flera knappar inuti en tabellcell
+.actions-cell .mat-mdc-button-base {
+  padding: 0 8px;
+  min-width: 0;
+  font-size: 12px;
 }
 
 .wrap-cell {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Incident, IncidentUpdate } from './incident';
+import { Incident, IncidentUpdate, IncidentWithCI } from './incident';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -12,6 +12,18 @@ export class IncidentService {
 
     list(): Observable<Incident[]> {
         return this.http.get<Incident[]>(this.baseUrl);
+    }
+
+    getById(incidentId: number): Observable<IncidentWithCI> {
+        return this.http.get<IncidentWithCI>(`${this.baseUrl}/${incidentId}`);
+    }
+
+    updateStatus(incidentId: number, status: string): Observable<Incident> {
+        return this.http.put<Incident>(`${this.baseUrl}/${incidentId}/status`, { status });
+    }
+
+    updateSeverity(incidentId: number, severity: string): Observable<Incident> {
+        return this.http.put<Incident>(`${this.baseUrl}/${incidentId}/severity`, { severity });
     }
 
     create(title: string, description: string, severity: string, ciId: number): Observable<Incident> {

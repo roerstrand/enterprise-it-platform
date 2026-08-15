@@ -14,6 +14,8 @@ See `docs/ard/` for all architecture decisions (ARDs). Summary:
 - CMDB Service (`grpc_servers/cmdb_server.py`) manages Configuration Items over gRPC (ARD-0007)
 - Incident Service (`grpc_servers/incident_server.py`) manages incidents over gRPC, enriches with CI/owner data from the CMDB service
 - Change Service is implemented in C#/.NET — the platform's first polyglot service (ARD-0009)
+- Audit Service (`grpc_servers/audit_server.py`) is an append-only event log shared by every mutating service (Python and C#), queried read-only by Admins via `/demo/api/audit`
+- JWT auth with roles (admin/operator/viewer) is enforced server-side per endpoint; the Angular client only hides/disables actions it has no permission for
 - Observability via Prometheus + Grafana: FastAPI exposes `/metrics`, each gRPC server exposes its own metrics port (ARD-0008)
 - nginx reverse-proxies port 80 to the FastAPI app on port 8000; gRPC between services stays internal, never exposed through nginx
 - Redis used for caching (`caching/cache.py`)
@@ -46,4 +48,6 @@ The Python backend lives in `server/` — steps 3, 4, 5 and 7 are run with `serv
 4. `cd server && python -m grpc_servers.cmdb_server` — CMDB gRPC server (port 50052)
 5. `cd server && python -m grpc_servers.incident_server` — Incident gRPC server (port 50053)
 6. `dotnet run --project server/ChangeService` — Change Service, C#/.NET gRPC server (port 50054, ARD-0009)
-7. `cd server && uvicorn main:app --reload` — starts FastAPI, web demo at `/demo` (port 8000)
+7. `cd server && python -m grpc_servers.audit_server` — Audit gRPC server (port 50055)
+8. `cd server && uvicorn main:app --reload` — starts FastAPI, web demo at `/demo` (port 8000)
+9. `cd angular-client && ng serve` — Angular client (port 4200)

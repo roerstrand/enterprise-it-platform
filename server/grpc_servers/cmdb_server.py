@@ -29,6 +29,7 @@ from observability.tracing import setup_tracing
 from messaging.publisher import publish_event
 from google.protobuf.json_format import MessageToDict, ParseDict
 from caching.cache import get_cached, set_cached, delete_cached
+from grpc_clients.audit_client import record_audit_event
 
 def _to_ci_response(ci):
     response = cmdb_pb2.CIResponse(
@@ -62,6 +63,12 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
                 await delete_cached("cis:all")
             except Exception as e:
                 print(f"delete_cached misslyckades: {e}")
+
+            await record_audit_event(
+                request.actor_user_id or None, request.actor_email or None,
+                "ci.created", "ci", ci.id,
+                before=None, after={"name": ci.name, "ci_type": ci.ci_type, "environment": ci.environment},
+            )
             return _to_ci_response(ci)
         
     @track_grpc_metrics("cmdb")
@@ -158,13 +165,16 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
     @track_grpc_metrics("cmdb")
     async def UpdateCI(self, request, context):
         async with get_db_context() as db:
-            owner_team_id = request.owner_team_id if request.HasField("owner_team_id") else None
-            owner_user_id = request.owner_user_id if request.HasField("owner_user_id") else None
-            ci = await update_ci_in_db(db, request.id, request.name, request.ci_type, request.environment, owner_team_id, owner_user_id)
-            if not ci:
+            before = await get_ci_by_id_from_db(db, request.id)
+            if not before:
                 context.set_code(grpc.StatusCode.NOT_FOUND)
                 context.set_details(f"CI {request.id} not found")
                 return cmdb_pb2.CIResponse()
+            before_snapshot = {"name": before.name, "ci_type": before.ci_type, "environment": before.environment}
+
+            owner_team_id = request.owner_team_id if request.HasField("owner_team_id") else None
+            owner_user_id = request.owner_user_id if request.HasField("owner_user_id") else None
+            ci = await update_ci_in_db(db, request.id, request.name, request.ci_type, request.environment, owner_team_id, owner_user_id)
 
             try:
                 await delete_cached(f"ci:{request.id}")
@@ -173,15 +183,29 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
             except Exception as e:
                 print(f"delete_cached misslyckades: {e}")
 
+            await record_audit_event(
+                request.actor_user_id or None, request.actor_email or None,
+                "ci.updated", "ci", ci.id,
+                before=before_snapshot, after={"name": ci.name, "ci_type": ci.ci_type, "environment": ci.environment},
+            )
             return _to_ci_response(ci)
 
     @track_grpc_metrics("cmdb")
     async def DeleteCI(self, request, context):
         async with get_db_context() as db:
+            before = await get_ci_by_id_from_db(db, request.id)
+            if not before:
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details(f"CI {request.id} not found")
+                return cmdb_pb2.Empty()
+            # Snapshot INNAN delete/commit - efter commit är instansen "deleted"-expired och attributen oåtkomliga
+            before_snapshot = {"name": before.name, "ci_type": before.ci_type, "environment": before.environment}
+
             deleted = await delete_ci_from_db(db, request.id)
             if not deleted:
                 context.set_code(grpc.StatusCode.NOT_FOUND)
                 context.set_details(f"CI {request.id} not found")
+                return cmdb_pb2.Empty()
 
             try:
                 await delete_cached(f"ci:{request.id}")
@@ -190,6 +214,12 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
             except Exception as e:
                 print(f"delete_cached misslyckades: {e}")
 
+            await record_audit_event(
+                request.actor_user_id or None, request.actor_email or None,
+                "ci.deleted", "ci", request.id,
+                before=before_snapshot,
+                after=None,
+            )
             return cmdb_pb2.Empty()
 
 async def serve():

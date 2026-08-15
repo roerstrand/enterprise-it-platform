@@ -51,7 +51,7 @@ class ChangeServiceStub:
                 _registered_method=True)
         self.ApproveChange = channel.unary_unary(
                 '/change.ChangeService/ApproveChange',
-                request_serializer=protos_dot_change__pb2.ChangeIdRequest.SerializeToString,
+                request_serializer=protos_dot_change__pb2.ChangeActionRequest.SerializeToString,
                 response_deserializer=protos_dot_change__pb2.ChangeResponse.FromString,
                 _registered_method=True)
         self.GetChangeWithCI = channel.unary_unary(
@@ -114,7 +114,7 @@ def add_ChangeServiceServicer_to_server(servicer, server):
             ),
             'ApproveChange': grpc.unary_unary_rpc_method_handler(
                     servicer.ApproveChange,
-                    request_deserializer=protos_dot_change__pb2.ChangeIdRequest.FromString,
+                    request_deserializer=protos_dot_change__pb2.ChangeActionRequest.FromString,
                     response_serializer=protos_dot_change__pb2.ChangeResponse.SerializeToString,
             ),
             'GetChangeWithCI': grpc.unary_unary_rpc_method_handler(
@@ -229,7 +229,7 @@ class ChangeService:
             request,
             target,
             '/change.ChangeService/ApproveChange',
-            protos_dot_change__pb2.ChangeIdRequest.SerializeToString,
+            protos_dot_change__pb2.ChangeActionRequest.SerializeToString,
             protos_dot_change__pb2.ChangeResponse.FromString,
             options,
             channel_credentials,

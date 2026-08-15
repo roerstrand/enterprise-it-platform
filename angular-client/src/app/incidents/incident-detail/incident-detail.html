@@ -1,0 +1,163 @@
+<div class="page">
+  <a routerLink="/incidents" class="back-link"><mat-icon aria-hidden="true">arrow_back</mat-icon>Back to incidents</a>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (notFound()) {
+    <p class="empty-state">Incident not found.</p>
+  } @else if (incident(); as incident) {
+    <h1 class="page-title">
+      <mat-icon aria-hidden="true">report_problem</mat-icon>
+      #{{ incident.id }} — {{ incident.title }}
+    </h1>
+
+    <div class="detail-grid">
+      <mat-card class="detail-card">
+        <mat-card-header>
+          <mat-card-title>Overview</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <dl class="field-list">
+            <dt>Status</dt>
+            <dd><span [class]="statusClass(incident.status)">{{ incident.status }}</span></dd>
+
+            <dt>Severity</dt>
+            <dd><span [class]="severityClass(incident.severity)">{{ incident.severity }}</span></dd>
+
+            <dt>Description</dt>
+            <dd>{{ incident.description }}</dd>
+
+            <dt>Configuration Item</dt>
+            <dd>{{ incident.ci_name }} · {{ incident.ci_type }} · {{ incident.ci_environment }}</dd>
+
+            <dt>CI owner</dt>
+            <dd>{{ incident.owner_name || '—' }} @if (incident.owner_email) { ({{ incident.owner_email }}) }</dd>
+
+            <dt>Created</dt>
+            <dd>{{ incident.created_at | date: 'medium' }}</dd>
+
+            <dt>Last updated</dt>
+            <dd>{{ incident.updated_at | date: 'medium' }}</dd>
+          </dl>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="detail-card">
+        <mat-card-header>
+          <mat-card-title>AI assistance</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <dl class="field-list">
+            <dt>Summary</dt>
+            <dd>{{ incident.ai_summary || '—' }}</dd>
+
+            <dt>Suggested severity</dt>
+            <dd>
+              @if (incident.ai_suggested_severity) {
+                <span class="actions-cell">
+                  {{ incident.ai_suggested_severity }}
+                  @if (authService.canManage()) {
+                    <button mat-button (click)="onAcceptSeverity()">Accept</button>
+                  }
+                </span>
+              } @else {
+                —
+              }
+            </dd>
+
+            <dt>Suggested status</dt>
+            <dd>
+              @if (incident.ai_suggested_status) {
+                <span class="actions-cell">
+                  {{ incident.ai_suggested_status }}
+                  @if (authService.canManage()) {
+                    <button mat-button (click)="onAcceptStatus()">Accept</button>
+                  }
+                </span>
+              } @else {
+                —
+              }
+            </dd>
+          </dl>
+        </mat-card-content>
+      </mat-card>
+
+      @if (authService.canManage()) {
+        <mat-card class="detail-card">
+          <mat-card-header>
+            <mat-card-title>Lifecycle</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            @if (nextStatuses().length === 0) {
+              <p class="empty-state">No further transitions ({{ incident.status }} is terminal).</p>
+            } @else {
+              <div class="transition-buttons">
+                @for (status of nextStatuses(); track status) {
+                  <button mat-raised-button color="primary" (click)="onTransitionTo(status)">
+                    Mark as {{ status | titlecase }}
+                  </button>
+                }
+              </div>
+            }
+
+            <form [formGroup]="severityForm" (ngSubmit)="onSeveritySubmit()" class="severity-form">
+              <mat-form-field appearance="outline" class="field-narrow">
+                <mat-label>Severity</mat-label>
+                <mat-select formControlName="severity">
+                  @for (level of severities; track level) {
+                    <mat-option [value]="level">{{ level | titlecase }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <button mat-button type="submit" [disabled]="severityForm.invalid">Update severity</button>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+
+    @if (authService.canManage()) {
+      <mat-card class="detail-card">
+        <mat-card-header>
+          <mat-card-title>Add update</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="updateForm" (ngSubmit)="onUpdateSubmit()" class="form-grid-inline">
+            <mat-form-field appearance="outline">
+              <mat-label>Update text</mat-label>
+              <input matInput formControlName="text" placeholder="The issue has been fixed." />
+            </mat-form-field>
+            <button mat-raised-button color="primary" type="submit" [disabled]="updateForm.invalid">
+              Add update
+            </button>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <mat-card-title>History</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (updates().length === 0) {
+          <p class="empty-state">No updates yet.</p>
+        } @else {
+          <ul class="timeline">
+            @for (update of updates(); track update.id) {
+              <li class="timeline-item">
+                <div class="timeline-meta">
+                  <span class="timeline-author">{{ authorLabel(update) }}</span>
+                  <span class="timeline-date">{{ update.created_at | date: 'medium' }}</span>
+                </div>
+                <p class="timeline-text">{{ update.text }}</p>
+              </li>
+            }
+          </ul>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

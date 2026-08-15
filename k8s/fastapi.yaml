@@ -49,6 +49,11 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: CHANGE_SERVICE_ADDR
+            - name: AUDIT_SERVICE_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: AUDIT_SERVICE_ADDR
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               valueFrom:
                 configMapKeyRef:

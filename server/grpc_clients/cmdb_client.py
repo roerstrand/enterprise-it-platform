@@ -35,9 +35,9 @@ async def list_cis():
         raise CmdbServiceUnavailable(str(e))
     return [_to_dict(ci) for ci in response.cis]
 
-async def create_ci(name: str, ci_type: str, environment: str, owner_user_id: int | None = None):
+async def create_ci(name: str, ci_type: str, environment: str, owner_user_id: int | None = None, actor_user_id: int | None = None, actor_email: str | None = None):
     try:
-        request = cmdb_pb2.CreateCIRequest(name=name, ci_type=ci_type, environment=environment)
+        request = cmdb_pb2.CreateCIRequest(name=name, ci_type=ci_type, environment=environment, actor_user_id=actor_user_id or 0, actor_email=actor_email or "")
         if owner_user_id is not None:
             request.owner_user_id = owner_user_id
         response = await _get_stub().CreateCI(request)
@@ -46,9 +46,9 @@ async def create_ci(name: str, ci_type: str, environment: str, owner_user_id: in
         raise CmdbServiceUnavailable(str(e))
     return _to_dict(response)
 
-async def update_ci(ci_id: int, name: str, ci_type: str, environment: str, owner_user_id: int | None = None):
+async def update_ci(ci_id: int, name: str, ci_type: str, environment: str, owner_user_id: int | None = None, actor_user_id: int | None = None, actor_email: str | None = None):
     try:
-        request = cmdb_pb2.UpdateCIRequest(id=ci_id, name=name, ci_type=ci_type, environment=environment)
+        request = cmdb_pb2.UpdateCIRequest(id=ci_id, name=name, ci_type=ci_type, environment=environment, actor_user_id=actor_user_id or 0, actor_email=actor_email or "")
         if owner_user_id is not None:
             request.owner_user_id = owner_user_id
         response = await _get_stub().UpdateCI(request)
@@ -57,9 +57,9 @@ async def update_ci(ci_id: int, name: str, ci_type: str, environment: str, owner
         raise CmdbServiceUnavailable(str(e))
     return _to_dict(response)
 
-async def delete_ci(ci_id: int):
+async def delete_ci(ci_id: int, actor_user_id: int | None = None, actor_email: str | None = None):
     try:
-        await _get_stub().DeleteCI(cmdb_pb2.CIIdRequest(id=ci_id))
+        await _get_stub().DeleteCI(cmdb_pb2.CIActionRequest(id=ci_id, actor_user_id=actor_user_id or 0, actor_email=actor_email or ""))
     except grpc.RpcError as e:
         print(f"gRPC-fel: {e.code()} {e.details()}")
         raise CmdbServiceUnavailable(str(e))

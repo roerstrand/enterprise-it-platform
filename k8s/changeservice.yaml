@@ -29,6 +29,11 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: CMDB_SERVICE_ADDR
+            - name: AUDIT_SERVICE_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: AUDIT_SERVICE_ADDR
           resources:
             requests:
               memory: "192Mi"

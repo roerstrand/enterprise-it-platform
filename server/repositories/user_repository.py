@@ -19,10 +19,20 @@ async def get_user_by_email_from_db(db: AsyncSession, email: str):
     )
     return result.scalars().first()
 
-async def create_user_in_db(db: AsyncSession, name, email, hashed_password):
-    user = UserModel(name=name, email=email, hashed_password=hashed_password)
+async def create_user_in_db(db: AsyncSession, name, email, hashed_password, role="viewer"):
+    user = UserModel(name=name, email=email, hashed_password=hashed_password, role=role)
     db.add(user)
     await db.commit()
+    return user
+
+async def update_user_role_in_db(db: AsyncSession, user_id: int, role: str):
+    result = await db.execute(
+        select(UserModel).where(UserModel.id == user_id)
+    )
+    user = result.scalars().first()
+    if user:
+        user.role = role
+        await db.commit()
     return user
 
 async def delete_user_from_db(db: AsyncSession, user_id):

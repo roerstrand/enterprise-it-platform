@@ -35,19 +35,22 @@ async def list_changes():
         raise ChangeServiceUnavailable(str(e))
     return [_to_dict(c) for c in response.changes]
 
-async def create_change(title: str, description: str, risk_level: str, ci_id: int):
+async def create_change(title: str, description: str, risk_level: str, ci_id: int, actor_user_id: int | None = None, actor_email: str | None = None):
     try:
         response = await _get_stub().CreateChange(change_pb2.CreateChangeRequest(
-            title=title, description=description, risk_level=risk_level, ci_id=ci_id
+            title=title, description=description, risk_level=risk_level, ci_id=ci_id,
+            actor_user_id=actor_user_id or 0, actor_email=actor_email or "",
         ))
     except grpc.RpcError as e:
         print(f"gRPC-fel: {e.code()} {e.details()}")
         raise ChangeServiceUnavailable(str(e))
     return _to_dict(response)
 
-async def approve_change(change_id: int):
+async def approve_change(change_id: int, actor_user_id: int | None = None, actor_email: str | None = None):
     try:
-        response = await _get_stub().ApproveChange(change_pb2.ChangeIdRequest(id=change_id))
+        response = await _get_stub().ApproveChange(change_pb2.ChangeActionRequest(
+            id=change_id, actor_user_id=actor_user_id or 0, actor_email=actor_email or "",
+        ))
     except grpc.RpcError as e:
         print(f"gRPC-fel: {e.code()} {e.details()}")
         raise ChangeServiceUnavailable(str(e))

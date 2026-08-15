@@ -1,0 +1,32 @@
+.filter-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+}
+
+.col-timestamp {
+  width: 180px;
+}
+
+.col-changes {
+  max-width: 360px;
+}
+
+.changes-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.changes-before {
+  color: #c62828;
+  text-decoration: line-through;
+}
+
+.changes-after {
+  color: #1e7e34;
+}

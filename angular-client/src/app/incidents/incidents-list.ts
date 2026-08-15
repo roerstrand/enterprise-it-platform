@@ -1,26 +1,35 @@
 import { Component, OnInit, signal } from '@angular/core';
+import { TitleCasePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { IncidentService } from './incident.service';
 import { Incident, IncidentUpdate } from './incident';
+import { CIService } from '../cis/ci.service';
+import { CI } from '../cis/ci';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
     selector: 'app-incidents-list',
     imports: [
         ReactiveFormsModule,
+        RouterLink,
         MatTableModule,
         MatProgressSpinnerModule,
         MatFormFieldModule,
         MatInputModule,
+        MatSelectModule,
         MatButtonModule,
         MatCardModule,
-        MatIconModule
+        MatIconModule,
+        TitleCasePipe
     ],
     templateUrl: './incidents-list.html',
     styleUrl: './incidents-list.scss'
@@ -28,10 +37,17 @@ import { Incident, IncidentUpdate } from './incident';
 
 export class IncidentsList implements OnInit {
     protected readonly incidents = signal<Incident[]>([]);
+    protected readonly cis = signal<CI[]>([]);
     protected readonly loading = signal(true);
+    // ai_suggested_severity + ai_suggested_status slås ihop till en kolumn (ai_suggestions) i
+    // .html - två separata kolumner tog för mycket bredd för hur sällan/kort innehållet är
     protected readonly displayedColumns = [
-      'id', 'title', 'description', 'status', 'severity', 'ai_suggested_severity', 'ai_suggested_status', 'ai_summary', 'actions'
+      'id', 'title', 'description', 'status', 'severity', 'ai_suggestions', 'ai_summary', 'actions'
     ];
+
+    // Backend validerar mot exakt dessa värden (server/domain/incident_lifecycle.py:SEVERITIES),
+    // lagras alltid lowercase - se severity-selecten i .html
+    protected readonly severities = ['low', 'medium', 'high', 'critical'];
 
     // null = inget under redigering, annars id:t för raden vars edit-formulär ska visas
     protected readonly editingId = signal<number | null>(null);
@@ -44,7 +60,7 @@ export class IncidentsList implements OnInit {
     protected readonly updateForm: FormGroup;
     protected readonly editForm: FormGroup;
 
-    constructor(private incidentService: IncidentService, formBuilder: FormBuilder) {
+    constructor(private incidentService: IncidentService, private ciService: CIService, formBuilder: FormBuilder, protected authService: AuthService) {
         this.createForm = formBuilder.group({
             title: ['', Validators.required],
             description: ['', Validators.required],
@@ -67,6 +83,16 @@ export class IncidentsList implements OnInit {
 
     ngOnInit(): void {
         this.loadIncidents();
+        // CI-listan behövs bara för Create/Edit-formulärens CI-select, ingen loading-state
+        // krävs för den - formuläret fungerar (fast tomt) tills den kommit tillbaka
+        this.ciService.list().subscribe({
+            next: (cis) => this.cis.set(cis)
+        });
+    }
+
+    // Visningstext i CI-selecten, t.ex. "db-02 (server · production)"
+    protected ciLabel(ci: CI): string {
+        return `${ci.name} (${ci.ci_type} · ${ci.environment})`;
     }
 
     private loadIncidents(): void {
