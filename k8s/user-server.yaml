@@ -31,7 +31,20 @@ spec:
                   name: app-secrets
                   key: SECRET_KEY
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
-              value: "jaeger:4317"
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: OTEL_EXPORTER_OTLP_ENDPOINT
+          livenessProbe:
+            grpc:
+              port: 50051
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          readinessProbe:
+            grpc:
+              port: 50051
+            initialDelaySeconds: 5
+            periodSeconds: 10
 ---
 apiVersion: v1
 kind: Service

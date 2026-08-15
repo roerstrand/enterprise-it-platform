@@ -1,12 +1,14 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { UserService } from './user.service';
 import { User } from './user';
 
 @Component({
     selector: 'app-users-list',
-    imports: [MatTableModule, MatProgressSpinnerModule],
+    imports: [MatTableModule, MatProgressSpinnerModule, MatCardModule, MatIconModule],
     templateUrl: './users-list.html',
     styleUrl: './users-list.scss'
 })
