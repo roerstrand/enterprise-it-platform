@@ -10,3 +10,9 @@ export interface Incident {
     ai_suggested_severity: string;
     ai_suggested_status: string;
 }
+
+export interface IncidentUpdate {
+    id: number;
+    incident_id: number;
+    text: string;
+}

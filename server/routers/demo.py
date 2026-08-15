@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import FileResponse
 
 from grpc_clients.user_client import list_users, create_user, login, UserServiceUnavailable, InvalidCredentials
-from grpc_clients.incident_client import list_incidents, create_incident, add_incident_update, accept_suggested_severity, accept_suggested_status, update_incident, delete_incident, IncidentServiceUnavailable
+from grpc_clients.incident_client import list_incidents, create_incident, add_incident_update, get_incident_updates, accept_suggested_severity, accept_suggested_status, update_incident, delete_incident, IncidentServiceUnavailable
 from grpc_clients.cmdb_client import list_cis, create_ci, update_ci, delete_ci, CmdbServiceUnavailable
 from grpc_clients.change_client import list_changes, create_change, approve_change, ChangeServiceUnavailable
 from schemas.user_create import UserCreateSchema
@@ -67,6 +67,13 @@ async def api_create_incident(incident: IncidentCreateSchema):
 async def api_add_incident_update(incident_id: int, update: IncidentUpdateCreateSchema):
     try:
         return await add_incident_update(incident_id, update.text)
+    except IncidentServiceUnavailable:
+        raise HTTPException(status_code=503, detail="gRPC service is down")
+
+@router.get("/api/incidents/{incident_id}/updates")
+async def api_list_incident_updates(incident_id: int):
+    try:
+        return await get_incident_updates(incident_id)
     except IncidentServiceUnavailable:
         raise HTTPException(status_code=503, detail="gRPC service is down")
 

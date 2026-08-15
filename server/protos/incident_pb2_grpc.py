@@ -59,6 +59,11 @@ class IncidentServiceStub:
                 request_serializer=protos_dot_incident__pb2.AddIncidentUpdateRequest.SerializeToString,
                 response_deserializer=protos_dot_incident__pb2.IncidentResponse.FromString,
                 _registered_method=True)
+        self.GetIncidentUpdates = channel.unary_unary(
+                '/incident.IncidentService/GetIncidentUpdates',
+                request_serializer=protos_dot_incident__pb2.IncidentIdRequest.SerializeToString,
+                response_deserializer=protos_dot_incident__pb2.IncidentUpdateList.FromString,
+                _registered_method=True)
         self.AcceptSuggestedSeverity = channel.unary_unary(
                 '/incident.IncidentService/AcceptSuggestedSeverity',
                 request_serializer=protos_dot_incident__pb2.IncidentIdRequest.SerializeToString,
@@ -109,6 +114,12 @@ class IncidentServiceServicer:
         raise NotImplementedError('Method not implemented!')
 
     def AddIncidentUpdate(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetIncidentUpdates(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -165,6 +176,11 @@ def add_IncidentServiceServicer_to_server(servicer, server):
                     servicer.AddIncidentUpdate,
                     request_deserializer=protos_dot_incident__pb2.AddIncidentUpdateRequest.FromString,
                     response_serializer=protos_dot_incident__pb2.IncidentResponse.SerializeToString,
+            ),
+            'GetIncidentUpdates': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetIncidentUpdates,
+                    request_deserializer=protos_dot_incident__pb2.IncidentIdRequest.FromString,
+                    response_serializer=protos_dot_incident__pb2.IncidentUpdateList.SerializeToString,
             ),
             'AcceptSuggestedSeverity': grpc.unary_unary_rpc_method_handler(
                     servicer.AcceptSuggestedSeverity,
@@ -322,6 +338,33 @@ class IncidentService:
             '/incident.IncidentService/AddIncidentUpdate',
             protos_dot_incident__pb2.AddIncidentUpdateRequest.SerializeToString,
             protos_dot_incident__pb2.IncidentResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetIncidentUpdates(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/incident.IncidentService/GetIncidentUpdates',
+            protos_dot_incident__pb2.IncidentIdRequest.SerializeToString,
+            protos_dot_incident__pb2.IncidentUpdateList.FromString,
             options,
             channel_credentials,
             insecure,

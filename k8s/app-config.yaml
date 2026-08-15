@@ -9,4 +9,4 @@ data:
   INCIDENT_SERVICE_ADDR: "incident-server:50053"
   CHANGE_SERVICE_ADDR: "change-service:50054"
   REDIS_URL: "redis://redis:6379/0"
-  
+  AI_SERVICE_URL: "http://host.docker.internal:51298/v1"

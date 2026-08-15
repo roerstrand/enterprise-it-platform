@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: incident-server
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: incident-server
@@ -30,6 +30,11 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: CMDB_SERVICE_ADDR
+            - name: AI_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: AI_SERVICE_URL
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               valueFrom:
                 configMapKeyRef:
@@ -45,6 +50,13 @@ spec:
               port: 50053
             initialDelaySeconds: 5
             periodSeconds: 10
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
 ---
 apiVersion: v1
 kind: Service

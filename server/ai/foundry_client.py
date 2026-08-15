@@ -1,7 +1,8 @@
+import os
 from openai import OpenAI
 
 MODEL_ID = "mistralai-Mistral-7B-Instruct-v0-2-generic-cpu"
-BASE_URL = "http://127.0.0.1:51298/v1"
+BASE_URL = os.getenv("AI_SERVICE_URL", "http://127.0.0.1:51298/v1")  # fallback funkar när servern körs lokalt utanför k8s
 VALID_STATUSES = {"OPEN", "IN_PROGRESS", "RESOLVED"}
 
 def _build_context_block(ci_name: str | None, ci_environment: str | None, owner_name: str | None) -> str:
