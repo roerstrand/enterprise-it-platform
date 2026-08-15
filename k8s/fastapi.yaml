@@ -30,16 +30,30 @@ spec:
                   name: app-secrets
                   key: SECRET_KEY
             - name: USER_SERVICE_ADDR
-              value: "user-server:50051"
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: USER_SERVICE_ADDR
             - name: INCIDENT_SERVICE_ADDR
-              value: "incident-server:50053"
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: INCIDENT_SERVICE_ADDR
             - name: CMDB_SERVICE_ADDR
-              value: "cmdb-server:50052"
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: CMDB_SERVICE_ADDR
             - name: CHANGE_SERVICE_ADDR
-              value: "change-service:50054"
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: CHANGE_SERVICE_ADDR
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
-              value: "jaeger:4317"
----
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: OTEL_EXPORTER_OTLP_ENDPOINT---
 apiVersion: v1
 kind: Service
 metadata:

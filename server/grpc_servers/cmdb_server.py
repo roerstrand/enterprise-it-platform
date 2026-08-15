@@ -11,6 +11,7 @@ from protos import cmdb_pb2_grpc
 from protos import user_pb2
 from protos import user_pb2_grpc
 
+from grpc_health.v1 import health, health_pb2, health_pb2_grpc
 
 from repositories.cmdb_repository import (
     create_ci_in_db,
@@ -196,6 +197,11 @@ async def serve():
     start_http_server(9102)
     server = grpc.aio.server()
     cmdb_pb2_grpc.add_CmdbServiceServicer_to_server(CmdbServiceServicer(), server)
+
+    health_servicer = health.aio.HealthServicer()
+    health_pb2_grpc.add_HealthServicer_to_server(health_servicer, server)
+    health_servicer.set("", health_pb2.HealthCheckResponse.SERVING)
+    
     server.add_insecure_port("[::]:50052")
     await server.start()
     await server.wait_for_termination()

@@ -7,6 +7,8 @@ CMDB_SERVICE_ADDR = os.getenv("CMDB_SERVICE_ADDR", "localhost:50052")
 
 from protos import incident_pb2, incident_pb2_grpc, cmdb_pb2, cmdb_pb2_grpc
 
+from grpc_health.v1 import health, health_pb2, health_pb2_grpc
+
 from repositories.incident_repository import (
     create_incident_in_db,
     get_incident_by_id_from_db,
@@ -218,6 +220,11 @@ async def serve():
     start_http_server(9103)
     server = grpc.aio.server()
     incident_pb2_grpc.add_IncidentServiceServicer_to_server(IncidentServiceServicer(), server)
+
+    health_servicer = health.aio.HealthServicer()
+    health_pb2_grpc.add_HealthServicer_to_server(health_servicer, server)
+    health_servicer.set("", health_pb2.HealthCheckResponse.SERVING)
+
     server.add_insecure_port("[::]:50053")
     await server.start()
     await server.wait_for_termination()

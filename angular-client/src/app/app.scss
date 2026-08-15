@@ -1,4 +1,96 @@
-.active-link {
-    background-color: rgb(210, 139, 139, 50%);
-    border-radius: 4px;
+// :host = komponentens eget rot-element (<app-root>). Måste sättas explicit
+// eftersom en custom element annars är display:inline som standard och inte
+// sträcker sig till full höjd.
+:host {
+  display: block;
+  height: 100%;
+}
+
+.app-shell {
+  display: flex;
+  height: 100%;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  flex: 0 0 240px;
+  background-color: #14181f;
+  color: #cbd2dc;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 12px;
+  box-sizing: border-box;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  padding: 0 8px 20px;
+}
+
+.sidebar-brand mat-icon {
+  color: var(--mat-sys-primary);
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  // 3px mindre padding-left än höger/topp/botten - kompenserar för den 3px
+  // vänsterkant (border-left) den aktiva länken får, så texten inte hoppar sidledes
+  padding: 8px 10px 8px 7px;
+  border-left: 3px solid transparent;
+  border-radius: 6px;
+  color: #9aa4b5;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.sidebar-link mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.sidebar-link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.sidebar-link:focus-visible {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: -2px;
+}
+
+// routerLinkActive="active" sätter den här klassen på länken vars route matchar aktuell URL.
+// Dämpad bakgrund + en vänsterkant i accentfärgen, istället för ett fyllt färgblock
+// - matchar hur t.ex. VS Code/GitHub markerar aktivt nav-val i en enterprise-kontext.
+.sidebar-link.active {
+  background-color: rgba(255, 255, 255, 0.07);
+  border-left-color: var(--mat-sys-primary);
+  color: #fff;
+}
+
+.app-main {
+  flex: 1 1 auto;
+  // Ljust neutralt grå, inte rent vitt - så vita kort faktiskt syns mot bakgrunden
+  background-color: #f5f6f8;
+  min-height: 100vh;
+  overflow-x: hidden;
 }

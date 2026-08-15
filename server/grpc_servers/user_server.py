@@ -4,6 +4,8 @@ import grpc
 from protos import user_pb2
 from protos import user_pb2_grpc
 
+from grpc_health.v1 import health, health_pb2, health_pb2_grpc
+
 from repositories.user_repository import (
     get_all_users_from_db,
     get_user_by_id_from_db,
@@ -64,6 +66,11 @@ async def serve():
     start_http_server(9101)
     server = grpc.aio.server()
     user_pb2_grpc.add_UserServiceServicer_to_server(UserServiceServicer(), server)
+
+    health_servicer = health.aio.HealthServicer()
+    health_pb2_grpc.add_HealthServicer_to_server(health_servicer, server)
+    health_servicer.set("", health_pb2.HealthCheckResponse.SERVING)
+    
     server.add_insecure_port("[::]:50051")
     await server.start()
     await server.wait_for_termination()

@@ -5,6 +5,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { IncidentService } from './incident.service';
 import { Incident } from './incident';
 
@@ -16,8 +18,10 @@ import { Incident } from './incident';
         MatProgressSpinnerModule,
         MatFormFieldModule,
         MatInputModule,
-        MatButtonModule
-    ], 
+        MatButtonModule,
+        MatCardModule,
+        MatIconModule
+    ],
     templateUrl: './incidents-list.html',
     styleUrl: './incidents-list.scss'
 })
@@ -148,5 +152,15 @@ export class IncidentsList implements OnInit {
         this.incidentService.delete(incidentId).subscribe({
             next: () => this.loadIncidents()
         });
+    }
+
+    // Bygger CSS-klassnamnet till .chip-severity-low/medium/high/critical i styles.scss utifrån backend-strängen
+    protected severityClass(severity: string): string {
+        return `chip chip-severity-${(severity || '').toLowerCase()}`;
+    }
+
+    // Samma mönster för status (open/in_progress/resolved/closed)
+    protected statusClass(status: string): string {
+        return `chip chip-status-${(status || '').toLowerCase()}`;
     }
 }

@@ -37,3 +37,205 @@ body {
   height: 100%;
 }
 /* You can add global styles to this file, and also import other style files */
+
+// ---- Delade layout-klasser för alla listsidor (Users/CIs/Incidents) ----
+// Ligger globalt istället för i varje komponents egen .scss, eftersom
+// Angulars style-encapsulation annars skulle kräva att samma regler
+// duplicerades i tre filer.
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px 32px;
+  box-sizing: border-box;
+}
+
+.page-title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  // Egna, mindre värden istället för --mat-sys-headline-medium (~28-36px) -
+  // den tokenen är dimensionerad för marknadssidor, inte en app-sidhuvud
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--mat-sys-on-surface);
+}
+
+.page-title mat-icon {
+  color: var(--mat-sys-primary);
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.form-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.form-card {
+  flex: 1 1 320px;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.form-card,
+.table-card {
+  // --mdc-elevated-card-container-elevation är samma CSS-variabel Material
+  // själv använder för sin (ganska kraftiga) default-skugga, så vi skriver
+  // över den med en egen, mycket svagare skugga + mjuk kantlinje istället.
+  --mdc-elevated-card-container-elevation: none;
+  --mat-card-title-text-size: 15px;
+  --mat-card-title-text-weight: 600;
+  border: 1px solid rgba(16, 24, 40, 0.08);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  transition: border-color 0.15s ease;
+}
+
+.table-card {
+  padding: 0;
+  // Klipper tabellens raka hörn mot kortets egna rundade hörn
+  overflow: hidden;
+}
+
+.table-scroll {
+  // Låter breda tabeller scrolla horisontellt istället för att trycka ut sidan
+  overflow-x: auto;
+}
+
+.table-scroll table {
+  width: 100%;
+}
+
+.table-scroll tr.mat-mdc-row {
+  transition: background-color 0.12s ease;
+}
+
+.table-scroll tr.mat-mdc-row:hover {
+  background-color: var(--mat-sys-surface-container-high);
+}
+
+// Synligt fokus-ringar för tangentbordsnavigering - Material har egna, men
+// länkar utanför Material-komponenter (t.ex. sidebar-nav) behöver egna
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 2px;
+}
+
+.table-scroll th.mat-mdc-header-cell {
+  // Hierarki via typografi (versaler, brett bokstavsmellanrum, dämpad färg) +
+  // en mjuk kantlinje istället för ett fyllt färgblock - Stripe/Linear-mönster
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid rgba(16, 24, 40, 0.08);
+}
+
+.table-scroll td.mat-mdc-cell,
+.table-scroll th.mat-mdc-header-cell {
+  // Tätare radhöjd - en driftsverktygstabell ska rymma mycket, inte kännas som en marknadssida
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-size: 13px;
+}
+
+.table-scroll td.mat-mdc-cell {
+  // Explicit istället för att förlita sig på nedärvning - annars kan enskilda
+  // celler (t.ex. siffror/e-post) plocka upp länkfärg från webbläsarens egna
+  // heuristik för "detekterbar" text istället för temats textfärg
+  color: var(--mat-sys-on-surface);
+}
+
+.mono {
+  // Fast breddsteg för siffror i tabeller - de radar upp sig rakt under varandra
+  font-family: 'Roboto Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+// Färgade status/severity-"pills" - samma semantiska färger oavsett tema,
+// därför fasta hex-värden istället för --mat-sys-*-tokens (som byter ton i mörkt läge)
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  // Liten badge-radius istället för en full pill - pills läser mer "konsument-app",
+  // små rektangulära badges är standard i drifts-/ITSM-verktyg (Jira, ServiceNow, Datadog)
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.7;
+}
+
+.chip-severity-low,
+.chip-status-resolved,
+.chip-status-closed {
+  background-color: #e6f4ea;
+  color: #1e7e34;
+}
+
+.chip-severity-medium,
+.chip-status-in_progress {
+  background-color: #fff4e5;
+  color: #b5650a;
+}
+
+.chip-severity-high,
+.chip-status-open {
+  background-color: #fdecea;
+  color: #c62828;
+}
+
+.chip-severity-critical {
+  background-color: #f8d7da;
+  color: #7a0d16;
+}
+
+.chip-severity-,
+.chip-status- {
+  background-color: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.wrap-cell {
+  // Radbryt lång text (beskrivningar, AI-sammanfattningar) istället för att tvinga fram en jättebred kolumn
+  white-space: normal;
+  max-width: 280px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 48px 0;
+}
+
+.empty-state {
+  padding: 32px;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+}
