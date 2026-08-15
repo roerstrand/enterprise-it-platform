@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: change-service
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: change-service
@@ -28,7 +28,15 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   name: app-config
-                  key: CMDB_SERVICE_ADDR---
+                  key: CMDB_SERVICE_ADDR
+          resources:
+            requests:
+              memory: "192Mi"
+              cpu: "100m"
+            limits:
+              memory: "384Mi"
+              cpu: "250m"
+---
 apiVersion: v1
 kind: Service
 metadata:

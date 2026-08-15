@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: user-server
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: user-server
@@ -45,6 +45,13 @@ spec:
               port: 50051
             initialDelaySeconds: 5
             periodSeconds: 10
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
 ---
 apiVersion: v1
 kind: Service

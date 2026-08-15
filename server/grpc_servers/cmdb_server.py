@@ -200,7 +200,7 @@ async def serve():
 
     health_servicer = health.aio.HealthServicer()
     health_pb2_grpc.add_HealthServicer_to_server(health_servicer, server)
-    health_servicer.set("", health_pb2.HealthCheckResponse.SERVING)
+    await health_servicer.set("", health_pb2.HealthCheckResponse.SERVING)
     
     server.add_insecure_port("[::]:50052")
     await server.start()

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Incident } from './incident';
+import { Incident, IncidentUpdate } from './incident';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -27,6 +27,10 @@ export class IncidentService {
         return this.http.post<Incident>(`${this.baseUrl}/${incidentId}/updates`, {
             text
         });
+    }
+
+    getUpdates(incidentId: number): Observable<IncidentUpdate[]> {
+        return this.http.get<IncidentUpdate[]>(`${this.baseUrl}/${incidentId}/updates`);
     }
 
     acceptSeverity(incidentId: number): Observable<Incident> {

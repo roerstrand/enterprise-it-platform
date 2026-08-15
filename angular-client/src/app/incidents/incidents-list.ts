@@ -8,7 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { IncidentService } from './incident.service';
-import { Incident } from './incident';
+import { Incident, IncidentUpdate } from './incident';
 
 @Component({
     selector: 'app-incidents-list',
@@ -35,6 +35,10 @@ export class IncidentsList implements OnInit {
 
     // null = inget under redigering, annars id:t för raden vars edit-formulär ska visas
     protected readonly editingId = signal<number | null>(null);
+
+    // null = ingen updates-historik visas just nu, annars id:t för raden
+    protected readonly viewingUpdatesId = signal<number | null>(null);
+    protected readonly incidentUpdates = signal<IncidentUpdate[]>([]);
 
     protected readonly createForm: FormGroup;
     protected readonly updateForm: FormGroup;
@@ -129,6 +133,18 @@ export class IncidentsList implements OnInit {
 
     protected onEditCancel(): void {
         this.editingId.set(null);
+    }
+
+    protected onViewUpdates(incidentId: number): void {
+        // toggle: klick på samma rad igen stänger listan
+        if (this.viewingUpdatesId() === incidentId) {
+            this.viewingUpdatesId.set(null);
+            return;
+        }
+        this.viewingUpdatesId.set(incidentId);
+        this.incidentService.getUpdates(incidentId).subscribe({
+            next: (updates) => this.incidentUpdates.set(updates)
+        });
     }
 
     protected onEditSubmit(): void {

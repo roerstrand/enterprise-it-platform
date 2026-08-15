@@ -172,6 +172,15 @@ class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
         return response
 
     @track_grpc_metrics("Incident")
+    async def GetIncidentUpdates(self, request, context):
+        async with get_db_context() as db:
+            updates = await get_updates_for_incident_from_db(db, request.id)
+            return incident_pb2.IncidentUpdateList(updates=[
+                incident_pb2.IncidentUpdateResponse(id=u.id, incident_id=u.incident_id, text=u.text)
+                for u in updates
+            ])
+
+    @track_grpc_metrics("Incident")
     async def AcceptSuggestedSeverity(self, request, context):
         async with get_db_context() as db:
             await accept_incident_suggested_severity(db, request.id)
@@ -223,7 +232,7 @@ async def serve():
 
     health_servicer = health.aio.HealthServicer()
     health_pb2_grpc.add_HealthServicer_to_server(health_servicer, server)
-    health_servicer.set("", health_pb2.HealthCheckResponse.SERVING)
+    await health_servicer.set("", health_pb2.HealthCheckResponse.SERVING)
 
     server.add_insecure_port("[::]:50053")
     await server.start()
