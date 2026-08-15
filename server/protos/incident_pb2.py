@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15protos/incident.proto\x12\x08incident\"\x07\n\x05\x45mpty\"\x1f\n\x11IncidentIdRequest\x12\n\n\x02id\x18\x01 \x01(\x05\"=\n\x18\x41\x64\x64IncidentUpdateRequest\x12\x13\n\x0bincident_id\x18\x01 \x01(\x05\x12\x0c\n\x04text\x18\x02 \x01(\t\"G\n\x16IncidentUpdateResponse\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x13\n\x0bincident_id\x18\x02 \x01(\x05\x12\x0c\n\x04text\x18\x03 \x01(\t\"G\n\x12IncidentUpdateList\x12\x31\n\x07updates\x18\x01 \x03(\x0b\x32 .incident.IncidentUpdateResponse\"\\\n\x15\x43reateIncidentRequest\x12\r\n\x05title\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x10\n\x08severity\x18\x03 \x01(\t\x12\r\n\x05\x63i_id\x18\x04 \x01(\x05\"h\n\x15UpdateIncidentRequest\x12\n\n\x02id\x18\x01 \x01(\x05\x12\r\n\x05title\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x10\n\x08severity\x18\x04 \x01(\t\x12\r\n\x05\x63i_id\x18\x05 \x01(\x05\"\xde\x01\n\x10IncidentResponse\x12\n\n\x02id\x18\x01 \x01(\x05\x12\r\n\x05title\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x0e\n\x06status\x18\x04 \x01(\t\x12\x10\n\x08severity\x18\x05 \x01(\t\x12\r\n\x05\x63i_id\x18\x06 \x01(\x05\x12\x12\n\nai_summary\x18\x07 \x01(\t\x12\x19\n\x11\x61i_summary_status\x18\x08 \x01(\t\x12\x1d\n\x15\x61i_suggested_severity\x18\t \x01(\t\x12\x1b\n\x13\x61i_suggested_status\x18\n \x01(\t\"=\n\x0cIncidentList\x12-\n\tincidents\x18\x01 \x03(\x0b\x32\x1a.incident.IncidentResponse\"\x98\x01\n\x16IncidentWithCIResponse\x12,\n\x08incident\x18\x01 \x01(\x0b\x32\x1a.incident.IncidentResponse\x12\x0f\n\x07\x63i_name\x18\x02 \x01(\t\x12\x16\n\x0e\x63i_environment\x18\x03 \x01(\t\x12\x12\n\nowner_name\x18\x04 \x01(\t\x12\x13\n\x0bowner_email\x18\x05 \x01(\t2\x91\x06\n\x0fIncidentService\x12M\n\x0e\x43reateIncident\x12\x1f.incident.CreateIncidentRequest\x1a\x1a.incident.IncidentResponse\x12\x46\n\x0bGetIncident\x12\x1b.incident.IncidentIdRequest\x1a\x1a.incident.IncidentResponse\x12\x38\n\rListIncidents\x12\x0f.incident.Empty\x1a\x16.incident.IncidentList\x12R\n\x11GetIncidentWithCI\x12\x1b.incident.IncidentIdRequest\x1a .incident.IncidentWithCIResponse\x12S\n\x11\x41\x64\x64IncidentUpdate\x12\".incident.AddIncidentUpdateRequest\x1a\x1a.incident.IncidentResponse\x12O\n\x12GetIncidentUpdates\x12\x1b.incident.IncidentIdRequest\x1a\x1c.incident.IncidentUpdateList\x12R\n\x17\x41\x63\x63\x65ptSuggestedSeverity\x12\x1b.incident.IncidentIdRequest\x1a\x1a.incident.IncidentResponse\x12P\n\x15\x41\x63\x63\x65ptSuggestedStatus\x12\x1b.incident.IncidentIdRequest\x1a\x1a.incident.IncidentResponse\x12M\n\x0eUpdateIncident\x12\x1f.incident.UpdateIncidentRequest\x1a\x1a.incident.IncidentResponse\x12>\n\x0e\x44\x65leteIncident\x12\x1b.incident.IncidentIdRequest\x1a\x0f.incident.Emptyb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15protos/incident.proto\x12\x08incident\"\x07\n\x05\x45mpty\"\x1f\n\x11IncidentIdRequest\x12\n\n\x02id\x18\x01 \x01(\x05\"O\n\x15IncidentActionRequest\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x15\n\ractor_user_id\x18\x02 \x01(\x05\x12\x13\n\x0b\x61\x63tor_email\x18\x03 \x01(\t\"i\n\x18\x41\x64\x64IncidentUpdateRequest\x12\x13\n\x0bincident_id\x18\x01 \x01(\x05\x12\x0c\n\x04text\x18\x02 \x01(\t\x12\x15\n\ractor_user_id\x18\x03 \x01(\x05\x12\x13\n\x0b\x61\x63tor_email\x18\x04 \x01(\t\"\x89\x01\n\x16IncidentUpdateResponse\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x13\n\x0bincident_id\x18\x02 \x01(\x05\x12\x0c\n\x04text\x18\x03 \x01(\t\x12\x16\n\x0e\x61uthor_user_id\x18\x04 \x01(\x05\x12\x14\n\x0c\x61uthor_email\x18\x05 \x01(\t\x12\x12\n\ncreated_at\x18\x06 \x01(\t\"G\n\x12IncidentUpdateList\x12\x31\n\x07updates\x18\x01 \x03(\x0b\x32 .incident.IncidentUpdateResponse\"\x88\x01\n\x15\x43reateIncidentRequest\x12\r\n\x05title\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x10\n\x08severity\x18\x03 \x01(\t\x12\r\n\x05\x63i_id\x18\x04 \x01(\x05\x12\x15\n\ractor_user_id\x18\x05 \x01(\x05\x12\x13\n\x0b\x61\x63tor_email\x18\x06 \x01(\t\"\x94\x01\n\x15UpdateIncidentRequest\x12\n\n\x02id\x18\x01 \x01(\x05\x12\r\n\x05title\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x10\n\x08severity\x18\x04 \x01(\t\x12\r\n\x05\x63i_id\x18\x05 \x01(\x05\x12\x15\n\ractor_user_id\x18\x06 \x01(\x05\x12\x13\n\x0b\x61\x63tor_email\x18\x07 \x01(\t\"e\n\x1bUpdateIncidentStatusRequest\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0e\n\x06status\x18\x02 \x01(\t\x12\x15\n\ractor_user_id\x18\x03 \x01(\x05\x12\x13\n\x0b\x61\x63tor_email\x18\x04 \x01(\t\"i\n\x1dUpdateIncidentSeverityRequest\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x10\n\x08severity\x18\x02 \x01(\t\x12\x15\n\ractor_user_id\x18\x03 \x01(\x05\x12\x13\n\x0b\x61\x63tor_email\x18\x04 \x01(\t\"\x86\x02\n\x10IncidentResponse\x12\n\n\x02id\x18\x01 \x01(\x05\x12\r\n\x05title\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x0e\n\x06status\x18\x04 \x01(\t\x12\x10\n\x08severity\x18\x05 \x01(\t\x12\r\n\x05\x63i_id\x18\x06 \x01(\x05\x12\x12\n\nai_summary\x18\x07 \x01(\t\x12\x19\n\x11\x61i_summary_status\x18\x08 \x01(\t\x12\x1d\n\x15\x61i_suggested_severity\x18\t \x01(\t\x12\x1b\n\x13\x61i_suggested_status\x18\n \x01(\t\x12\x12\n\ncreated_at\x18\x0b \x01(\t\x12\x12\n\nupdated_at\x18\x0c \x01(\t\"=\n\x0cIncidentList\x12-\n\tincidents\x18\x01 \x03(\x0b\x32\x1a.incident.IncidentResponse\"\xa9\x01\n\x16IncidentWithCIResponse\x12,\n\x08incident\x18\x01 \x01(\x0b\x32\x1a.incident.IncidentResponse\x12\x0f\n\x07\x63i_name\x18\x02 \x01(\t\x12\x16\n\x0e\x63i_environment\x18\x03 \x01(\t\x12\x0f\n\x07\x63i_type\x18\x04 \x01(\t\x12\x12\n\nowner_name\x18\x05 \x01(\t\x12\x13\n\x0bowner_email\x18\x06 \x01(\t2\xd7\x07\n\x0fIncidentService\x12M\n\x0e\x43reateIncident\x12\x1f.incident.CreateIncidentRequest\x1a\x1a.incident.IncidentResponse\x12\x46\n\x0bGetIncident\x12\x1b.incident.IncidentIdRequest\x1a\x1a.incident.IncidentResponse\x12\x38\n\rListIncidents\x12\x0f.incident.Empty\x1a\x16.incident.IncidentList\x12R\n\x11GetIncidentWithCI\x12\x1b.incident.IncidentIdRequest\x1a .incident.IncidentWithCIResponse\x12S\n\x11\x41\x64\x64IncidentUpdate\x12\".incident.AddIncidentUpdateRequest\x1a\x1a.incident.IncidentResponse\x12O\n\x12GetIncidentUpdates\x12\x1b.incident.IncidentIdRequest\x1a\x1c.incident.IncidentUpdateList\x12V\n\x17\x41\x63\x63\x65ptSuggestedSeverity\x12\x1f.incident.IncidentActionRequest\x1a\x1a.incident.IncidentResponse\x12T\n\x15\x41\x63\x63\x65ptSuggestedStatus\x12\x1f.incident.IncidentActionRequest\x1a\x1a.incident.IncidentResponse\x12M\n\x0eUpdateIncident\x12\x1f.incident.UpdateIncidentRequest\x1a\x1a.incident.IncidentResponse\x12Y\n\x14UpdateIncidentStatus\x12%.incident.UpdateIncidentStatusRequest\x1a\x1a.incident.IncidentResponse\x12]\n\x16UpdateIncidentSeverity\x12\'.incident.UpdateIncidentSeverityRequest\x1a\x1a.incident.IncidentResponse\x12\x42\n\x0e\x44\x65leteIncident\x12\x1f.incident.IncidentActionRequest\x1a\x0f.incident.Emptyb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -35,22 +35,28 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_EMPTY']._serialized_end=42
   _globals['_INCIDENTIDREQUEST']._serialized_start=44
   _globals['_INCIDENTIDREQUEST']._serialized_end=75
-  _globals['_ADDINCIDENTUPDATEREQUEST']._serialized_start=77
-  _globals['_ADDINCIDENTUPDATEREQUEST']._serialized_end=138
-  _globals['_INCIDENTUPDATERESPONSE']._serialized_start=140
-  _globals['_INCIDENTUPDATERESPONSE']._serialized_end=211
-  _globals['_INCIDENTUPDATELIST']._serialized_start=213
-  _globals['_INCIDENTUPDATELIST']._serialized_end=284
-  _globals['_CREATEINCIDENTREQUEST']._serialized_start=286
-  _globals['_CREATEINCIDENTREQUEST']._serialized_end=378
-  _globals['_UPDATEINCIDENTREQUEST']._serialized_start=380
-  _globals['_UPDATEINCIDENTREQUEST']._serialized_end=484
-  _globals['_INCIDENTRESPONSE']._serialized_start=487
-  _globals['_INCIDENTRESPONSE']._serialized_end=709
-  _globals['_INCIDENTLIST']._serialized_start=711
-  _globals['_INCIDENTLIST']._serialized_end=772
-  _globals['_INCIDENTWITHCIRESPONSE']._serialized_start=775
-  _globals['_INCIDENTWITHCIRESPONSE']._serialized_end=927
-  _globals['_INCIDENTSERVICE']._serialized_start=930
-  _globals['_INCIDENTSERVICE']._serialized_end=1715
+  _globals['_INCIDENTACTIONREQUEST']._serialized_start=77
+  _globals['_INCIDENTACTIONREQUEST']._serialized_end=156
+  _globals['_ADDINCIDENTUPDATEREQUEST']._serialized_start=158
+  _globals['_ADDINCIDENTUPDATEREQUEST']._serialized_end=263
+  _globals['_INCIDENTUPDATERESPONSE']._serialized_start=266
+  _globals['_INCIDENTUPDATERESPONSE']._serialized_end=403
+  _globals['_INCIDENTUPDATELIST']._serialized_start=405
+  _globals['_INCIDENTUPDATELIST']._serialized_end=476
+  _globals['_CREATEINCIDENTREQUEST']._serialized_start=479
+  _globals['_CREATEINCIDENTREQUEST']._serialized_end=615
+  _globals['_UPDATEINCIDENTREQUEST']._serialized_start=618
+  _globals['_UPDATEINCIDENTREQUEST']._serialized_end=766
+  _globals['_UPDATEINCIDENTSTATUSREQUEST']._serialized_start=768
+  _globals['_UPDATEINCIDENTSTATUSREQUEST']._serialized_end=869
+  _globals['_UPDATEINCIDENTSEVERITYREQUEST']._serialized_start=871
+  _globals['_UPDATEINCIDENTSEVERITYREQUEST']._serialized_end=976
+  _globals['_INCIDENTRESPONSE']._serialized_start=979
+  _globals['_INCIDENTRESPONSE']._serialized_end=1241
+  _globals['_INCIDENTLIST']._serialized_start=1243
+  _globals['_INCIDENTLIST']._serialized_end=1304
+  _globals['_INCIDENTWITHCIRESPONSE']._serialized_start=1307
+  _globals['_INCIDENTWITHCIRESPONSE']._serialized_end=1476
+  _globals['_INCIDENTSERVICE']._serialized_start=1479
+  _globals['_INCIDENTSERVICE']._serialized_end=2462
 # @@protoc_insertion_point(module_scope)

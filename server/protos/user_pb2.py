@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11protos/user.proto\x12\x04user\"\x07\n\x05\x45mpty\"\x1b\n\rUserIdRequest\x12\n\n\x02id\x18\x01 \x01(\x05\"B\n\x11\x43reateUserRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x02 \x01(\t\x12\x10\n\x08password\x18\x03 \x01(\t\"7\n\x0cUserResponse\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05\x65mail\x18\x03 \x01(\t\"-\n\x08UserList\x12!\n\x05users\x18\x01 \x03(\x0b\x32\x12.user.UserResponse\"/\n\x0cLoginRequest\x12\r\n\x05\x65mail\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"9\n\rTokenResponse\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x01 \x01(\t\x12\x12\n\ntoken_type\x18\x02 \x01(\t2\xde\x01\n\x0bUserService\x12*\n\x0bGetAllUsers\x12\x0b.user.Empty\x1a\x0e.user.UserList\x12\x36\n\x0bGetUserById\x12\x13.user.UserIdRequest\x1a\x12.user.UserResponse\x12\x39\n\nCreateUser\x12\x17.user.CreateUserRequest\x1a\x12.user.UserResponse\x12\x30\n\x05Login\x12\x12.user.LoginRequest\x1a\x13.user.TokenResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11protos/user.proto\x12\x04user\"\x07\n\x05\x45mpty\"\x1b\n\rUserIdRequest\x12\n\n\x02id\x18\x01 \x01(\x05\"B\n\x11\x43reateUserRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x02 \x01(\t\x12\x10\n\x08password\x18\x03 \x01(\t\"E\n\x0cUserResponse\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\r\n\x05\x65mail\x18\x03 \x01(\t\x12\x0c\n\x04role\x18\x04 \x01(\t\"-\n\x08UserList\x12!\n\x05users\x18\x01 \x03(\x0b\x32\x12.user.UserResponse\"/\n\x0cLoginRequest\x12\r\n\x05\x65mail\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t\"1\n\x15UpdateUserRoleRequest\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04role\x18\x02 \x01(\t\"9\n\rTokenResponse\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x01 \x01(\t\x12\x12\n\ntoken_type\x18\x02 \x01(\t2\xa1\x02\n\x0bUserService\x12*\n\x0bGetAllUsers\x12\x0b.user.Empty\x1a\x0e.user.UserList\x12\x36\n\x0bGetUserById\x12\x13.user.UserIdRequest\x1a\x12.user.UserResponse\x12\x39\n\nCreateUser\x12\x17.user.CreateUserRequest\x1a\x12.user.UserResponse\x12\x30\n\x05Login\x12\x12.user.LoginRequest\x1a\x13.user.TokenResponse\x12\x41\n\x0eUpdateUserRole\x12\x1b.user.UpdateUserRoleRequest\x1a\x12.user.UserResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -38,13 +38,15 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_CREATEUSERREQUEST']._serialized_start=65
   _globals['_CREATEUSERREQUEST']._serialized_end=131
   _globals['_USERRESPONSE']._serialized_start=133
-  _globals['_USERRESPONSE']._serialized_end=188
-  _globals['_USERLIST']._serialized_start=190
-  _globals['_USERLIST']._serialized_end=235
-  _globals['_LOGINREQUEST']._serialized_start=237
-  _globals['_LOGINREQUEST']._serialized_end=284
-  _globals['_TOKENRESPONSE']._serialized_start=286
-  _globals['_TOKENRESPONSE']._serialized_end=343
-  _globals['_USERSERVICE']._serialized_start=346
-  _globals['_USERSERVICE']._serialized_end=568
+  _globals['_USERRESPONSE']._serialized_end=202
+  _globals['_USERLIST']._serialized_start=204
+  _globals['_USERLIST']._serialized_end=249
+  _globals['_LOGINREQUEST']._serialized_start=251
+  _globals['_LOGINREQUEST']._serialized_end=298
+  _globals['_UPDATEUSERROLEREQUEST']._serialized_start=300
+  _globals['_UPDATEUSERROLEREQUEST']._serialized_end=349
+  _globals['_TOKENRESPONSE']._serialized_start=351
+  _globals['_TOKENRESPONSE']._serialized_end=408
+  _globals['_USERSERVICE']._serialized_start=411
+  _globals['_USERSERVICE']._serialized_end=700
 # @@protoc_insertion_point(module_scope)

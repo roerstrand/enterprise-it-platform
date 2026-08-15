@@ -1,0 +1,113 @@
+<div class="page">
+  <h1 class="page-title"><mat-icon aria-hidden="true">dashboard</mat-icon>Operations Dashboard</h1>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else {
+    <div class="stat-grid">
+      <a routerLink="/incidents" class="stat-tile">
+        <span class="stat-value">{{ openIncidentsCount() }}</span>
+        <span class="stat-label">Open incidents</span>
+      </a>
+      <a routerLink="/incidents" class="stat-tile stat-tile--warn">
+        <span class="stat-value">{{ highCriticalCount() }}</span>
+        <span class="stat-label">High / Critical incidents</span>
+      </a>
+      <a routerLink="/cis" class="stat-tile">
+        <span class="stat-value">{{ totalCisCount() }}</span>
+        <span class="stat-label">Configuration items</span>
+      </a>
+      <div class="stat-tile stat-tile--static">
+        <span class="stat-value">{{ recentChangesCount() }}</span>
+        <span class="stat-label">Changes</span>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <mat-card class="detail-card">
+        <mat-card-header>
+          <mat-card-title>Incidents by status</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (byStatus().length === 0) {
+            <p class="empty-state">No incidents yet.</p>
+          } @else {
+            <ul class="breakdown-list">
+              @for (row of byStatus(); track row.key) {
+                <li>
+                  <span [class]="statusClass(row.key)">{{ row.key }}</span>
+                  <span class="breakdown-count">{{ row.count }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="detail-card">
+        <mat-card-header>
+          <mat-card-title>Incidents by severity</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (bySeverity().length === 0) {
+            <p class="empty-state">No incidents yet.</p>
+          } @else {
+            <ul class="breakdown-list">
+              @for (row of bySeverity(); track row.key) {
+                <li>
+                  <span [class]="severityClass(row.key)">{{ row.key }}</span>
+                  <span class="breakdown-count">{{ row.count }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="detail-grid">
+      <mat-card class="detail-card">
+        <mat-card-header>
+          <mat-card-title>Recent incidents</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (recentIncidents().length === 0) {
+            <p class="empty-state">No incidents yet.</p>
+          } @else {
+            <ul class="recent-list">
+              @for (incident of recentIncidents(); track incident.id) {
+                <li>
+                  <a [routerLink]="['/incidents', incident.id]" class="recent-title">#{{ incident.id }} {{ incident.title }}</a>
+                  <span [class]="statusClass(incident.status)">{{ incident.status }}</span>
+                  <span class="recent-date">{{ incident.created_at | date: 'short' }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="detail-card">
+        <mat-card-header>
+          <mat-card-title>Recent changes</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (recentChanges().length === 0) {
+            <p class="empty-state">No changes yet.</p>
+          } @else {
+            <ul class="recent-list">
+              @for (change of recentChanges(); track change.id) {
+                <li>
+                  <span class="recent-title recent-title--static">#{{ change.id }} {{ change.title }}</span>
+                  <span class="chip">{{ change.status }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</div>

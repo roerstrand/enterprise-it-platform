@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audit-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: audit-server
+  template:
+    metadata:
+      labels:
+        app: audit-server
+    spec:
+      containers:
+        - name: audit-server
+          image: audit-server:local
+          imagePullPolicy: Never   # Bygg lokalt image, försök aldrig hämta den från ett registry
+          ports:
+            - containerPort: 50055
+            - containerPort: 9105
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: DATABASE_URL
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: OTEL_EXPORTER_OTLP_ENDPOINT
+          livenessProbe:
+            grpc:
+              port: 50055
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          readinessProbe:
+            grpc:
+              port: 50055
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: audit-server
+spec:
+  selector:
+    app: audit-server
+  ports:
+    - name: grpc
+      port: 50055
+      targetPort: 50055
+    - name: metrics
+      port: 9105
+      targetPort: 9105

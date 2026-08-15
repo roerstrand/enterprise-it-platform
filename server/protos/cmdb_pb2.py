@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11protos/cmdb.proto\x12\x04\x63mdb\"\x07\n\x05\x45mpty\"\x19\n\x0b\x43IIdRequest\x12\n\n\x02id\x18\x01 \x01(\x05\"\xa1\x01\n\x0f\x43reateCIRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07\x63i_type\x18\x02 \x01(\t\x12\x13\n\x0b\x65nvironment\x18\x03 \x01(\t\x12\x1a\n\rowner_team_id\x18\x04 \x01(\x05H\x00\x88\x01\x01\x12\x1a\n\rowner_user_id\x18\x05 \x01(\x05H\x01\x88\x01\x01\x42\x10\n\x0e_owner_team_idB\x10\n\x0e_owner_user_id\"\xad\x01\n\x0fUpdateCIRequest\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0f\n\x07\x63i_type\x18\x03 \x01(\t\x12\x13\n\x0b\x65nvironment\x18\x04 \x01(\t\x12\x1a\n\rowner_team_id\x18\x05 \x01(\x05H\x00\x88\x01\x01\x12\x1a\n\rowner_user_id\x18\x06 \x01(\x05H\x01\x88\x01\x01\x42\x10\n\x0e_owner_team_idB\x10\n\x0e_owner_user_id\"\xa8\x01\n\nCIResponse\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0f\n\x07\x63i_type\x18\x03 \x01(\t\x12\x13\n\x0b\x65nvironment\x18\x04 \x01(\t\x12\x1a\n\rowner_team_id\x18\x05 \x01(\x05H\x00\x88\x01\x01\x12\x1a\n\rowner_user_id\x18\x06 \x01(\x05H\x01\x88\x01\x01\x42\x10\n\x0e_owner_team_idB\x10\n\x0e_owner_user_id\"\'\n\x06\x43IList\x12\x1d\n\x03\x63is\x18\x01 \x03(\x0b\x32\x10.cmdb.CIResponse\"b\n\x19\x43reateRelationshipRequest\x12\x14\n\x0csource_ci_id\x18\x01 \x01(\x05\x12\x14\n\x0ctarget_ci_id\x18\x02 \x01(\x05\x12\x19\n\x11relationship_type\x18\x03 \x01(\t\"i\n\x14RelationshipResponse\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x14\n\x0csource_ci_id\x18\x02 \x01(\x05\x12\x14\n\x0ctarget_ci_id\x18\x03 \x01(\x05\x12\x19\n\x11relationship_type\x18\x04 \x01(\t\"\\\n\x13\x43IWithOwnerResponse\x12\x1c\n\x02\x63i\x18\x01 \x01(\x0b\x32\x10.cmdb.CIResponse\x12\x12\n\nowner_name\x18\x02 \x01(\t\x12\x13\n\x0bowner_email\x18\x03 \x01(\t2\xbc\x03\n\x0b\x43mdbService\x12\x33\n\x08\x43reateCI\x12\x15.cmdb.CreateCIRequest\x1a\x10.cmdb.CIResponse\x12,\n\x05GetCI\x12\x11.cmdb.CIIdRequest\x1a\x10.cmdb.CIResponse\x12$\n\x07ListCIs\x12\x0b.cmdb.Empty\x1a\x0c.cmdb.CIList\x12Q\n\x12\x43reateRelationship\x12\x1f.cmdb.CreateRelationshipRequest\x1a\x1a.cmdb.RelationshipResponse\x12\x30\n\rGetRelatedCIs\x12\x11.cmdb.CIIdRequest\x1a\x0c.cmdb.CIList\x12>\n\x0eGetCIWithOwner\x12\x11.cmdb.CIIdRequest\x1a\x19.cmdb.CIWithOwnerResponse\x12\x33\n\x08UpdateCI\x12\x15.cmdb.UpdateCIRequest\x1a\x10.cmdb.CIResponse\x12*\n\x08\x44\x65leteCI\x12\x11.cmdb.CIIdRequest\x1a\x0b.cmdb.EmptyB\x0c\xaa\x02\tCmdb.Grpcb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x11protos/cmdb.proto\x12\x04\x63mdb\"\x07\n\x05\x45mpty\"\x19\n\x0b\x43IIdRequest\x12\n\n\x02id\x18\x01 \x01(\x05\"I\n\x0f\x43IActionRequest\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x15\n\ractor_user_id\x18\x02 \x01(\x05\x12\x13\n\x0b\x61\x63tor_email\x18\x03 \x01(\t\"\xcd\x01\n\x0f\x43reateCIRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0f\n\x07\x63i_type\x18\x02 \x01(\t\x12\x13\n\x0b\x65nvironment\x18\x03 \x01(\t\x12\x1a\n\rowner_team_id\x18\x04 \x01(\x05H\x00\x88\x01\x01\x12\x1a\n\rowner_user_id\x18\x05 \x01(\x05H\x01\x88\x01\x01\x12\x15\n\ractor_user_id\x18\x06 \x01(\x05\x12\x13\n\x0b\x61\x63tor_email\x18\x07 \x01(\tB\x10\n\x0e_owner_team_idB\x10\n\x0e_owner_user_id\"\xd9\x01\n\x0fUpdateCIRequest\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0f\n\x07\x63i_type\x18\x03 \x01(\t\x12\x13\n\x0b\x65nvironment\x18\x04 \x01(\t\x12\x1a\n\rowner_team_id\x18\x05 \x01(\x05H\x00\x88\x01\x01\x12\x1a\n\rowner_user_id\x18\x06 \x01(\x05H\x01\x88\x01\x01\x12\x15\n\ractor_user_id\x18\x07 \x01(\x05\x12\x13\n\x0b\x61\x63tor_email\x18\x08 \x01(\tB\x10\n\x0e_owner_team_idB\x10\n\x0e_owner_user_id\"\xa8\x01\n\nCIResponse\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0f\n\x07\x63i_type\x18\x03 \x01(\t\x12\x13\n\x0b\x65nvironment\x18\x04 \x01(\t\x12\x1a\n\rowner_team_id\x18\x05 \x01(\x05H\x00\x88\x01\x01\x12\x1a\n\rowner_user_id\x18\x06 \x01(\x05H\x01\x88\x01\x01\x42\x10\n\x0e_owner_team_idB\x10\n\x0e_owner_user_id\"\'\n\x06\x43IList\x12\x1d\n\x03\x63is\x18\x01 \x03(\x0b\x32\x10.cmdb.CIResponse\"b\n\x19\x43reateRelationshipRequest\x12\x14\n\x0csource_ci_id\x18\x01 \x01(\x05\x12\x14\n\x0ctarget_ci_id\x18\x02 \x01(\x05\x12\x19\n\x11relationship_type\x18\x03 \x01(\t\"i\n\x14RelationshipResponse\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x14\n\x0csource_ci_id\x18\x02 \x01(\x05\x12\x14\n\x0ctarget_ci_id\x18\x03 \x01(\x05\x12\x19\n\x11relationship_type\x18\x04 \x01(\t\"\\\n\x13\x43IWithOwnerResponse\x12\x1c\n\x02\x63i\x18\x01 \x01(\x0b\x32\x10.cmdb.CIResponse\x12\x12\n\nowner_name\x18\x02 \x01(\t\x12\x13\n\x0bowner_email\x18\x03 \x01(\t2\xc0\x03\n\x0b\x43mdbService\x12\x33\n\x08\x43reateCI\x12\x15.cmdb.CreateCIRequest\x1a\x10.cmdb.CIResponse\x12,\n\x05GetCI\x12\x11.cmdb.CIIdRequest\x1a\x10.cmdb.CIResponse\x12$\n\x07ListCIs\x12\x0b.cmdb.Empty\x1a\x0c.cmdb.CIList\x12Q\n\x12\x43reateRelationship\x12\x1f.cmdb.CreateRelationshipRequest\x1a\x1a.cmdb.RelationshipResponse\x12\x30\n\rGetRelatedCIs\x12\x11.cmdb.CIIdRequest\x1a\x0c.cmdb.CIList\x12>\n\x0eGetCIWithOwner\x12\x11.cmdb.CIIdRequest\x1a\x19.cmdb.CIWithOwnerResponse\x12\x33\n\x08UpdateCI\x12\x15.cmdb.UpdateCIRequest\x1a\x10.cmdb.CIResponse\x12.\n\x08\x44\x65leteCI\x12\x15.cmdb.CIActionRequest\x1a\x0b.cmdb.EmptyB\x0c\xaa\x02\tCmdb.Grpcb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -36,20 +36,22 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_EMPTY']._serialized_end=34
   _globals['_CIIDREQUEST']._serialized_start=36
   _globals['_CIIDREQUEST']._serialized_end=61
-  _globals['_CREATECIREQUEST']._serialized_start=64
-  _globals['_CREATECIREQUEST']._serialized_end=225
-  _globals['_UPDATECIREQUEST']._serialized_start=228
-  _globals['_UPDATECIREQUEST']._serialized_end=401
-  _globals['_CIRESPONSE']._serialized_start=404
-  _globals['_CIRESPONSE']._serialized_end=572
-  _globals['_CILIST']._serialized_start=574
-  _globals['_CILIST']._serialized_end=613
-  _globals['_CREATERELATIONSHIPREQUEST']._serialized_start=615
-  _globals['_CREATERELATIONSHIPREQUEST']._serialized_end=713
-  _globals['_RELATIONSHIPRESPONSE']._serialized_start=715
-  _globals['_RELATIONSHIPRESPONSE']._serialized_end=820
-  _globals['_CIWITHOWNERRESPONSE']._serialized_start=822
-  _globals['_CIWITHOWNERRESPONSE']._serialized_end=914
-  _globals['_CMDBSERVICE']._serialized_start=917
-  _globals['_CMDBSERVICE']._serialized_end=1361
+  _globals['_CIACTIONREQUEST']._serialized_start=63
+  _globals['_CIACTIONREQUEST']._serialized_end=136
+  _globals['_CREATECIREQUEST']._serialized_start=139
+  _globals['_CREATECIREQUEST']._serialized_end=344
+  _globals['_UPDATECIREQUEST']._serialized_start=347
+  _globals['_UPDATECIREQUEST']._serialized_end=564
+  _globals['_CIRESPONSE']._serialized_start=567
+  _globals['_CIRESPONSE']._serialized_end=735
+  _globals['_CILIST']._serialized_start=737
+  _globals['_CILIST']._serialized_end=776
+  _globals['_CREATERELATIONSHIPREQUEST']._serialized_start=778
+  _globals['_CREATERELATIONSHIPREQUEST']._serialized_end=876
+  _globals['_RELATIONSHIPRESPONSE']._serialized_start=878
+  _globals['_RELATIONSHIPRESPONSE']._serialized_end=983
+  _globals['_CIWITHOWNERRESPONSE']._serialized_start=985
+  _globals['_CIWITHOWNERRESPONSE']._serialized_end=1077
+  _globals['_CMDBSERVICE']._serialized_start=1080
+  _globals['_CMDBSERVICE']._serialized_end=1528
 # @@protoc_insertion_point(module_scope)

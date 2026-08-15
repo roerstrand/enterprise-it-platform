@@ -9,6 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { CIService } from './ci.service';
 import { CI } from './ci';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
     selector: 'app-cis-list',
@@ -36,7 +37,7 @@ export class CisList implements OnInit {
     protected readonly form: FormGroup;
     protected readonly editForm: FormGroup;
 
-    constructor(private ciService: CIService, formBuilder: FormBuilder) {
+    constructor(private ciService: CIService, formBuilder: FormBuilder, protected authService: AuthService) {
         this.form = formBuilder.group({
             name: ['', Validators.required],
             ciType: ['', Validators.required],

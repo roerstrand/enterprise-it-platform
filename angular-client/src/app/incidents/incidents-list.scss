@@ -1,1 +1,64 @@
 // Delade layout-klasser (.page, .form-cards, .table-card, .wrap-cell m.fl.) ligger i src/styles.scss
+
+// table-layout: fixed gör att kolumnbredderna nedan faktiskt respekteras,
+// istället för att browsern räknar ut bredd efter innehåll (vilket är det
+// som orsakade den horisontella scrollen tidigare)
+.table-scroll table {
+  table-layout: fixed;
+}
+
+.col-id { width: 40px; }
+// Title har prioritet - näst störst andel av vad som blir kvar efter de fasta kolumnerna
+.col-title { width: 15%; }
+.col-description { width: 150px; }
+// Materials egen tabellcell klipper med ellipsis när innehållet inte får plats -
+// "IN_PROGRESS" är den längsta statusen och styr denna bredd
+.col-status { width: 132px; }
+.col-severity { width: 100px; }
+.col-ai-suggest { width: 205px; }
+// Ingen bredd = tar det utrymme som blir kvar när övriga kolumner är dragna
+.col-ai-summary { width: auto; }
+.col-actions { width: 152px; }
+
+// Trunkerar lång text till en rad med "..." - full text nås via title-attributets tooltip
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.muted {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+// En rad per AI-förslag (severity/status) i den kombinerade AI-kolumnen
+.ai-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.ai-row + .ai-row {
+  margin-top: 1px;
+}
+
+.ai-row-label {
+  // "SEVERITY" (8 tecken) är den längsta etiketten - bredden måste rymma den,
+  // annars trycks etikett och värde ihop utan synligt mellanrum
+  flex: 0 0 auto;
+  width: 58px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ai-row .mat-mdc-button-base {
+  padding: 0 6px;
+  font-size: 11px;
+  min-width: 0;
+}

@@ -54,6 +54,11 @@ class UserServiceStub:
                 request_serializer=protos_dot_user__pb2.LoginRequest.SerializeToString,
                 response_deserializer=protos_dot_user__pb2.TokenResponse.FromString,
                 _registered_method=True)
+        self.UpdateUserRole = channel.unary_unary(
+                '/user.UserService/UpdateUserRole',
+                request_serializer=protos_dot_user__pb2.UpdateUserRoleRequest.SerializeToString,
+                response_deserializer=protos_dot_user__pb2.UserResponse.FromString,
+                _registered_method=True)
 
 
 class UserServiceServicer:
@@ -83,6 +88,12 @@ class UserServiceServicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def UpdateUserRole(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_UserServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -105,6 +116,11 @@ def add_UserServiceServicer_to_server(servicer, server):
                     servicer.Login,
                     request_deserializer=protos_dot_user__pb2.LoginRequest.FromString,
                     response_serializer=protos_dot_user__pb2.TokenResponse.SerializeToString,
+            ),
+            'UpdateUserRole': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateUserRole,
+                    request_deserializer=protos_dot_user__pb2.UpdateUserRoleRequest.FromString,
+                    response_serializer=protos_dot_user__pb2.UserResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -215,6 +231,33 @@ class UserService:
             '/user.UserService/Login',
             protos_dot_user__pb2.LoginRequest.SerializeToString,
             protos_dot_user__pb2.TokenResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpdateUserRole(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/user.UserService/UpdateUserRole',
+            protos_dot_user__pb2.UpdateUserRoleRequest.SerializeToString,
+            protos_dot_user__pb2.UserResponse.FromString,
             options,
             channel_credentials,
             insecure,

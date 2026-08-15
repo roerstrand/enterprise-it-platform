@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
 using ChangeService.Data;
@@ -12,6 +13,32 @@ public class ChangeServiceImpl : ChangeService.Grpc.ChangeService.ChangeServiceB
     public ChangeServiceImpl(ChangeDbContext db)
     {
         _db = db;
+    }
+
+    // Best-effort, precis som audit_client.py pa Python-sidan: en nere audit-service
+    // ska aldrig fa en change-mutation att misslyckas.
+    private static async Task RecordAuditEventAsync(int actorUserId, string actorEmail, string action, int entityId, object? before, object? after)
+    {
+        try
+        {
+            var auditServiceAddr = Environment.GetEnvironmentVariable("AUDIT_SERVICE_ADDR") ?? "localhost:50055";
+            using var channel = GrpcChannel.ForAddress($"http://{auditServiceAddr}");
+            var auditClient = new AuditService.Grpc.AuditService.AuditServiceClient(channel);
+            await auditClient.RecordAuditEventAsync(new AuditService.Grpc.RecordAuditEventRequest
+            {
+                ActorUserId = actorUserId,
+                ActorEmail = actorEmail ?? "",
+                Action = action,
+                EntityType = "change",
+                EntityId = entityId.ToString(),
+                BeforeJson = before is null ? "" : JsonSerializer.Serialize(before),
+                AfterJson = after is null ? "" : JsonSerializer.Serialize(after),
+            });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"[ChangeServiceImpl] failed to record audit event ({action} change#{entityId}): {e.Message}");
+        }
     }
 
     private static ChangeResponse ToResponse(Models.Change change) => new()
@@ -35,6 +62,10 @@ public class ChangeServiceImpl : ChangeService.Grpc.ChangeService.ChangeServiceB
         };
         _db.Changes.Add(change);
         await _db.SaveChangesAsync();
+
+        await RecordAuditEventAsync(request.ActorUserId, request.ActorEmail, "change.created", change.Id,
+            before: null, after: new { title = change.Title, riskLevel = change.RiskLevel, ciId = change.CiId, status = change.Status });
+
         return ToResponse(change);
     }
 
@@ -53,12 +84,17 @@ public class ChangeServiceImpl : ChangeService.Grpc.ChangeService.ChangeServiceB
         return list;
     }
 
-    public override async Task<ChangeResponse> ApproveChange(ChangeIdRequest request, ServerCallContext context)
+    public override async Task<ChangeResponse> ApproveChange(ChangeActionRequest request, ServerCallContext context)
     {
         var change = await _db.Changes.FindAsync(request.Id);
         if (change is null) throw new RpcException(new Status(StatusCode.NotFound, $"Change {request.Id} not found"));
+        var previousStatus = change.Status;
         change.Status = "approved";
         await _db.SaveChangesAsync();
+
+        await RecordAuditEventAsync(request.ActorUserId, request.ActorEmail, "change.approved", change.Id,
+            before: new { status = previousStatus }, after: new { status = change.Status });
+
         return ToResponse(change);
     }
 

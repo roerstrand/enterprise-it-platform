@@ -20,6 +20,8 @@ from repositories.incident_repository import (
     accept_incident_suggested_severity,
     accept_incident_suggested_status,
     update_incident_in_db,
+    update_incident_status_in_db,
+    update_incident_severity_in_db,
     delete_incident_from_db,
 )
 
@@ -29,12 +31,15 @@ from data.database import get_db_context
 from observability.grpc_metrics import track_grpc_metrics
 from observability.tracing import setup_tracing
 from ai.foundry_client import generate_incident_summary, classify_incident_severity, classify_incident_status
+from domain.incident_lifecycle import validate_transition, validate_severity, InvalidStatusTransition, InvalidSeverity
+from grpc_clients.audit_client import record_audit_event
 
 def _to_incident_response(incident):
      return incident_pb2.IncidentResponse(
         id=incident.id, title=incident.title, description=incident.description,
-        status=incident.status, severity=incident.severity, ci_id=incident.ci_id, ai_summary=incident.ai_summary or "", 
-        ai_summary_status=incident.ai_summary_status, ai_suggested_severity=incident.ai_suggested_severity or "", ai_suggested_status=incident.ai_suggested_status or ""
+        status=incident.status, severity=incident.severity, ci_id=incident.ci_id, ai_summary=incident.ai_summary or "",
+        ai_summary_status=incident.ai_summary_status, ai_suggested_severity=incident.ai_suggested_severity or "", ai_suggested_status=incident.ai_suggested_status or "",
+        created_at=incident.created_at.isoformat(), updated_at=incident.updated_at.isoformat()
     )
 
 _background_tasks: set[asyncio.Task] = set()
@@ -104,9 +109,22 @@ class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
 
     @track_grpc_metrics("Incident")
     async def CreateIncident(self, request, context):
+        try:
+            severity = validate_severity(request.severity)
+        except InvalidSeverity as e:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(str(e))
+            return incident_pb2.IncidentResponse()
+
         async with get_db_context() as db:
-            incident = await create_incident_in_db(db, request.title, request.description, request.severity, request.ci_id)
+            incident = await create_incident_in_db(db, request.title, request.description, severity, request.ci_id)
             response = _to_incident_response(incident)
+
+        await record_audit_event(
+            request.actor_user_id or None, request.actor_email or None,
+            "incident.created", "incident", incident.id,
+            before=None, after={"title": incident.title, "severity": incident.severity, "ci_id": incident.ci_id, "status": incident.status},
+        )
 
         _fire_and_forget(
             _generate_and_store_summary(incident.id, incident.title, incident.description, incident.ci_id)
@@ -150,6 +168,7 @@ class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
                 incident=incident_response,
                 ci_name=ci_with_owner.ci.name,
                 ci_environment=ci_with_owner.ci.environment,
+                ci_type=ci_with_owner.ci.ci_type,
                 owner_name=ci_with_owner.owner_name,
                 owner_email=ci_with_owner.owner_email,
             )
@@ -157,13 +176,19 @@ class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
     @track_grpc_metrics("Incident")
     async def AddIncidentUpdate(self, request, context):
         async with get_db_context() as db:
-            await create_incident_update_in_db(db, request.incident_id, request.text)
+            await create_incident_update_in_db(db, request.incident_id, request.text, request.actor_user_id or None)
             incident = await get_incident_by_id_from_db(db, request.incident_id)
             if not incident:
                 context.set_code(grpc.StatusCode.NOT_FOUND)
                 context.set_details(f"Incident {request.incident_id} not found")
                 return incident_pb2.IncidentResponse()
             response = _to_incident_response(incident)
+
+        await record_audit_event(
+            request.actor_user_id or None, request.actor_email or None,
+            "incident.update_added", "incident", incident.id,
+            before=None, after={"text": request.text},
+        )
 
         _fire_and_forget(
             _classify_and_store_status(incident.id, incident.title, incident.description, incident.ci_id)
@@ -176,52 +201,175 @@ class IncidentServiceServicer(incident_pb2_grpc.IncidentServiceServicer):
         async with get_db_context() as db:
             updates = await get_updates_for_incident_from_db(db, request.id)
             return incident_pb2.IncidentUpdateList(updates=[
-                incident_pb2.IncidentUpdateResponse(id=u.id, incident_id=u.incident_id, text=u.text)
+                incident_pb2.IncidentUpdateResponse(
+                    id=u.id, incident_id=u.incident_id, text=u.text,
+                    author_user_id=u.author_user_id or 0, created_at=u.created_at.isoformat(),
+                )
                 for u in updates
             ])
 
     @track_grpc_metrics("Incident")
     async def AcceptSuggestedSeverity(self, request, context):
+        # OBS: allt som läser ORM-attribut (inkl. _to_incident_response, som läser created_at/updated_at)
+        # måste ske INNAN "async with"-blocket stängs - annars DetachedInstanceError, session är då stängd.
         async with get_db_context() as db:
-            await accept_incident_suggested_severity(db, request.id)
-            incident = await get_incident_by_id_from_db(db, request.id)
-            if not incident:
+            before = await get_incident_by_id_from_db(db, request.id)
+            if not before:
                 context.set_code(grpc.StatusCode.NOT_FOUND)
                 context.set_details(f"Incident {request.id} not found")
                 return incident_pb2.IncidentResponse()
-            return _to_incident_response(incident)
+            before_severity = before.severity
+            incident = await accept_incident_suggested_severity(db, request.id)
+            changed = incident.severity != before_severity
+            response = _to_incident_response(incident)
+
+        if changed:
+            await record_audit_event(
+                request.actor_user_id or None, request.actor_email or None,
+                "incident.severity_changed", "incident", response.id,
+                before={"severity": before_severity}, after={"severity": response.severity},
+            )
+        return response
 
     @track_grpc_metrics("Incident")
     async def AcceptSuggestedStatus(self, request, context):
         async with get_db_context() as db:
-            await accept_incident_suggested_status(db, request.id)
-            incident = await get_incident_by_id_from_db(db, request.id)
-            if not incident:
+            before = await get_incident_by_id_from_db(db, request.id)
+            if not before:
                 context.set_code(grpc.StatusCode.NOT_FOUND)
                 context.set_details(f"Incident {request.id} not found")
                 return incident_pb2.IncidentResponse()
-            return _to_incident_response(incident)
+
+            try:
+                validate_transition(before.status, (before.ai_suggested_status or "").lower())
+            except InvalidStatusTransition as e:
+                context.set_code(grpc.StatusCode.FAILED_PRECONDITION)
+                context.set_details(str(e))
+                return incident_pb2.IncidentResponse()
+
+            before_status = before.status
+            incident = await accept_incident_suggested_status(db, request.id)
+            changed = incident.status != before_status
+            response = _to_incident_response(incident)
+
+        if changed:
+            await record_audit_event(
+                request.actor_user_id or None, request.actor_email or None,
+                "incident.status_changed", "incident", response.id,
+                before={"status": before_status}, after={"status": response.status},
+            )
+        return response
 
     @track_grpc_metrics("Incident")
     async def UpdateIncident(self, request, context):
+        try:
+            severity = validate_severity(request.severity)
+        except InvalidSeverity as e:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(str(e))
+            return incident_pb2.IncidentResponse()
+
         async with get_db_context() as db:
-            incident = await update_incident_in_db(
-                db, request.id, request.title, request.description, request.severity, request.ci_id
-            )
-            if not incident:
+            before = await get_incident_by_id_from_db(db, request.id)
+            if not before:
                 context.set_code(grpc.StatusCode.NOT_FOUND)
                 context.set_details(f"Incident {request.id} not found")
                 return incident_pb2.IncidentResponse()
-            return _to_incident_response(incident)
+            before_snapshot = {"title": before.title, "description": before.description, "severity": before.severity, "ci_id": before.ci_id}
+
+            incident = await update_incident_in_db(
+                db, request.id, request.title, request.description, severity, request.ci_id
+            )
+            response = _to_incident_response(incident)
+
+        await record_audit_event(
+            request.actor_user_id or None, request.actor_email or None,
+            "incident.updated", "incident", response.id,
+            before=before_snapshot,
+            after={"title": response.title, "description": response.description, "severity": response.severity, "ci_id": response.ci_id},
+        )
+        return response
+
+    @track_grpc_metrics("Incident")
+    async def UpdateIncidentStatus(self, request, context):
+        async with get_db_context() as db:
+            before = await get_incident_by_id_from_db(db, request.id)
+            if not before:
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details(f"Incident {request.id} not found")
+                return incident_pb2.IncidentResponse()
+
+            try:
+                validate_transition(before.status, request.status)
+            except InvalidStatusTransition as e:
+                context.set_code(grpc.StatusCode.FAILED_PRECONDITION)
+                context.set_details(str(e))
+                return incident_pb2.IncidentResponse()
+
+            before_status = before.status
+            incident = await update_incident_status_in_db(db, request.id, request.status)
+            changed = incident.status != before_status
+            response = _to_incident_response(incident)
+
+        if changed:
+            await record_audit_event(
+                request.actor_user_id or None, request.actor_email or None,
+                "incident.status_changed", "incident", response.id,
+                before={"status": before_status}, after={"status": response.status},
+            )
+        return response
+
+    @track_grpc_metrics("Incident")
+    async def UpdateIncidentSeverity(self, request, context):
+        try:
+            severity = validate_severity(request.severity)
+        except InvalidSeverity as e:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(str(e))
+            return incident_pb2.IncidentResponse()
+
+        async with get_db_context() as db:
+            before = await get_incident_by_id_from_db(db, request.id)
+            if not before:
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details(f"Incident {request.id} not found")
+                return incident_pb2.IncidentResponse()
+            before_severity = before.severity
+            incident = await update_incident_severity_in_db(db, request.id, severity)
+            changed = incident.severity != before_severity
+            response = _to_incident_response(incident)
+
+        if changed:
+            await record_audit_event(
+                request.actor_user_id or None, request.actor_email or None,
+                "incident.severity_changed", "incident", response.id,
+                before={"severity": before_severity}, after={"severity": response.severity},
+            )
+        return response
 
     @track_grpc_metrics("Incident")
     async def DeleteIncident(self, request, context):
         async with get_db_context() as db:
+            before = await get_incident_by_id_from_db(db, request.id)
+            if not before:
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details(f"Incident {request.id} not found")
+                return incident_pb2.Empty()
+            before_snapshot = {"title": before.title, "status": before.status, "severity": before.severity}
+
             deleted = await delete_incident_from_db(db, request.id)
             if not deleted:
                 context.set_code(grpc.StatusCode.NOT_FOUND)
                 context.set_details(f"Incident {request.id} not found")
-            return incident_pb2.Empty()
+                return incident_pb2.Empty()
+
+        await record_audit_event(
+            request.actor_user_id or None, request.actor_email or None,
+            "incident.deleted", "incident", request.id,
+            before=before_snapshot,
+            after=None,
+        )
+        return incident_pb2.Empty()
 
 
 async def serve():

@@ -8,5 +8,6 @@ data:
   CMDB_SERVICE_ADDR: "cmdb-server:50052"
   INCIDENT_SERVICE_ADDR: "incident-server:50053"
   CHANGE_SERVICE_ADDR: "change-service:50054"
+  AUDIT_SERVICE_ADDR: "audit-server:50055"
   REDIS_URL: "redis://redis:6379/0"
   AI_SERVICE_URL: "http://host.docker.internal:51298/v1"

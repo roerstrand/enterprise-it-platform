@@ -1,1 +1,9 @@
 // Delade layout-klasser (.page, .form-card, .table-card m.fl.) ligger i src/styles.scss
+
+.table-scroll table {
+  table-layout: fixed;
+}
+
+.col-id { width: 60px; }
+.col-owner { width: 140px; }
+.col-actions { width: 140px; }

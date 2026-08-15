@@ -10,6 +10,9 @@ from jose import jwt, JWTError
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+# Admin = full access. Operator = manage CIs/incidents/changes. Viewer = read-only.
+ROLES = ("admin", "operator", "viewer")
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(password: str) -> str:

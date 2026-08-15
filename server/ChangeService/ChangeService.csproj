@@ -9,6 +9,7 @@
   <ItemGroup>
     <Protobuf Include="..\protos\change.proto" GrpcServices="Server" />
     <Protobuf Include="..\protos\cmdb.proto" GrpcServices="Client" />
+    <Protobuf Include="..\protos\audit.proto" GrpcServices="Client" />
   </ItemGroup>
 
   <ItemGroup>
