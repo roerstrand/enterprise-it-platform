@@ -37,6 +37,17 @@ def _to_dict(incident):
         "ai_suggested_status": incident.ai_suggested_status,
         "created_at": incident.created_at,
         "updated_at": incident.updated_at,
+        "assignee_user_id": incident.assignee_user_id or None,
+        "sla": {
+            "response_deadline": incident.sla_response_deadline,
+            "resolution_deadline": incident.sla_resolution_deadline,
+            "first_response_at": incident.sla_first_response_at or None,
+            "resolved_at": incident.sla_resolved_at or None,
+            "response_breached": incident.sla_response_breached,
+            "resolution_breached": incident.sla_resolution_breached,
+            "state": incident.sla_state,
+            "remaining_seconds": incident.sla_remaining_seconds,
+        },
     }
 
 def _to_update_dict(update):
@@ -69,13 +80,68 @@ async def _call(coro):
         print(f"gRPC-fel: {e.code()} {e.details()}")
         raise IncidentServiceUnavailable(str(e))
 
-async def list_incidents():
-    response = await _call(_get_stub().ListIncidents(incident_pb2.Empty()))
-    return [_to_dict(i) for i in response.incidents]
+async def list_incidents(
+    status: str | None = None,
+    severity: str | None = None,
+    assignee_user_id: int | None = None,
+    unassigned_only: bool = False,
+    ci_id: int | None = None,
+    sla_state: str | None = None,
+    search: str | None = None,
+    created_after: str | None = None,
+    created_before: str | None = None,
+    sort_by: str = "created_at",
+    sort_dir: str = "desc",
+    page: int = 1,
+    page_size: int = 25,
+):
+    response = await _call(_get_stub().ListIncidents(incident_pb2.ListIncidentsRequest(
+        status=status or "", severity=severity or "",
+        assignee_user_id=assignee_user_id or 0, unassigned_only=unassigned_only,
+        ci_id=ci_id or 0, sla_state=sla_state or "", search=search or "",
+        created_after=created_after or "", created_before=created_before or "",
+        sort_by=sort_by or "created_at", sort_dir=sort_dir or "desc",
+        page=page or 1, page_size=page_size or 25,
+    )))
+    return {
+        "incidents": [_to_dict(i) for i in response.incidents],
+        "total_count": response.total_count,
+        "page": response.page,
+        "page_size": response.page_size,
+    }
+
+async def assign_incident(incident_id: int, assignee_user_id: int | None, actor_user_id: int | None = None, actor_email: str | None = None):
+    response = await _call(_get_stub().AssignIncident(incident_pb2.AssignIncidentRequest(
+        id=incident_id, assignee_user_id=assignee_user_id or 0,
+        actor_user_id=actor_user_id or 0, actor_email=actor_email or "",
+    )))
+    return _to_dict(response)
 
 async def get_incident_with_ci(incident_id: int):
     response = await _call(_get_stub().GetIncidentWithCI(incident_pb2.IncidentIdRequest(id=incident_id)))
     return _to_with_ci_dict(response)
+
+async def get_incident(incident_id: int):
+    response = await _call(_get_stub().GetIncident(incident_pb2.IncidentIdRequest(id=incident_id)))
+    return _to_dict(response)
+
+async def link_change(incident_id: int, change_id: int, actor_user_id: int | None = None, actor_email: str | None = None):
+    await _call(_get_stub().LinkChange(incident_pb2.LinkChangeRequest(
+        incident_id=incident_id, change_id=change_id, actor_user_id=actor_user_id or 0, actor_email=actor_email or "",
+    )))
+
+async def unlink_change(incident_id: int, change_id: int, actor_user_id: int | None = None, actor_email: str | None = None):
+    await _call(_get_stub().UnlinkChange(incident_pb2.LinkChangeRequest(
+        incident_id=incident_id, change_id=change_id, actor_user_id=actor_user_id or 0, actor_email=actor_email or "",
+    )))
+
+async def get_linked_change_ids(incident_id: int) -> list[int]:
+    response = await _call(_get_stub().GetLinkedChangeIds(incident_pb2.IncidentIdRequest(id=incident_id)))
+    return list(response.change_ids)
+
+async def get_incident_ids_for_change(change_id: int) -> list[int]:
+    response = await _call(_get_stub().GetIncidentIdsForChange(incident_pb2.ChangeIdRequest(change_id=change_id)))
+    return list(response.incident_ids)
 
 async def create_incident(title: str, description: str, severity: str, ci_id: int, actor_user_id: int | None = None, actor_email: str | None = None):
     response = await _call(_get_stub().CreateIncident(incident_pb2.CreateIncidentRequest(

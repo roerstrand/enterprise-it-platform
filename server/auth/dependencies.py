@@ -23,7 +23,13 @@ def get_current_user(token: str = Depends(oauth2_schema)) -> CurrentUser:
     if role not in ROLES:
         # Gamla tokens utfärdade innan roll fanns i JWT-payloaden - tvinga omlogin istället för att gissa roll
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token missing role claim, please log in again")
-    return CurrentUser(id=int(payload["sub"]), email=payload["email"], role=role)
+    sub = payload.get("sub")
+    email = payload.get("email")
+    # .get() istället för indexering - en giltigt signerad token utan sub/email ska ge samma
+    # rena 401 som ovan, inte en okontrollerad KeyError (500) längre ner i anropskedjan
+    if sub is None or email is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token missing required claims, please log in again")
+    return CurrentUser(id=int(sub), email=email, role=role)
 
 def require_roles(*allowed_roles: str):
     # Factory: Depends(require_roles("admin", "operator")) - används per endpoint för att begränsa vilka roller som får mutera

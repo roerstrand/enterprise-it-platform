@@ -88,6 +88,12 @@ public class ChangeServiceImpl : ChangeService.Grpc.ChangeService.ChangeServiceB
     {
         var change = await _db.Changes.FindAsync(request.Id);
         if (change is null) throw new RpcException(new Status(StatusCode.NotFound, $"Change {request.Id} not found"));
+        if (change.Status == "approved")
+        {
+            // Ingen lifecycle-graf ännu för Change (bara requested -> approved finns idag), men
+            // en redan godkänd change ska inte tyst kunna "godkännas" om igen och skriva en ny audit-post.
+            throw new RpcException(new Status(StatusCode.FailedPrecondition, $"Change {request.Id} is already approved"));
+        }
         var previousStatus = change.Status;
         change.Status = "approved";
         await _db.SaveChangesAsync();

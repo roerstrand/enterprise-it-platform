@@ -74,7 +74,11 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
     @track_grpc_metrics("cmdb")
     async def GetCI(self, request, context):
         cache_key = f"ci:{request.id}"
-        cached = await get_cached(cache_key)
+        try:
+            cached = await get_cached(cache_key)
+        except Exception as e:
+            print(f"get_cached misslyckades: {e}")
+            cached = None
         if cached is not None:
             return ParseDict(cached, cmdb_pb2.CIResponse())
 
@@ -82,7 +86,10 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
             ci = await get_ci_by_id_from_db(db, request.id)
             if ci:
                 response = _to_ci_response(ci)
-                await set_cached(cache_key, MessageToDict(response))
+                try:
+                    await set_cached(cache_key, MessageToDict(response))
+                except Exception as e:
+                    print(f"set_cached misslyckades: {e}")
                 return response
             context.set_code(grpc.StatusCode.NOT_FOUND)
             context.set_details("CI {request.id} not found")
@@ -91,7 +98,11 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
     @track_grpc_metrics("cmdb")
     async def ListCIs(self, request, context):
         cache_key = "cis:all"
-        cached = await get_cached(cache_key)
+        try:
+            cached = await get_cached(cache_key)
+        except Exception as e:
+            print(f"get_cached misslyckades: {e}")
+            cached = None
         if cached is not None:
             return ParseDict(cached, cmdb_pb2.CIList())
 
@@ -107,8 +118,21 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
                 db, request.source_ci_id, request.target_ci_id, request.relationship_type
             )
 
-            await delete_cached(f"related_cis:{relationship.source_ci_id}")
-            await delete_cached(f"related_cis:{relationship.target_ci_id}")
+            try:
+                await delete_cached(f"related_cis:{relationship.source_ci_id}")
+                await delete_cached(f"related_cis:{relationship.target_ci_id}")
+            except Exception as e:
+                print(f"delete_cached misslyckades: {e}")
+
+            # CreateRelationship har ingen actor_user_id/actor_email i sin request (ingen gateway-route
+            # anropar den ännu) - loggas ändå, utan attribuerad användare, för att matcha övriga
+            # mutationer i denna fil som alla är auditerade.
+            await record_audit_event(
+                None, None,
+                "ci.relationship_created", "ci_relationship", relationship.id,
+                before=None,
+                after={"source_ci_id": relationship.source_ci_id, "target_ci_id": relationship.target_ci_id, "relationship_type": relationship.relationship_type},
+            )
 
             return cmdb_pb2.RelationshipResponse(
                 id=relationship.id,
@@ -119,21 +143,35 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
 
     @track_grpc_metrics("cmdb")
     async def GetRelatedCIs(self, request, context):
-        cache_key = f"related_cis: {request.id}"
-        cached = await get_cached(cache_key)
+        # Ingen mellanslag - måste matcha exakt de nycklar delete_cached anropas med
+        # ovan (rad 110-111), annars osynkas cache-invalidering tyst.
+        cache_key = f"related_cis:{request.id}"
+        try:
+            cached = await get_cached(cache_key)
+        except Exception as e:
+            print(f"get_cached misslyckades: {e}")
+            cached = None
         if cached is not None:
             return ParseDict(cached, cmdb_pb2.CIList())
 
         async with get_db_context() as db:
             cis = await get_related_cis_from_db(db, request.id)
             response = cmdb_pb2.CIList(cis=[_to_ci_response(ci) for ci in cis])
-            await set_cached(cache_key, MessageToDict(response))
+            try:
+                await set_cached(cache_key, MessageToDict(response))
+            except Exception as e:
+                print(f"set_cached misslyckades: {e}")
             return response
 
     @track_grpc_metrics("cmdb")
     async def GetCIWithOwner(self, request, context):
-        cache_key = f"ci_with_owner: {request.id}"
-        cached = await get_cached(cache_key)
+        # Ingen mellanslag - måste matcha exakt de nycklar UpdateCI/DeleteCI invaliderar med
+        cache_key = f"ci_with_owner:{request.id}"
+        try:
+            cached = await get_cached(cache_key)
+        except Exception as e:
+            print(f"get_cached misslyckades: {e}")
+            cached = None
         if cached is not None:
             return ParseDict(cached, cmdb_pb2.CIWithOwnerResponse())
 
@@ -149,7 +187,10 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
 
             if ci.owner_user_id is None:
                 response = cmdb_pb2.CIWithOwnerResponse(ci=ci_response)
-                await set_cached(cache_key, MessageToDict(response))
+                try:
+                    await set_cached(cache_key, MessageToDict(response))
+                except Exception as e:
+                    print(f"set_cached misslyckades: {e}")
                 return response
 
             async with grpc.aio.insecure_channel(USER_SERVICE_ADDR) as channel:
@@ -159,7 +200,10 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
             response = cmdb_pb2.CIWithOwnerResponse(
                 ci=ci_response, owner_name=user.name, owner_email=user.email
             )
-            await set_cached(cache_key, MessageToDict(response))
+            try:
+                await set_cached(cache_key, MessageToDict(response))
+            except Exception as e:
+                print(f"set_cached misslyckades: {e}")
             return response
 
     @track_grpc_metrics("cmdb")
@@ -175,6 +219,11 @@ class CmdbServiceServicer(cmdb_pb2_grpc.CmdbServiceServicer):
             owner_team_id = request.owner_team_id if request.HasField("owner_team_id") else None
             owner_user_id = request.owner_user_id if request.HasField("owner_user_id") else None
             ci = await update_ci_in_db(db, request.id, request.name, request.ci_type, request.environment, owner_team_id, owner_user_id)
+            if not ci:
+                # Race: CI:et togs bort mellan "before"-hämtningen ovan och update_ci_in_db
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details(f"CI {request.id} not found")
+                return cmdb_pb2.CIResponse()
 
             try:
                 await delete_cached(f"ci:{request.id}")

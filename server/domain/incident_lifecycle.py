@@ -15,14 +15,18 @@ class InvalidStatusTransition(Exception):
         self.new_status = new_status
         super().__init__(f"Cannot transition incident from '{current_status}' to '{new_status}'")
 
-def validate_transition(current_status: str, new_status: str) -> None:
-    if new_status not in STATUSES:
+def validate_transition(current_status: str, new_status: str) -> str:
+    # Samma normalisering som validate_severity - annars avvisas t.ex. "OPEN"/"In_Progress"
+    # som en ogiltig lifecycle-övergång istället för att bara tolkas skiftlägesokänsligt.
+    normalized = (new_status or "").lower()
+    if normalized not in STATUSES:
         raise InvalidStatusTransition(current_status, new_status)
     # Samma status = no-op, inte ett fel (t.ex. AI föreslår status som redan gäller)
-    if new_status == current_status:
-        return
-    if new_status not in ALLOWED_TRANSITIONS.get(current_status, set()):
+    if normalized == current_status:
+        return normalized
+    if normalized not in ALLOWED_TRANSITIONS.get(current_status, set()):
         raise InvalidStatusTransition(current_status, new_status)
+    return normalized
 
 SEVERITIES = ("low", "medium", "high", "critical")
 

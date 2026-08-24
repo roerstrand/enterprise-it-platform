@@ -46,8 +46,8 @@ class IncidentServiceStub:
                 _registered_method=True)
         self.ListIncidents = channel.unary_unary(
                 '/incident.IncidentService/ListIncidents',
-                request_serializer=protos_dot_incident__pb2.Empty.SerializeToString,
-                response_deserializer=protos_dot_incident__pb2.IncidentList.FromString,
+                request_serializer=protos_dot_incident__pb2.ListIncidentsRequest.SerializeToString,
+                response_deserializer=protos_dot_incident__pb2.ListIncidentsResponse.FromString,
                 _registered_method=True)
         self.GetIncidentWithCI = channel.unary_unary(
                 '/incident.IncidentService/GetIncidentWithCI',
@@ -89,10 +89,35 @@ class IncidentServiceStub:
                 request_serializer=protos_dot_incident__pb2.UpdateIncidentSeverityRequest.SerializeToString,
                 response_deserializer=protos_dot_incident__pb2.IncidentResponse.FromString,
                 _registered_method=True)
+        self.AssignIncident = channel.unary_unary(
+                '/incident.IncidentService/AssignIncident',
+                request_serializer=protos_dot_incident__pb2.AssignIncidentRequest.SerializeToString,
+                response_deserializer=protos_dot_incident__pb2.IncidentResponse.FromString,
+                _registered_method=True)
         self.DeleteIncident = channel.unary_unary(
                 '/incident.IncidentService/DeleteIncident',
                 request_serializer=protos_dot_incident__pb2.IncidentActionRequest.SerializeToString,
                 response_deserializer=protos_dot_incident__pb2.Empty.FromString,
+                _registered_method=True)
+        self.LinkChange = channel.unary_unary(
+                '/incident.IncidentService/LinkChange',
+                request_serializer=protos_dot_incident__pb2.LinkChangeRequest.SerializeToString,
+                response_deserializer=protos_dot_incident__pb2.Empty.FromString,
+                _registered_method=True)
+        self.UnlinkChange = channel.unary_unary(
+                '/incident.IncidentService/UnlinkChange',
+                request_serializer=protos_dot_incident__pb2.LinkChangeRequest.SerializeToString,
+                response_deserializer=protos_dot_incident__pb2.Empty.FromString,
+                _registered_method=True)
+        self.GetLinkedChangeIds = channel.unary_unary(
+                '/incident.IncidentService/GetLinkedChangeIds',
+                request_serializer=protos_dot_incident__pb2.IncidentIdRequest.SerializeToString,
+                response_deserializer=protos_dot_incident__pb2.ChangeIdList.FromString,
+                _registered_method=True)
+        self.GetIncidentIdsForChange = channel.unary_unary(
+                '/incident.IncidentService/GetIncidentIdsForChange',
+                request_serializer=protos_dot_incident__pb2.ChangeIdRequest.SerializeToString,
+                response_deserializer=protos_dot_incident__pb2.IncidentIdList.FromString,
                 _registered_method=True)
 
 
@@ -165,7 +190,37 @@ class IncidentServiceServicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def AssignIncident(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def DeleteIncident(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def LinkChange(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UnlinkChange(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetLinkedChangeIds(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetIncidentIdsForChange(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -186,8 +241,8 @@ def add_IncidentServiceServicer_to_server(servicer, server):
             ),
             'ListIncidents': grpc.unary_unary_rpc_method_handler(
                     servicer.ListIncidents,
-                    request_deserializer=protos_dot_incident__pb2.Empty.FromString,
-                    response_serializer=protos_dot_incident__pb2.IncidentList.SerializeToString,
+                    request_deserializer=protos_dot_incident__pb2.ListIncidentsRequest.FromString,
+                    response_serializer=protos_dot_incident__pb2.ListIncidentsResponse.SerializeToString,
             ),
             'GetIncidentWithCI': grpc.unary_unary_rpc_method_handler(
                     servicer.GetIncidentWithCI,
@@ -229,10 +284,35 @@ def add_IncidentServiceServicer_to_server(servicer, server):
                     request_deserializer=protos_dot_incident__pb2.UpdateIncidentSeverityRequest.FromString,
                     response_serializer=protos_dot_incident__pb2.IncidentResponse.SerializeToString,
             ),
+            'AssignIncident': grpc.unary_unary_rpc_method_handler(
+                    servicer.AssignIncident,
+                    request_deserializer=protos_dot_incident__pb2.AssignIncidentRequest.FromString,
+                    response_serializer=protos_dot_incident__pb2.IncidentResponse.SerializeToString,
+            ),
             'DeleteIncident': grpc.unary_unary_rpc_method_handler(
                     servicer.DeleteIncident,
                     request_deserializer=protos_dot_incident__pb2.IncidentActionRequest.FromString,
                     response_serializer=protos_dot_incident__pb2.Empty.SerializeToString,
+            ),
+            'LinkChange': grpc.unary_unary_rpc_method_handler(
+                    servicer.LinkChange,
+                    request_deserializer=protos_dot_incident__pb2.LinkChangeRequest.FromString,
+                    response_serializer=protos_dot_incident__pb2.Empty.SerializeToString,
+            ),
+            'UnlinkChange': grpc.unary_unary_rpc_method_handler(
+                    servicer.UnlinkChange,
+                    request_deserializer=protos_dot_incident__pb2.LinkChangeRequest.FromString,
+                    response_serializer=protos_dot_incident__pb2.Empty.SerializeToString,
+            ),
+            'GetLinkedChangeIds': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetLinkedChangeIds,
+                    request_deserializer=protos_dot_incident__pb2.IncidentIdRequest.FromString,
+                    response_serializer=protos_dot_incident__pb2.ChangeIdList.SerializeToString,
+            ),
+            'GetIncidentIdsForChange': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetIncidentIdsForChange,
+                    request_deserializer=protos_dot_incident__pb2.ChangeIdRequest.FromString,
+                    response_serializer=protos_dot_incident__pb2.IncidentIdList.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -314,8 +394,8 @@ class IncidentService:
             request,
             target,
             '/incident.IncidentService/ListIncidents',
-            protos_dot_incident__pb2.Empty.SerializeToString,
-            protos_dot_incident__pb2.IncidentList.FromString,
+            protos_dot_incident__pb2.ListIncidentsRequest.SerializeToString,
+            protos_dot_incident__pb2.ListIncidentsResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -543,6 +623,33 @@ class IncidentService:
             _registered_method=True)
 
     @staticmethod
+    def AssignIncident(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/incident.IncidentService/AssignIncident',
+            protos_dot_incident__pb2.AssignIncidentRequest.SerializeToString,
+            protos_dot_incident__pb2.IncidentResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
     def DeleteIncident(request,
             target,
             options=(),
@@ -559,6 +666,114 @@ class IncidentService:
             '/incident.IncidentService/DeleteIncident',
             protos_dot_incident__pb2.IncidentActionRequest.SerializeToString,
             protos_dot_incident__pb2.Empty.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def LinkChange(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/incident.IncidentService/LinkChange',
+            protos_dot_incident__pb2.LinkChangeRequest.SerializeToString,
+            protos_dot_incident__pb2.Empty.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UnlinkChange(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/incident.IncidentService/UnlinkChange',
+            protos_dot_incident__pb2.LinkChangeRequest.SerializeToString,
+            protos_dot_incident__pb2.Empty.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetLinkedChangeIds(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/incident.IncidentService/GetLinkedChangeIds',
+            protos_dot_incident__pb2.IncidentIdRequest.SerializeToString,
+            protos_dot_incident__pb2.ChangeIdList.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetIncidentIdsForChange(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/incident.IncidentService/GetIncidentIdsForChange',
+            protos_dot_incident__pb2.ChangeIdRequest.SerializeToString,
+            protos_dot_incident__pb2.IncidentIdList.FromString,
             options,
             channel_credentials,
             insecure,

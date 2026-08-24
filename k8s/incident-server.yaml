@@ -30,6 +30,11 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: CMDB_SERVICE_ADDR
+            - name: USER_SERVICE_ADDR
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: USER_SERVICE_ADDR
             - name: AI_SERVICE_URL
               valueFrom:
                 configMapKeyRef:
