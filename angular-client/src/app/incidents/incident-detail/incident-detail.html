@@ -30,10 +30,16 @@
             <dd>{{ incident.description }}</dd>
 
             <dt>Configuration Item</dt>
-            <dd>{{ incident.ci_name }} · {{ incident.ci_type }} · {{ incident.ci_environment }}</dd>
+            <dd>
+              <a [routerLink]="['/configuration-items', incident.ci_id]">{{ incident.ci_name }}</a>
+              · {{ incident.ci_type }} · {{ incident.ci_environment }}
+            </dd>
 
             <dt>CI owner</dt>
             <dd>{{ incident.owner_name || '—' }} @if (incident.owner_email) { ({{ incident.owner_email }}) }</dd>
+
+            <dt>Assignee</dt>
+            <dd>{{ assigneeName(incident.assignee_user_id) }}</dd>
 
             <dt>Created</dt>
             <dd>{{ incident.created_at | date: 'medium' }}</dd>
@@ -83,6 +89,63 @@
           </dl>
         </mat-card-content>
       </mat-card>
+
+      <mat-card class="detail-card">
+        <mat-card-header>
+          <mat-card-title>SLA</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <dl class="field-list">
+            <dt>State</dt>
+            <dd><span [class]="slaClass(incident.sla.state)">{{ incident.sla.state }}</span></dd>
+
+            <dt>Response deadline</dt>
+            <dd>
+              {{ incident.sla.response_deadline | date: 'medium' }}
+              @if (incident.sla.response_breached) { <span class="sla-breached-label">breached</span> }
+            </dd>
+
+            <dt>Resolution deadline</dt>
+            <dd>
+              {{ incident.sla.resolution_deadline | date: 'medium' }}
+              @if (incident.sla.resolution_breached) { <span class="sla-breached-label">breached</span> }
+            </dd>
+
+            <dt>First response</dt>
+            <dd>{{ incident.sla.first_response_at ? (incident.sla.first_response_at | date: 'medium') : 'Not yet' }}</dd>
+
+            <dt>Resolved</dt>
+            <dd>{{ incident.sla.resolved_at ? (incident.sla.resolved_at | date: 'medium') : '—' }}</dd>
+
+            @if (incident.sla.state === 'on_track' || incident.sla.state === 'at_risk') {
+              <dt>Time remaining</dt>
+              <dd>{{ formatRemaining(incident.sla.remaining_seconds) }}</dd>
+            }
+          </dl>
+        </mat-card-content>
+      </mat-card>
+
+      @if (authService.canManage()) {
+        <mat-card class="detail-card">
+          <mat-card-header>
+            <mat-card-title>Assignment</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="assigneeForm" (ngSubmit)="onAssigneeSubmit()" class="severity-form">
+              <mat-form-field appearance="outline" class="field-narrow">
+                <mat-label>Assignee</mat-label>
+                <mat-select formControlName="assigneeUserId">
+                  <mat-option [value]="null">Unassigned</mat-option>
+                  @for (u of users(); track u.id) {
+                    <mat-option [value]="u.id">{{ u.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <button mat-button type="submit">Update assignee</button>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      }
 
       @if (authService.canManage()) {
         <mat-card class="detail-card">
@@ -136,6 +199,65 @@
         </mat-card-content>
       </mat-card>
     }
+
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <mat-card-title>Linked changes</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (linkedChanges().length === 0) {
+          <p class="empty-state">No changes linked to this incident.</p>
+        } @else {
+          <ul class="recent-list">
+            @for (change of linkedChanges(); track change.id) {
+              <li>
+                <a [routerLink]="['/changes', change.id]" class="recent-title">#{{ change.id }} {{ change.title }}</a>
+                <span class="chip">{{ change.status }}</span>
+                @if (authService.canManage()) {
+                  <button mat-button color="warn" (click)="onUnlinkChange(change.id)">Unlink</button>
+                }
+              </li>
+            }
+          </ul>
+        }
+
+        @if (authService.canManage()) {
+          <form [formGroup]="linkChangeForm" (ngSubmit)="onLinkChangeSubmit()" class="severity-form link-change-form">
+            <mat-form-field appearance="outline" class="field-narrow">
+              <mat-label>Link existing change</mat-label>
+              <mat-select formControlName="changeId">
+                @for (change of linkableChanges(); track change.id) {
+                  <mat-option [value]="change.id">#{{ change.id }} {{ change.title }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <button mat-button type="submit" [disabled]="linkChangeForm.invalid">Link</button>
+          </form>
+
+          <form [formGroup]="newChangeForm" (ngSubmit)="onNewChangeSubmit()" class="form-grid link-change-form">
+            <mat-form-field appearance="outline">
+              <mat-label>New change title</mat-label>
+              <input matInput formControlName="title" placeholder="Increase db-01 disk size" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="field-narrow">
+              <mat-label>Risk level</mat-label>
+              <mat-select formControlName="riskLevel">
+                @for (level of riskLevels; track level) {
+                  <mat-option [value]="level">{{ level | titlecase }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="field-full">
+              <mat-label>Description</mat-label>
+              <input matInput formControlName="description" />
+            </mat-form-field>
+            <button mat-raised-button color="primary" type="submit" class="grid-cell-end" [disabled]="newChangeForm.invalid">
+              Create &amp; link change
+            </button>
+          </form>
+        }
+      </mat-card-content>
+    </mat-card>
 
     <mat-card class="detail-card">
       <mat-card-header>

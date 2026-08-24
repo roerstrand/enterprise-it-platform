@@ -1,0 +1,64 @@
+<div class="page">
+  <a routerLink="/changes" class="back-link"><mat-icon aria-hidden="true">arrow_back</mat-icon>Back to changes</a>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (notFound()) {
+    <p class="empty-state">Change not found.</p>
+  } @else if (change(); as change) {
+    <h1 class="page-title">
+      <mat-icon aria-hidden="true">build</mat-icon>
+      #{{ change.id }} — {{ change.title }}
+    </h1>
+
+    <div class="detail-grid">
+      <mat-card class="detail-card">
+        <mat-card-header>
+          <mat-card-title>Overview</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <dl class="field-list">
+            <dt>Status</dt>
+            <dd><span [class]="statusClass(change.status)">{{ change.status }}</span></dd>
+
+            <dt>Risk level</dt>
+            <dd>{{ change.risk_level }}</dd>
+
+            <dt>Description</dt>
+            <dd>{{ change.description }}</dd>
+
+            <dt>Configuration Item</dt>
+            <dd><a [routerLink]="['/configuration-items', change.ci_id]">#{{ change.ci_id }}</a></dd>
+          </dl>
+
+          @if (authService.canManage() && change.status !== 'approved') {
+            <button mat-raised-button color="primary" (click)="onApprove()" class="approve-button">Approve change</button>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="detail-card">
+        <mat-card-header>
+          <mat-card-title>Related incidents</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (change.related_incidents.length === 0) {
+            <p class="empty-state">No incidents linked to this change.</p>
+          } @else {
+            <ul class="recent-list">
+              @for (incident of change.related_incidents; track incident.id) {
+                <li>
+                  <a [routerLink]="['/incidents', incident.id]" class="recent-title">#{{ incident.id }} {{ incident.title }}</a>
+                  <span [class]="statusClass(incident.status)">{{ incident.status }}</span>
+                  <span [class]="severityClass(incident.severity)">{{ incident.severity }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</div>

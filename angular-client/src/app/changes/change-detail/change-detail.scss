@@ -1,5 +1,5 @@
-// Delade klasser (.page, .page-title, .chip*, .actions-cell, .empty-state, .loading-container,
-// .form-grid-inline, .field-narrow) ligger globalt i src/styles.scss
+// Samma layout-mönster som incidents/incident-detail/incident-detail.scss - duplicerad lokalt,
+// se kommentaren där för varför
 
 .back-link {
   display: inline-flex;
@@ -21,8 +21,6 @@
   }
 }
 
-// Samma kort-utseende som .form-card/.table-card i styles.scss (dämpad skugga, tunn kant),
-// duplicerad lokalt istället för att döpa om till .form-card i hela mallen
 .detail-card {
   --mdc-elevated-card-container-elevation: none;
   --mat-card-title-text-size: 15px;
@@ -65,60 +63,13 @@
   font-size: 13px;
 }
 
-.sla-breached-label {
-  margin-left: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: #c62828;
-}
-
-.transition-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.severity-form {
-  display: flex;
-  align-items: end;
-  gap: 12px;
-}
-
-.timeline {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.timeline-item {
-  border-left: 2px solid var(--mat-sys-outline-variant, #d9dee6);
-  padding-left: 12px;
-}
-
-.timeline-meta {
-  display: flex;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--mat-sys-on-surface-variant);
-}
-
-.timeline-author {
-  font-weight: 600;
-}
-
-.timeline-text {
-  margin: 4px 0 0;
-  font-size: 13px;
+.approve-button {
+  margin-top: 12px;
 }
 
 .recent-list {
   list-style: none;
-  margin: 0 0 12px;
+  margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -130,20 +81,14 @@
   align-items: center;
   gap: 8px;
   font-size: 13px;
+  flex-wrap: wrap;
 }
 
 .recent-title {
-  flex: 1 1 auto;
   color: var(--mat-sys-primary);
   text-decoration: none;
 
   &:hover {
     text-decoration: underline;
   }
-}
-
-.link-change-form {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(16, 24, 40, 0.08);
 }

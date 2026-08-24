@@ -15,14 +15,18 @@
         <span class="stat-value">{{ highCriticalCount() }}</span>
         <span class="stat-label">High / Critical incidents</span>
       </a>
+      <a routerLink="/incidents" [queryParams]="{ sla_state: 'breached' }" class="stat-tile stat-tile--warn">
+        <span class="stat-value">{{ slaBreachedCount() }}</span>
+        <span class="stat-label">SLA breached</span>
+      </a>
       <a routerLink="/cis" class="stat-tile">
         <span class="stat-value">{{ totalCisCount() }}</span>
         <span class="stat-label">Configuration items</span>
       </a>
-      <div class="stat-tile stat-tile--static">
+      <a routerLink="/changes" class="stat-tile">
         <span class="stat-value">{{ recentChangesCount() }}</span>
         <span class="stat-label">Changes</span>
-      </div>
+      </a>
     </div>
 
     <div class="detail-grid">
@@ -100,7 +104,7 @@
             <ul class="recent-list">
               @for (change of recentChanges(); track change.id) {
                 <li>
-                  <span class="recent-title recent-title--static">#{{ change.id }} {{ change.title }}</span>
+                  <a [routerLink]="['/changes', change.id]" class="recent-title">#{{ change.id }} {{ change.title }}</a>
                   <span class="chip">{{ change.status }}</span>
                 </li>
               }
