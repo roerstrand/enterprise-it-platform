@@ -5,7 +5,7 @@ package incident;
 service IncidentService {
     rpc CreateIncident (CreateIncidentRequest) returns (IncidentResponse);
     rpc GetIncident (IncidentIdRequest) returns (IncidentResponse);
-    rpc ListIncidents (Empty) returns (IncidentList);
+    rpc ListIncidents (ListIncidentsRequest) returns (ListIncidentsResponse);
     rpc GetIncidentWithCI (IncidentIdRequest) returns (IncidentWithCIResponse);
     rpc AddIncidentUpdate (AddIncidentUpdateRequest) returns (IncidentResponse);
     rpc GetIncidentUpdates (IncidentIdRequest) returns (IncidentUpdateList);
@@ -14,7 +14,12 @@ service IncidentService {
     rpc UpdateIncident (UpdateIncidentRequest) returns (IncidentResponse);
     rpc UpdateIncidentStatus (UpdateIncidentStatusRequest) returns (IncidentResponse);
     rpc UpdateIncidentSeverity (UpdateIncidentSeverityRequest) returns (IncidentResponse);
+    rpc AssignIncident (AssignIncidentRequest) returns (IncidentResponse);
     rpc DeleteIncident (IncidentActionRequest) returns (Empty);
+    rpc LinkChange (LinkChangeRequest) returns (Empty);
+    rpc UnlinkChange (LinkChangeRequest) returns (Empty);
+    rpc GetLinkedChangeIds (IncidentIdRequest) returns (ChangeIdList);
+    rpc GetIncidentIdsForChange (ChangeIdRequest) returns (IncidentIdList);
 }
 
 message Empty {}
@@ -43,8 +48,10 @@ message IncidentUpdateResponse {
     int32 incident_id = 2;
     string text = 3;
     int32 author_user_id = 4;
-    string author_email = 5;
-    string created_at = 6;
+    // Ingen author_email här med avsikt: /api/incidents/*/updates är läsbart för Viewer,
+    // och email hör bara hemma i svar bara Admin ser (se api_list_users i routers/demo.py).
+    // Angular slår upp författarnamn separat via UserService (id+name, ingen email för icke-admin).
+    string created_at = 5;
 }
 
 message IncidentUpdateList {
@@ -84,6 +91,15 @@ message UpdateIncidentSeverityRequest {
     string actor_email = 4;
 }
 
+message AssignIncidentRequest {
+    int32 id = 1;
+    // 0 = unassign (user-id:n börjar på 1, så 0 är en säker "inget värde"-sentinel, precis som
+    // actor_user_id=0 används för "ingen actor" i audit-anropen i denna fil)
+    int32 assignee_user_id = 2;
+    int32 actor_user_id = 3;
+    string actor_email = 4;
+}
+
 message IncidentResponse {
     int32 id = 1;
     string title = 2;
@@ -97,10 +113,61 @@ message IncidentResponse {
     string ai_suggested_status = 10;
     string created_at = 11;
     string updated_at = 12;
+    int32 assignee_user_id = 13;
+    // SLA - alltid beräknat färskt vid läsning (se domain/sla.py), aldrig lagrat direkt i DB
+    string sla_response_deadline = 14;
+    string sla_resolution_deadline = 15;
+    string sla_first_response_at = 16;
+    string sla_resolved_at = 17;
+    bool sla_response_breached = 18;
+    bool sla_resolution_breached = 19;
+    string sla_state = 20;
+    int32 sla_remaining_seconds = 21;
 }
 
-message IncidentList {
+message ListIncidentsRequest {
+    // Alla filter är optional - tom sträng/0/false = inget filter på det fältet
+    string status = 1;
+    string severity = 2;
+    int32 assignee_user_id = 3;
+    bool unassigned_only = 4;
+    int32 ci_id = 5;
+    string sla_state = 6;
+    string search = 7;
+    string created_after = 8;
+    string created_before = 9;
+    string sort_by = 10;
+    string sort_dir = 11;
+    int32 page = 12;
+    int32 page_size = 13;
+}
+
+message ListIncidentsResponse {
     repeated IncidentResponse incidents = 1;
+    int32 total_count = 2;
+    int32 page = 3;
+    int32 page_size = 4;
+}
+
+// Länken är avsiktligt bara två id:n + vem/när - ingen Incident- eller Change-data kopieras hit,
+// gatewayen slår upp fulla objekt via respektive tjänsts befintliga GetIncident/GetChange.
+message LinkChangeRequest {
+    int32 incident_id = 1;
+    int32 change_id = 2;
+    int32 actor_user_id = 3;
+    string actor_email = 4;
+}
+
+message ChangeIdList {
+    repeated int32 change_ids = 1;
+}
+
+message ChangeIdRequest {
+    int32 change_id = 1;
+}
+
+message IncidentIdList {
+    repeated int32 incident_ids = 1;
 }
 
 message IncidentWithCIResponse {

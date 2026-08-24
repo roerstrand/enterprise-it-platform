@@ -17,6 +17,9 @@ def _get_stub():
 class CmdbServiceUnavailable(Exception):
     pass
 
+class CINotFound(Exception):
+    pass
+
 def _to_dict(ci):
     return {
         "id": ci.id,
@@ -30,6 +33,28 @@ def _to_dict(ci):
 async def list_cis():
     try:
         response = await _get_stub().ListCIs(cmdb_pb2.Empty())
+    except grpc.RpcError as e:
+        print(f"gRPC-fel: {e.code()} {e.details()}")
+        raise CmdbServiceUnavailable(str(e))
+    return [_to_dict(ci) for ci in response.cis]
+
+async def get_ci_with_owner(ci_id: int):
+    try:
+        response = await _get_stub().GetCIWithOwner(cmdb_pb2.CIIdRequest(id=ci_id))
+    except grpc.RpcError as e:
+        if e.code() == grpc.StatusCode.NOT_FOUND:
+            raise CINotFound(str(e))
+        print(f"gRPC-fel: {e.code()} {e.details()}")
+        raise CmdbServiceUnavailable(str(e))
+    return {
+        **_to_dict(response.ci),
+        "owner_name": response.owner_name,
+        "owner_email": response.owner_email,
+    }
+
+async def get_related_cis(ci_id: int):
+    try:
+        response = await _get_stub().GetRelatedCIs(cmdb_pb2.CIIdRequest(id=ci_id))
     except grpc.RpcError as e:
         print(f"gRPC-fel: {e.code()} {e.details()}")
         raise CmdbServiceUnavailable(str(e))

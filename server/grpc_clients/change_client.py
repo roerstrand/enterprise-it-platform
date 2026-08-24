@@ -17,6 +17,12 @@ def _get_stub():
 class ChangeServiceUnavailable(Exception):
     pass
 
+class ChangeNotFound(Exception):
+    pass
+
+class InvalidChangeInput(Exception):
+    pass
+
 def _to_dict(change):
     return {
         "id": change.id,
@@ -35,6 +41,16 @@ async def list_changes():
         raise ChangeServiceUnavailable(str(e))
     return [_to_dict(c) for c in response.changes]
 
+async def get_change(change_id: int):
+    try:
+        response = await _get_stub().GetChange(change_pb2.ChangeIdRequest(id=change_id))
+    except grpc.RpcError as e:
+        if e.code() == grpc.StatusCode.NOT_FOUND:
+            raise ChangeNotFound(str(e))
+        print(f"gRPC-fel: {e.code()} {e.details()}")
+        raise ChangeServiceUnavailable(str(e))
+    return _to_dict(response)
+
 async def create_change(title: str, description: str, risk_level: str, ci_id: int, actor_user_id: int | None = None, actor_email: str | None = None):
     try:
         response = await _get_stub().CreateChange(change_pb2.CreateChangeRequest(
@@ -52,6 +68,10 @@ async def approve_change(change_id: int, actor_user_id: int | None = None, actor
             id=change_id, actor_user_id=actor_user_id or 0, actor_email=actor_email or "",
         ))
     except grpc.RpcError as e:
+        if e.code() == grpc.StatusCode.NOT_FOUND:
+            raise ChangeNotFound(str(e))
+        if e.code() == grpc.StatusCode.FAILED_PRECONDITION:
+            raise InvalidChangeInput(e.details())
         print(f"gRPC-fel: {e.code()} {e.details()}")
         raise ChangeServiceUnavailable(str(e))
     return _to_dict(response)
