@@ -1,5 +1,5 @@
-// Delade klasser (.page, .page-title, .chip*, .actions-cell, .empty-state, .loading-container,
-// .form-grid-inline, .field-narrow) ligger globalt i src/styles.scss
+// Samma layout-mönster som incidents/incident-detail/incident-detail.scss - duplicerad lokalt,
+// se kommentaren där för varför (samma skäl som .form-card/.table-card i styles.scss)
 
 .back-link {
   display: inline-flex;
@@ -21,8 +21,6 @@
   }
 }
 
-// Samma kort-utseende som .form-card/.table-card i styles.scss (dämpad skugga, tunn kant),
-// duplicerad lokalt istället för att döpa om till .form-card i hela mallen
 .detail-card {
   --mdc-elevated-card-container-elevation: none;
   --mat-card-title-text-size: 15px;
@@ -65,25 +63,44 @@
   font-size: 13px;
 }
 
-.sla-breached-label {
-  margin-left: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: #c62828;
-}
-
-.transition-buttons {
+.recent-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 8px;
-  margin-bottom: 12px;
 }
 
-.severity-form {
+.recent-list li {
   display: flex;
-  align-items: end;
-  gap: 12px;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.recent-title {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--mat-sys-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.recent-title--static {
+  color: inherit;
+  cursor: default;
+}
+
+.muted {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 12px;
 }
 
 .timeline {
@@ -109,32 +126,7 @@
 
 .timeline-author {
   font-weight: 600;
-}
-
-.timeline-text {
-  margin: 4px 0 0;
-  font-size: 13px;
-}
-
-.recent-list {
-  list-style: none;
-  margin: 0 0 12px;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.recent-list li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-}
-
-.recent-title {
-  flex: 1 1 auto;
-  color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-surface);
   text-decoration: none;
 
   &:hover {
@@ -142,8 +134,17 @@
   }
 }
 
-.link-change-form {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(16, 24, 40, 0.08);
+.timeline-text {
+  margin: 4px 0 0;
+  font-size: 13px;
+  display: flex;
+  gap: 6px;
+}
+
+.timeline-text.mono {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 11px;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: pre-wrap;
+  word-break: break-word;
 }

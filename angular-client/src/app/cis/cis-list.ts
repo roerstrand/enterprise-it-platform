@@ -1,4 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -15,6 +16,7 @@ import { AuthService } from '../auth/auth.service';
     selector: 'app-cis-list',
     imports: [
         ReactiveFormsModule,
+        RouterLink,
         MatTableModule,
         MatProgressSpinnerModule,
         MatFormFieldModule,

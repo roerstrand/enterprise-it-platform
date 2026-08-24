@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CI } from './ci';
+import { CIDetail } from './ci-detail';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -12,6 +13,10 @@ export class CIService {
 
     list(): Observable<CI[]> {
         return this.http.get<CI[]>(this.baseUrl);
+    }
+
+    getById(ciId: number): Observable<CIDetail> {
+        return this.http.get<CIDetail>(`${this.baseUrl}/${ciId}`);
     }
 
     create(name: string, ciType: string, environment: string, ownerUserId: number | null): Observable<CI> {

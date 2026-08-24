@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Incident, IncidentUpdate, IncidentWithCI } from './incident';
+import { Incident, IncidentListFilter, IncidentListResult, IncidentUpdate, IncidentWithCI } from './incident';
+import { Change } from '../changes/change';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -10,8 +11,14 @@ export class IncidentService {
 
     constructor(private http: HttpClient) {}
 
-    list(): Observable<Incident[]> {
-        return this.http.get<Incident[]>(this.baseUrl);
+    list(filter: IncidentListFilter = {}): Observable<IncidentListResult> {
+        let params = new HttpParams();
+        for (const [key, value] of Object.entries(filter)) {
+            if (value !== undefined && value !== null && value !== '') {
+                params = params.set(key, String(value));
+            }
+        }
+        return this.http.get<IncidentListResult>(this.baseUrl, { params });
     }
 
     getById(incidentId: number): Observable<IncidentWithCI> {
@@ -24,6 +31,10 @@ export class IncidentService {
 
     updateSeverity(incidentId: number, severity: string): Observable<Incident> {
         return this.http.put<Incident>(`${this.baseUrl}/${incidentId}/severity`, { severity });
+    }
+
+    assign(incidentId: number, assigneeUserId: number | null): Observable<Incident> {
+        return this.http.put<Incident>(`${this.baseUrl}/${incidentId}/assignee`, { assignee_user_id: assigneeUserId });
     }
 
     create(title: string, description: string, severity: string, ciId: number): Observable<Incident> {
@@ -65,6 +76,18 @@ export class IncidentService {
     delete(incidentId: number): Observable<unknown> {
         // ingen typad response behövs, backend returnerar bara { deleted: id } vi inte använder till något
         return this.http.delete(`${this.baseUrl}/${incidentId}`);
+    }
+
+    getLinkedChanges(incidentId: number): Observable<Change[]> {
+        return this.http.get<Change[]>(`${this.baseUrl}/${incidentId}/changes`);
+    }
+
+    linkChange(incidentId: number, changeId: number): Observable<unknown> {
+        return this.http.post(`${this.baseUrl}/${incidentId}/changes`, { change_id: changeId });
+    }
+
+    unlinkChange(incidentId: number, changeId: number): Observable<unknown> {
+        return this.http.delete(`${this.baseUrl}/${incidentId}/changes/${changeId}`);
     }
 
 }

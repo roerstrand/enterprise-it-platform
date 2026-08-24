@@ -16,9 +16,16 @@
 .col-status { width: 132px; }
 .col-severity { width: 100px; }
 .col-ai-suggest { width: 205px; }
+.col-assignee { width: 140px; }
+.col-sla { width: 100px; }
 // Ingen bredd = tar det utrymme som blir kvar när övriga kolumner är dragna
 .col-ai-summary { width: auto; }
 .col-actions { width: 152px; }
+
+.assignee-select {
+  width: 100%;
+  font-size: 12px;
+}
 
 // Trunkerar lång text till en rad med "..." - full text nås via title-attributets tooltip
 .truncate {

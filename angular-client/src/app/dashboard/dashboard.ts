@@ -37,6 +37,9 @@ export class Dashboard implements OnInit {
     protected readonly highCriticalCount = computed(
         () => this.incidents().filter((i) => i.severity === 'high' || i.severity === 'critical').length
     );
+    protected readonly slaBreachedCount = computed(
+        () => this.incidents().filter((i) => i.sla.state === 'breached').length
+    );
     protected readonly totalCisCount = computed(() => this.cis().length);
     protected readonly recentChangesCount = computed(() => this.changes().length);
 
@@ -57,12 +60,14 @@ export class Dashboard implements OnInit {
 
     ngOnInit(): void {
         forkJoin({
-            incidents: this.incidentService.list(),
+            // page_size stort nog för hela dev-datasetet - dashboarden aggregerar över alla incidents,
+            // en riktig "stats"-endpoint vore rätt lösning vid mycket större volym (se incident_repository.py)
+            incidents: this.incidentService.list({ page_size: 100 }),
             cis: this.ciService.list(),
             changes: this.changeService.list(),
         }).subscribe({
             next: ({ incidents, cis, changes }) => {
-                this.incidents.set(incidents);
+                this.incidents.set(incidents.incidents);
                 this.cis.set(cis);
                 this.changes.set(changes);
                 this.loading.set(false);

@@ -26,6 +26,10 @@
           <mat-icon aria-hidden="true">report_problem</mat-icon>
           <span>Incidents</span>
         </a>
+        <a routerLink="/changes" routerLinkActive="active" class="sidebar-link">
+          <mat-icon aria-hidden="true">build</mat-icon>
+          <span>Changes</span>
+        </a>
         @if (authService.isAdmin()) {
           <a routerLink="/audit" routerLinkActive="active" class="sidebar-link">
             <mat-icon aria-hidden="true">fact_check</mat-icon>

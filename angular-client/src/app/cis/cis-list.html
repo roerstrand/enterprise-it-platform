@@ -86,7 +86,9 @@
           </ng-container>
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>Name</th>
-            <td mat-cell *matCellDef="let ci">{{ ci.name }}</td>
+            <td mat-cell *matCellDef="let ci">
+              <a [routerLink]="['/configuration-items', ci.id]">{{ ci.name }}</a>
+            </td>
           </ng-container>
           <ng-container matColumnDef="ci_type">
             <th mat-header-cell *matHeaderCellDef>Type</th>
