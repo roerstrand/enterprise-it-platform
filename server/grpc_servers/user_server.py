@@ -12,9 +12,10 @@ from repositories.user_repository import (
     get_user_by_id_from_db,
     create_user_in_db,
     get_user_by_email_from_db,
-    update_user_role_in_db
+    update_user_role_in_db,
+    any_admin_exists_from_db
 )
-from auth.security import ROLES
+from auth.security import ROLES, decode_access_token
 
 from data.database import get_db_context
 
@@ -84,6 +85,16 @@ class UserServiceServicer(user_pb2_grpc.UserServiceServicer):
             context.set_details(f"Invalid role '{request.role}', must be one of {ROLES}")
             return user_pb2.UserResponse()
         async with get_db_context() as db:
+            if await any_admin_exists_from_db(db):
+                metadata = dict(context.invocation_metadata())
+                auth_header = metadata.get("authorization", "")
+                token = auth_header.removeprefix("Bearer ").strip()
+                payload = decode_access_token(token) if token else None
+                if payload is None or payload.get("role") != "admin":
+                    context.set_code(grpc.StatusCode.PERMISSION_DENIED)
+                    context.set_details("A valid admin token is required to change roles")
+                    return user_pb2.UserResponse()
+    
             user = await update_user_role_in_db(db, request.id, request.role)
             if not user:
                 context.set_code(grpc.StatusCode.NOT_FOUND)

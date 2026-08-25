@@ -1,6 +1,7 @@
 import os
 
 import grpc
+import psycopg2
 
 from protos import user_pb2, user_pb2_grpc
 from protos import cmdb_pb2, cmdb_pb2_grpc
@@ -13,16 +14,17 @@ USER_SERVICE_ADDR = os.getenv("USER_SERVICE_ADDR", "localhost:50051")
 CMDB_SERVICE_ADDR = os.getenv("CMDB_SERVICE_ADDR", "localhost:50052")
 INCIDENT_SERVICE_ADDR = os.getenv("INCIDENT_SERVICE_ADDR", "localhost:50053")
 
+SEED_DATABASE_URL = os.getenv("SEED_DATABASE_URL", "postgresql://devuser:devpass@localhost:5433/microservices")
+
 # Går direkt mot gRPC-servrarna, precis som cmdb_client.py/incident_client.py -
 # de har ingen egen auth (JWT/RBAC enforceas bara i FastAPI-gatewayen, se demo.py),
 # så det här skriptet slipper bootstrap-problemet med att behöva en admin-token
 # bara för att seeda testdata.
 
 USERS = [
-    ("Maria Svensson", "maria.svensson@example.com"),
-    ("Johan Berg", "johan.berg@example.com"),
-    ("Test User", "test@test.com"),
-    ("Demo User", "demo@test.com"),
+    ("Admin User", "admin@test.com", "admin"),
+    ("Operator User", "operator@test.com", "operator"),
+    ("Viewer User", "viewer@test.com", "viewer"),
 ]
 
 CIS = [
@@ -46,15 +48,38 @@ INCIDENTS = [
     ("Nightly batch job failing silently", "The 02:00 batch-worker-03 job exits 0 but hasn't written output for 3 nights.", "critical", 5, None, None),
 ]
 
+def reset_database():
+    conn = psycopg2.connect(SEED_DATABASE_URL)
+    conn.autocommit = True
+    with conn.cursor() as cur:
+        cur.execute(
+            'TRUNCATE incident_updates, incident_change_links, ci_relationships, '
+            'incidents, configuration_items, audit_log, "Changes", users '
+            'RESTART IDENTITY CASCADE;' 
+        )
+    conn.close()
+    print("Database reset: all seed-relevant tables truncated.\n")
 
 def run():
+    reset_database()
+
     with grpc.insecure_channel(USER_SERVICE_ADDR) as user_channel:
         user_stub = user_pb2_grpc.UserServiceStub(user_channel)
         user_ids = []
-        for name, email in USERS:
+        admin_token = None
+        for name, email, role in USERS:
             user = user_stub.CreateUser(user_pb2.CreateUserRequest(name=name, email=email, password="test1234"))
+
+            if role != "viewer":
+                metadata = (("authorization", f"Bearer {admin_token}"),) if admin_token else None
+                user = user_stub.UpdateUserRole(user_pb2.UpdateUserRoleRequest(id=user.id, role=role), metadata=metadata)
+
+            if role == "admin" and admin_token is None:
+                login_response = user_stub.Login(user_pb2.LoginRequest(email=email, password="test1234"))
+                admin_token = login_response.access_token
+
             user_ids.append(user.id)
-            print(f"Created user: id={user.id}, name={user.name}")
+            print(f"Created user: id={user.id}, name={user.name}, role={user.role}")
 
     with grpc.insecure_channel(CMDB_SERVICE_ADDR) as cmdb_channel:
         cmdb_stub = cmdb_pb2_grpc.CmdbServiceStub(cmdb_channel)

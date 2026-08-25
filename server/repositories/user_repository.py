@@ -52,3 +52,8 @@ async def update_user_in_db(db: AsyncSession, user_id: int, name: str, email: st
     user.email = email
     await db.commit()
     return user
+
+async def any_admin_exists_from_db(db: AsyncSession) -> bool:
+    result = await db.execute(select(UserModel.id).where(UserModel.role == "admin").limit(1))
+    return result.scalar() is not None
+

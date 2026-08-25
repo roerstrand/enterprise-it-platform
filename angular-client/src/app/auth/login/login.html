@@ -20,7 +20,7 @@
           <p class="error-text">{{ error() }}</p>
         }
 
-        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading()">
+        <button mat-flat-button color="primary" type="submit" class="submit-button" [disableRipple]="true" [disabled]="form.invalid || loading()">
           @if (loading()) {
             <mat-spinner diameter="20" />
           } @else {
@@ -28,7 +28,7 @@
           }
         </button>
 
-        <a routerLink="/register" class="back-link">No account? Create one</a>
+        <p class="signup-hint">No account? <a routerLink="/register" class="signup-link">Create one</a></p>
       </form>
     </mat-card-content>
   </mat-card>

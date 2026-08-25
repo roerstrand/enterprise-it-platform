@@ -114,7 +114,8 @@ body {
 // fel/hint-text (subscript), även när den är tom. Ingen av formulären här
 // använder mat-error/mat-hint, så vi tar bort den reserverade höjden -
 // det är den enskilt största bidragande orsaken till att fälten känns höga.
-.form-grid .mat-mdc-form-field-subscript-wrapper {
+.form-grid .mat-mdc-form-field-subscript-wrapper,
+.login-form .mat-mdc-form-field-subscript-wrapper {
   display: none;
 }
 

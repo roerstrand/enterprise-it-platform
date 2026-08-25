@@ -34,14 +34,59 @@
     margin: 0;
 }
 
-.back-link {
-    margin-top: 0.5rem;
-    font-size: 0.875rem;
+.submit-button {
+    // Material äger background-color/border/border-radius via egna tokens på samma
+    // element - !important krävs för att garantera att de här exakta värdena vinner,
+    // oavsett vilken intern MDC-regel/specificitet som annars skulle vinna.
+    border-radius: 8px !important;
+    box-shadow: none !important;
+
+    &:disabled {
+        background-color: #e2e5e9 !important;
+        color: #6b7280 !important;
+        border: 1px solid #c8cdd3 !important;
+        cursor: not-allowed;
+    }
+
+    &:not(:disabled) {
+        background-color: var(--mat-sys-primary) !important;
+        color: #ffffff !important;
+        border: none !important;
+        cursor: pointer;
+
+        &:hover {
+            background-color: color-mix(in srgb, var(--mat-sys-primary) 87%, black) !important;
+        }
+
+        &:active {
+            background-color: color-mix(in srgb, var(--mat-sys-primary) 74%, black) !important;
+        }
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--mat-sys-primary);
+        outline-offset: 2px;
+    }
+}
+
+.signup-hint {
+    margin: 0.5rem 0 0;
     text-align: center;
+    font-size: 0.8125rem;
+    color: var(--mat-sys-on-surface-variant);
+}
+
+.signup-link {
     color: var(--mat-sys-primary);
+    font-weight: 600;
     text-decoration: none;
 
-    &:hover {
+    &:hover,
+    &:focus-visible {
         text-decoration: underline;
+    }
+
+    &:active {
+        opacity: 0.8;
     }
 }
