@@ -5,7 +5,7 @@ from fastapi.responses import FileResponse
 
 from grpc_clients.user_client import (
     list_users, create_user, login, update_user_role,
-    UserServiceUnavailable, InvalidCredentials, RoleNotFound, InvalidRole, EmailAlreadyExists,
+    UserServiceUnavailable, InvalidCredentials, RoleNotFound, InvalidRole, EmailAlreadyExists, RoleUpdateForbidden
 )
 from grpc_clients.incident_client import (
     list_incidents, get_incident_with_ci, get_incident, create_incident, add_incident_update, get_incident_updates,
@@ -34,7 +34,7 @@ from schemas.ci_create import CICreateSchema
 from schemas.ci_edit import CIEditSchema
 from schemas.change_create import ChangeCreateSchema
 
-from auth.dependencies import get_current_user, require_roles, CurrentUser
+from auth.dependencies import get_current_user, require_roles, CurrentUser, oauth2_schema
 
 router = APIRouter(prefix="/demo")
 
@@ -71,13 +71,15 @@ async def api_create_user(user: UserCreateSchema):
         raise HTTPException(status_code=503, detail="gRPC service is down")
 
 @router.put("/api/users/{user_id}/role")
-async def api_update_user_role(user_id: int, body: UserRoleUpdateSchema, admin: CurrentUser = Depends(admin_only)):
+async def api_update_user_role(user_id: int, body: UserRoleUpdateSchema, admin: CurrentUser = Depends(admin_only), token: str = Depends(oauth2_schema)):
     try:
-        return await update_user_role(user_id, body.role)
+        return await update_user_role(user_id, body.role, token)
     except RoleNotFound:
         raise HTTPException(status_code=404, detail="User not found")
     except InvalidRole as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except RoleUpdateForbidden:
+        raise HTTPException(status_code=403, detail="A valid admin token is required to change roles")
     except UserServiceUnavailable:
         raise HTTPException(status_code=503, detail="gRPC service is down")
 

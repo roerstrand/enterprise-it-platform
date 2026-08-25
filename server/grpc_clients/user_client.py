@@ -28,6 +28,9 @@ class RoleNotFound(Exception):
 class InvalidRole(Exception):
     pass
 
+class RoleUpdateForbidden(Exception):
+    pass
+
 class EmailAlreadyExists(Exception):
     pass
 
@@ -59,12 +62,19 @@ async def login(email: str, password: str):
         raise UserServiceUnavailable(str(e))
     return {"access_token": response.access_token, "token_type": response.token_type}
 
-async def update_user_role(user_id: int, role: str):
+async def update_user_role(user_id: int, role: str, token: str | None = None):
     try:
-        response = await _get_stub().UpdateUserRole(user_pb2.UpdateUserRoleRequest(id=user_id, role=role))
+        metadata = (("authorization", f"Bearer {token}"),) if token else None
+        response = await _get_stub().UpdateUserRole(
+            user_pb2.UpdateUserRoleRequest(id=user_id, role=role,),
+            metadata=metadata,
+            )
+        
     except grpc.RpcError as e:
         if e.code() == grpc.StatusCode.NOT_FOUND:
             raise RoleNotFound(str(e))
+        if e.code() == grpc.StatusCode.PERMISSION_DENIED:
+            raise RoleUpdateForbidden(str(e))
         if e.code() == grpc.StatusCode.INVALID_ARGUMENT:
             raise InvalidRole(str(e))
         print(f"gRPC-fel: {e.code()} {e.details()}")

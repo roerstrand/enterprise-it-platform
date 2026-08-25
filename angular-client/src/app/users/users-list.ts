@@ -21,6 +21,7 @@ export class UsersList implements OnInit {
     protected readonly users = signal<User[]>([]);
     protected readonly loading = signal(true);
     protected readonly roles: Role[] = ['admin', 'operator', 'viewer'];
+    protected readonly error = signal<string | null>(null);
 
     constructor(private userService: UserService, protected authService: AuthService) {}
 
@@ -46,8 +47,10 @@ export class UsersList implements OnInit {
     }
 
     protected onRoleChange(user: User, role: Role): void {
+        this.error.set(null);
         this.userService.updateRole(user.id, role).subscribe({
-            next: () => this.loadUsers()
+            next: () => this.loadUsers(),
+            error: () => this.error.set(`Failed to update role for ${user.name}. Reverting`)
         });
     }
 }
