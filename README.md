@@ -63,3 +63,19 @@ The Python backend lives in `server/` — steps 3, 4, 5 and 7 are run with `serv
 7. `cd server && python -m grpc_servers.audit_server` — Audit gRPC server (port 50055)
 8. `cd server && uvicorn main:app --reload` — starts FastAPI, web demo at `/demo` (port 8000)
 9. `cd angular-client && ng serve` — Angular client (port 4200)
+
+## Deployment status
+
+The platform is provisioned for Azure via Terraform (`terraform/main.tf`):
+resource group, Azure Container Registry, and an OIDC-federated identity for
+GitHub Actions (no stored secrets). A GitHub Actions workflow
+(`.github/workflows/build-and-push.yml`) builds and pushes all six service
+images to ACR on every push to `main`.
+
+**Not yet in Terraform:** the AKS cluster itself, and the ACR↔AKS pull-role
+wiring. The existing `k8s/` manifests currently target a local Docker Desktop
+cluster (`:local` image tags, `imagePullPolicy: Never`) and would need
+updating to reference ACR-hosted images before an AKS deploy.
+
+Azure resources are torn down (`terraform destroy`) between sessions to avoid
+idle cost — nothing is running in Azure by default.
