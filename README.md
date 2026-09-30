@@ -2,6 +2,27 @@
 
 FastAPI-based microservice demo with gRPC as the internal data contract and PostgreSQL as the database.
 
+## Screenshots
+
+![Operations dashboard](docs/screenshots/dashboard.png)
+
+<details>
+<summary>More screenshots</summary>
+
+**Incidents list** — severity/status badges, SLA state
+![Incidents list](docs/screenshots/incidents-list.png)
+
+**Incident detail** — AI-generated summary and AI-suggested severity/status (local LLM via Foundry Local)
+![Incident detail](docs/screenshots/incident-detail.png)
+
+**Configuration Items** — CMDB, owner resolved via a cross-service gRPC call
+![Configuration Items](docs/screenshots/ci-items.png)
+
+**Audit log** — append-only event log, admin-only
+![Audit log](docs/screenshots/audit-log.png)
+
+</details>
+
 ## Architecture
 
 See `docs/ard/` for all architecture decisions (ARDs). Summary:

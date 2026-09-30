@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { IncidentService } from './incident.service';
 import { Incident, IncidentListFilter, IncidentUpdate } from './incident';
@@ -23,6 +24,21 @@ import { AuthService } from '../auth/auth.service';
 
 // Alla filterfält som lever i URL:ens query params - en bokmärkt/delad länk återskapar exakt samma vy.
 const FILTER_KEYS = ['status', 'severity', 'assignee', 'ciId', 'slaState', 'search', 'createdAfter', 'createdBefore', 'sortBy', 'sortDir'] as const;
+
+// Date -> 'yyyy-mm-dd' i lokal tid (toISOString skulle ge UTC och kunna hoppa en dag bakåt)
+function toDateParam(d: Date): string {
+    // padStart(2, '0'): 9 -> '09'
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+// Filtervärdet är Date (vald i pickern) eller 'yyyy-mm-dd' (från URL:en vid sidladdning).
+// 'T00:00' utan 'Z' tolkas som lokal midnatt - samma som pickern ger - istället för UTC.
+function toIsoOrUndefined(value: Date | string | null): string | undefined {
+    if (!value) return undefined;
+    const d = value instanceof Date ? value : new Date(`${value}T00:00`);
+    return d.toISOString();
+}
 
 @Component({
     selector: 'app-incidents-list',
@@ -38,6 +54,7 @@ const FILTER_KEYS = ['status', 'severity', 'assignee', 'ciId', 'slaState', 'sear
         MatCardModule,
         MatIconModule,
         MatPaginatorModule,
+        MatDatepickerModule,
         TitleCasePipe
     ],
     templateUrl: './incidents-list.html',
@@ -174,8 +191,8 @@ export class IncidentsList implements OnInit {
             ci_id: f.ciId ? Number(f.ciId) : undefined,
             sla_state: f.slaState || undefined,
             search: f.search || undefined,
-            created_after: f.createdAfter ? new Date(f.createdAfter).toISOString() : undefined,
-            created_before: f.createdBefore ? new Date(f.createdBefore).toISOString() : undefined,
+            created_after: toIsoOrUndefined(f.createdAfter),
+            created_before: toIsoOrUndefined(f.createdBefore),
             sort_by: f.sortBy || 'created_at',
             sort_dir: f.sortDir || 'desc',
             page: this.page() + 1,
@@ -195,7 +212,10 @@ export class IncidentsList implements OnInit {
         const f = this.filterForm.value;
         const queryParams: Record<string, string | null> = {};
         for (const key of FILTER_KEYS) {
-            queryParams[key] = f[key] || null;
+            // Datepickern ger Date-objekt - serialisera till yyyy-mm-dd (lokal dag) så URL:en blir läsbar
+            // och kan läsas tillbaka av patchValue (NativeDateAdapter tolkar ISO-strängar)
+            const value = f[key];
+            queryParams[key] = value instanceof Date ? toDateParam(value) : (value || null);
         }
         queryParams['page'] = this.page() > 0 ? String(this.page()) : null;
         queryParams['pageSize'] = this.pageSize() !== 25 ? String(this.pageSize()) : null;

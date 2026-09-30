@@ -183,12 +183,17 @@
 
         <mat-form-field appearance="outline" class="field-narrow">
           <mat-label>Created after</mat-label>
-          <input matInput type="date" formControlName="createdAfter" />
+          <!-- [matDatepicker]="afterPicker" kopplar inputen till <mat-datepicker #afterPicker> nedan -->
+          <input matInput [matDatepicker]="afterPicker" formControlName="createdAfter" />
+          <mat-datepicker-toggle matIconSuffix [for]="afterPicker" />
+          <mat-datepicker #afterPicker />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="field-narrow">
           <mat-label>Created before</mat-label>
-          <input matInput type="date" formControlName="createdBefore" />
+          <input matInput [matDatepicker]="beforePicker" formControlName="createdBefore" />
+          <mat-datepicker-toggle matIconSuffix [for]="beforePicker" />
+          <mat-datepicker #beforePicker />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="field-narrow">

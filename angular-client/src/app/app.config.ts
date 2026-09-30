@@ -3,6 +3,7 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './auth/auth.interceptor';
@@ -20,6 +21,11 @@ export const appConfig: ApplicationConfig = {
     // istället för Materials default där en tom/ofokuserad ruta visar labeln stor och
     // centrerad (som ser ut som placeholder-text). Satt en gång globalt här istället
     // för som attribut på varje enskilt <mat-form-field> i varje formulär.
-    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { floatLabel: 'always' } }
+    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { floatLabel: 'always' } },
+    // MatDatepicker kräver en DateAdapter - native = vanliga JS Date-objekt, inget extra bibliotek.
+    // MAT_DATE_LOCALE styr visat datumformat; native <input type="date"> följer istället
+    // webbläsarens/OS:ets språk (svenska här) och går inte att styra från appen.
+    provideNativeDateAdapter(),
+    { provide: MAT_DATE_LOCALE, useValue: 'en-US' }
   ]
 };
